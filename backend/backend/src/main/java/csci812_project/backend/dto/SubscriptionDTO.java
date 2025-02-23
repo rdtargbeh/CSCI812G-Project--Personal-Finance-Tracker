@@ -1,12 +1,10 @@
 package csci812_project.backend.dto;
 
 import csci812_project.backend.enums.SubscriptionStatus;
-import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Builder
 public class SubscriptionDTO {
 
     /** Unique subscription ID */

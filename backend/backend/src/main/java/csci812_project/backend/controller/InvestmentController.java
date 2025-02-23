@@ -2,6 +2,7 @@ package csci812_project.backend.controller;
 
 import csci812_project.backend.dto.InvestmentDTO;
 import csci812_project.backend.service.InvestmentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import java.util.List;
@@ -10,11 +11,8 @@ import java.util.List;
 @RequestMapping("/api/investments")
 public class InvestmentController {
 
-    private final InvestmentService investmentService;
-
-    public InvestmentController(InvestmentService investmentService) {
-        this.investmentService = investmentService;
-    }
+    @Autowired
+    private InvestmentService investmentService;
 
     @PostMapping
     public ResponseEntity<InvestmentDTO> addInvestment(@RequestBody InvestmentDTO dto) {

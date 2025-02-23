@@ -9,12 +9,6 @@ import java.util.Optional;
 
 public interface UserService {
 
-    /**
-     * Creates a new user account with validation checks.
-     * @param userDTO User registration data.
-     * @return Created UserDTO with user details.
-     */
-    UserDTO createUser(UserDTO userDTO);
 
     /**
      * Retrieves user details by user ID.
@@ -49,4 +43,13 @@ public interface UserService {
      * @param userId ID of the user to restore.
      */
     void restoreUser(Long userId);
+
+
+    /**
+     * Creates a new user account with validation checks.
+     * @param userDTO User registration data.
+     * @return Created UserDTO with user details.
+     */
+//    UserDTO createUser(UserDTO userDTO);
+
 }

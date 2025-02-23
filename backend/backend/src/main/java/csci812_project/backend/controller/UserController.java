@@ -19,10 +19,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping
-    public UserDTO createUser(@RequestBody UserDTO userDTO) {
-        return userService.createUser(userDTO);
-    }
 
     @GetMapping("/{userId}")
     public Optional<UserDTO> getUserById(@PathVariable Long userId) {
@@ -54,5 +50,11 @@ public class UserController {
         userService.restoreUser(userId);
         return ResponseEntity.ok("User has been restored successfully.");
     }
+
+    //    @PostMapping
+//    public UserDTO createUser(@RequestBody UserDTO userDTO) {
+//        return userService.createUser(userDTO);
+//    }
+
 }
 

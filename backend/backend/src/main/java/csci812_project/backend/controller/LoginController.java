@@ -14,12 +14,24 @@ public class LoginController {
     @Autowired
     private LoginService loginService;
 
+
+    /**
+     * ✅ Registers a new user and creates an empty user profile.
+     * @param loginDTO The login details (username, email, password).
+     * @return The registered user's login details.
+     */
     @PostMapping("/register")
-    public ResponseEntity<LoginDTO> register(@RequestParam String userName,
-                                             @RequestParam String email,
-                                             @RequestParam String password) {
-        return ResponseEntity.ok(loginService.registerUser(userName, email, password));
+    public ResponseEntity<LoginDTO> register(@RequestBody LoginDTO loginDTO) {
+        LoginDTO registeredUser = loginService.register(loginDTO);
+        return ResponseEntity.ok(registeredUser);
     }
+
+//    @PostMapping("/register")
+//    public ResponseEntity<LoginDTO> register(@RequestParam String userName,
+//                                             @RequestParam String email,
+//                                             @RequestParam String password) {
+//        return ResponseEntity.ok(loginService.registerUser(userName, email, password));
+//    }
 
     @PostMapping("/login")
     public ResponseEntity<Boolean> authenticate(@RequestParam String userName,

@@ -16,7 +16,7 @@ public class UserMapper {
         if (user == null) return null;
 
         UserDTO dto = new UserDTO();
-        dto.setUserId(user.getUserId()); // Changed from 'id' to 'userId'
+        dto.setLoginId(user.getUserId()); // Changed from 'id' to 'userId'
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
         dto.setPhoneNumber(user.getPhoneNumber());
@@ -41,7 +41,7 @@ public class UserMapper {
         if (userDTO == null) return null;
 
         User user = new User();
-        user.setUserId(userDTO.getUserId()); // Changed from 'id' to 'userId'
+        user.setUserId(userDTO.getLoginId()); // Changed from 'id' to 'userId'
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
         user.setPhoneNumber(userDTO.getPhoneNumber());

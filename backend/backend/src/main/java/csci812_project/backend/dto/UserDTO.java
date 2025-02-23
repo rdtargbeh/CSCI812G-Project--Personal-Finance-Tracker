@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public class UserDTO {
 
     /** Unique user ID */
-    private Long userId;
+    private Long loginId;
 
     /** First and last name of the user */
     private String firstName;
@@ -47,10 +47,10 @@ public class UserDTO {
 
     // Constructor
     public UserDTO(){}
-    public UserDTO(Long userId, String firstName, String lastName, String phoneNumber, String address, String currency,
+    public UserDTO(Long loginId, String firstName, String lastName, String phoneNumber, String address, String currency,
                    String timezone, String profilePicture, String notificationPreferences, String preferredLanguage,
                    boolean isDeleted, LocalDateTime dateCreated, LocalDateTime dateUpdated) {
-        this.userId = userId;
+        this.loginId = loginId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
@@ -66,12 +66,12 @@ public class UserDTO {
     }
 
     // Getter and Setter
-    public Long getUserId() {
-        return userId;
+    public Long getLoginId() {
+        return loginId;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setLoginId(Long loginId) {
+        this.loginId = loginId;
     }
 
     public String getFirstName() {

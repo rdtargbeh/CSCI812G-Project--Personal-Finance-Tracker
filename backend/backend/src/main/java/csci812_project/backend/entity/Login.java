@@ -11,8 +11,14 @@ public class Login {
 
     /** User ID (Primary Key, links to `users`) */
     @Id
-    @Column(name = "user_id")
-    private Long userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "login_id", nullable = false, updatable = false)
+    private Long loginId;
+
+    /** Relationship to `User` (One-to-One) */
+//    @OneToOne(mappedBy = "login", cascade = CascadeType.ALL) // ✅ Bi-directional mapping
+//    private User user;
+
 
     /** Unique username for authentication */
     @Column(name = "user_name", unique = true, nullable = false, length = 50)
@@ -42,34 +48,28 @@ public class Login {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
-    /** Relationship to `User` (One-to-One) */
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "user_id")
-    private User user;
-
     // Constructor
     public Login(){}
-    public Login(Long userId, String userName, String email, String password, boolean isVerified, LocalDateTime lastLogin,
+    public Login(Long loginId, String userName, String email, String password, boolean isVerified, LocalDateTime lastLogin,
                  boolean isDeleted, User user) {
-        this.userId = userId;
+        this.loginId = loginId;
         this.userName = userName;
         this.email = email;
         this.password = password;
         this.isVerified = isVerified;
         this.lastLogin = lastLogin;
         this.isDeleted = isDeleted;
-        this.user = user;
+//        this.user = user;
     }
 
     // Getter and Setter
 
-    public Long getUserId() {
-        return userId;
+    public Long getLoginId() {
+        return loginId;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setLoginId(Long loginId) {
+        this.loginId = loginId;
     }
 
     public @NotBlank(message = "Username is required") String getUserName() {
@@ -120,12 +120,12 @@ public class Login {
         isDeleted = deleted;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
+//    public User getUser() {
+//        return user;
+//    }
+//
+//    public void setUser(User user) {
+//        this.user = user;
+//    }
 }
 

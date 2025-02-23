@@ -1,12 +1,10 @@
 package csci812_project.backend.dto;
 
 import csci812_project.backend.enums.InvestmentType;
-import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Builder
 public class InvestmentDTO {
 
     /** Unique investment ID */

@@ -201,7 +201,7 @@ public class TransactionServiceImplementation implements TransactionService {
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
         // ✅ Fetch the user's email from the Login entity
-        Login login = loginRepository.findByUserId(user.getUserId())
+        Login login = loginRepository.findByLoginId(user.getUserId())
                 .orElseThrow(() -> new RuntimeException("User login details not found"));
 
         Transaction transaction = transactionMapper.toEntity(transactionDTO, user, account, null);
@@ -283,7 +283,7 @@ public class TransactionServiceImplementation implements TransactionService {
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
         // ✅ Fetch the user's email from the Login entity
-        Login login = loginRepository.findByUserId(user.getUserId())
+        Login login = loginRepository.findByLoginId(user.getUserId())
                 .orElseThrow(() -> new RuntimeException("User login details not found"));
 
         RecurringInterval recurringInterval = RecurringInterval.valueOf(transactionDTO.getRecurringInterval().toUpperCase());

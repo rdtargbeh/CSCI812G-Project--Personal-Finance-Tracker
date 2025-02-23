@@ -4,6 +4,7 @@ import csci812_project.backend.dto.CategoryDTO;
 import csci812_project.backend.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

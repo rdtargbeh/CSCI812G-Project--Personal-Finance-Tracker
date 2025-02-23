@@ -11,12 +11,16 @@ import java.time.LocalDateTime;
 public class User {
     /**
      * Unique ID for the user (Primary Key).
-     * Auto-incremented by the database.
+     * Non Auto-incremented by the database.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "user_id", nullable = false, updatable = false)
     private Long userId;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @MapsId
+    @JoinColumn(name = "user_id", nullable = false)
+    private Login login; // ✅ Link to Login entity
 
     /**
      * Unique username for login. Cannot be null or duplicate.
@@ -91,9 +95,6 @@ public class User {
      */
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Login login; // ✅ Link to Login entity
 
     /**
      * Timestamp for when the user was created.

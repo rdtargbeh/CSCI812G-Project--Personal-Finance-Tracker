@@ -1,6 +1,6 @@
 
 CREATE TABLE users (
-    user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT PRIMARY KEY,
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
     phone_number int(15)
@@ -19,7 +19,7 @@ CREATE TABLE users (
 CREATE INDEX idx_user_email ON users(email);
 
 CREATE TABLE login (
-    user_id BIGINT PRIMARY KEY,
+    user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_name VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(50) UNIQUE NOT NULL CHECK (email LIKE '%@%.%'),
     password VARCHAR(255) NOT NULL,

@@ -4,7 +4,9 @@ import csci812_project.backend.dto.LoginDTO;
 
 public interface LoginService {
 
-    LoginDTO registerUser(String userName, String email, String password);
+    LoginDTO register(LoginDTO loginDTO);
+
+//    LoginDTO registerUser(String userName, String email, String password);
 
     boolean authenticateUser(String userName, String password);
 

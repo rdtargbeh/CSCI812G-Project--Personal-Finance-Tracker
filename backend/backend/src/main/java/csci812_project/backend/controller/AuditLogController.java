@@ -4,6 +4,7 @@ import csci812_project.backend.dto.AuditLogDTO;
 import csci812_project.backend.service.AuditLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -11,7 +11,7 @@ public class LoginMapper {
         if (login == null) return null;
 
         LoginDTO dto = new LoginDTO();
-        dto.setUserId(login.getUserId());
+        dto.setLongId(login.getLoginId());
         dto.setUserName(login.getUserName());
         dto.setEmail(login.getEmail());
         dto.setVerified(login.isVerified());
@@ -23,7 +23,7 @@ public class LoginMapper {
         if (loginDTO == null) return null;
 
         Login login = new Login();
-        login.setUserId(loginDTO.getUserId());
+        login.setLoginId(loginDTO.getLongId());
         login.setUserName(loginDTO.getUserName());
         login.setEmail(loginDTO.getEmail());
         login.setVerified(loginDTO.isVerified());

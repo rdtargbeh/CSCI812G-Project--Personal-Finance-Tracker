@@ -25,12 +25,39 @@ public class UserServiceImplementation implements UserService {
     @Autowired
     private LoginRepository loginRepository;
 
+
     @Override
-    public UserDTO createUser(UserDTO userDTO) {
-        User user = userMapper.toEntity(userDTO);  // Use injected mapper
-        user = userRepository.save(user);
+    public UserDTO updateUser(Long userId, UserDTO userDTO) {
+
+        // ✅ First, verify that the user exists in login
+        Login login = loginRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found in login"));
+
+        // ✅ Then check if user profile exists, if not, create it
+        User user = userRepository.findById(userId)
+                .orElseGet(() -> {
+                    User newUser = new User();
+                    newUser.setUserId(userId); // ✅ Use the same user_id from login
+                    newUser.setLogin(login);
+                    return userRepository.save(newUser);
+                });
+
+        // ✅ Update profile fields
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setPhoneNumber(userDTO.getPhoneNumber());
+        user.setAddress(userDTO.getAddress());
+        user.setCurrency(userDTO.getCurrency());
+        user.setTimezone(userDTO.getTimezone());
+        user.setPreferredLanguage(userDTO.getPreferredLanguage());
+        user.setProfilePicture(userDTO.getProfilePicture());
+        user.setNotificationPreferences(userDTO.getNotificationPreferences());
+        user.setPreferredLanguage(userDTO.getPreferredLanguage());
+
+        userRepository.save(user);
         return userMapper.toDTO(user);
     }
+
 
     /**
      * Retrieves user profile details by user ID.
@@ -54,29 +81,6 @@ public class UserServiceImplementation implements UserService {
                 .map(userMapper::toDTO); // Convert each User entity to UserDTO
     }
 
-
-
-    @Override
-    public UserDTO updateUser(Long userId, UserDTO userDTO) {
-        User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        // Prevent changes to email & username (handled in LoginService)
-        existingUser.setFirstName(userDTO.getFirstName());
-        existingUser.setLastName(userDTO.getLastName());
-        existingUser.setPhoneNumber(userDTO.getPhoneNumber());
-        existingUser.setAddress(userDTO.getAddress());
-        existingUser.setCurrency(userDTO.getCurrency());
-        existingUser.setTimezone(userDTO.getTimezone());
-        existingUser.setProfilePicture(userDTO.getProfilePicture());
-        existingUser.setNotificationPreferences(userDTO.getNotificationPreferences());
-        existingUser.setPreferredLanguage(userDTO.getPreferredLanguage());
-
-        userRepository.save(existingUser);
-        return userMapper.toDTO(existingUser);
-    }
-
-
     @Override
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId)
@@ -91,8 +95,6 @@ public class UserServiceImplementation implements UserService {
         loginRepository.save(login);
     }
 
-
-
     @Override
     public void restoreUser(Long userId) {
         User user = userRepository.findById(userId)
@@ -106,5 +108,13 @@ public class UserServiceImplementation implements UserService {
         userRepository.save(user);
         loginRepository.save(login);
     }
+
+
+//    @Override
+//    public UserDTO createUser(UserDTO userDTO) {
+//        User user = userMapper.toEntity(userDTO);  // Use injected mapper
+//        user = userRepository.save(user);
+//        return userMapper.toDTO(user);
+//    }
 
 }
