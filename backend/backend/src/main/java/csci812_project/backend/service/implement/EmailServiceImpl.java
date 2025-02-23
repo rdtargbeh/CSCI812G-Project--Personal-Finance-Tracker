@@ -1,5 +1,7 @@
 package csci812_project.backend.service.implement;
 
+import csci812_project.backend.entity.User;
+import csci812_project.backend.repository.UserRepository;
 import csci812_project.backend.service.EmailService;
 import lombok.RequiredArgsConstructor;
 
@@ -17,6 +19,9 @@ public class EmailServiceImpl implements EmailService {
 
     @Autowired
     private JavaMailSender mailSender;
+    @Autowired
+    private UserRepository userRepository;
+
 
     @Override
     public void sendBudgetAlert(String email, String categoryName, BigDecimal budgetLimit) {
@@ -63,4 +68,49 @@ public class EmailServiceImpl implements EmailService {
             throw new RuntimeException("❌ Error sending loan reminder email: " + e.getMessage());
         }
     }
+
+    /** ✅ Send savings goal progress reminder */
+    @Override
+    public void sendSavingsGoalReminder(Long userId, String goalName, BigDecimal progress) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String subject = "🚀 Savings Goal Update: " + goalName;
+        String message = "Dear " + user.getFirstName() + ",\n\n"
+                + "Your savings goal **" + goalName + "** is now **" + progress + "% complete**! 🎉\n"
+                + "Keep up the great work and reach your goal soon!\n\n"
+                + "Best,\nYour Personal Finance Tracker";
+
+        sendEmail(user.getLogin().getEmail(), subject, message);
+    }
+
+    /** ✅ Helper method to send email */
+    private void sendEmail(String to, String subject, String text) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(text);
+            mailSender.send(message);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send email: " + e.getMessage());
+        }
+    }
+
+    /** ✅ Send savings contribution confirmation */
+    @Override
+    public void sendSavingsContributionEmail(Long userId, String goalName, BigDecimal contributionAmount) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String subject = "✅ Auto-Savings Contribution Completed";
+        String message = "Dear " + user.getFirstName() + ",\n\n"
+                + "A contribution of **$" + contributionAmount + "** has been successfully added to your savings goal **" + goalName + "**. 🎯\n"
+                + "Keep saving and reach your goal!\n\n"
+                + "Best,\nYour Personal Finance Tracker";
+
+        sendEmail(user.getLogin().getEmail(), subject, message);
+    }
+
 }

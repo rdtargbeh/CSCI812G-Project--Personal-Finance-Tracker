@@ -20,7 +20,7 @@ public class Report {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_id")
-    private Long id;
+    private Long reportId;
 
     /**
      * Foreign Key linking the report to a user.
@@ -96,19 +96,29 @@ public class Report {
     @Column(name = "date_updated")
     private LocalDate dateUpdated = LocalDate.now();
 
+
     /**
-     * Lifecycle hook to update the timestamp before updating.
+     * ✅ Calculates net balance automatically.
      */
-    @PreUpdate
-    protected void onUpdate() {
-        this.dateUpdated = LocalDate.now();
+    public void calculateNetBalance() {
+        this.netBalance = totalIncome.subtract(totalExpense);
     }
+
+
+    @PrePersist
+    @PreUpdate
+    private void onPersistOrUpdate() {
+        this.dateUpdated = LocalDate.now(); // ✅ Update timestamp
+        this.netBalance = totalIncome.subtract(totalExpense); // ✅ Auto-calculate net balance
+    }
+
+
 
     // Constructor
     public Report(){}
-    public Report(Long id, User user, LocalDate startDate, LocalDate endDate, BigDecimal totalIncome, BigDecimal totalExpense,
+    public Report(Long reportId, User user, LocalDate startDate, LocalDate endDate, BigDecimal totalIncome, BigDecimal totalExpense,
                   BigDecimal netBalance, ReportGeneratedBy generatedBy, ReportFileFormat fileFormat, LocalDate dateCreated, LocalDate dateUpdated) {
-        this.id = id;
+        this.reportId = reportId;
         this.user = user;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -123,12 +133,12 @@ public class Report {
 
     // Getter and Setter
 
-    public Long getId() {
-        return id;
+    public Long getReportId() {
+        return reportId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setReportId(Long reportId) {
+        this.reportId = reportId;
     }
 
     public User getUser() {

@@ -20,7 +20,7 @@ public class SavingsGoal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "saving_id")
-    private Long id;
+    private Long goalId;
 
     /**
      * Foreign Key linking the savings goal to a user.
@@ -97,6 +97,10 @@ public class SavingsGoal {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
+    /** ✅ Track the last date a contribution was made */
+    @Column(name = "last_deposit_date")
+    private LocalDate lastDepositDate;
+
     /**
      * Timestamp for when the savings goal was created.
      * Automatically set when a new record is inserted.
@@ -119,12 +123,17 @@ public class SavingsGoal {
         this.dateUpdated = LocalDate.now();
     }
 
+    /** ✅ Update last deposit date when a contribution is made */
+    public void updateLastDepositDate() {
+        this.lastDepositDate = LocalDate.now();
+    }
+
     // Constructor
     public SavingsGoal(){}
-    public SavingsGoal(Long id, User user, String goalName, BigDecimal targetAmount, BigDecimal currentAmount, LocalDate deadline,
+    public SavingsGoal(Long goalId, User user, String goalName, BigDecimal targetAmount, BigDecimal currentAmount, LocalDate deadline,
                        SavingsGoalStatus status, boolean autoSave, PriorityLevel priorityLevel, ContributionFrequency contributionFrequency,
-                       boolean isDeleted, LocalDate dateCreated, LocalDate dateUpdated) {
-        this.id = id;
+                       boolean isDeleted, LocalDate dateCreated, LocalDate dateUpdated, LocalDate lastDepositDate) {
+        this.goalId = goalId;
         this.user = user;
         this.goalName = goalName;
         this.targetAmount = targetAmount;
@@ -137,16 +146,17 @@ public class SavingsGoal {
         this.isDeleted = isDeleted;
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
+        this.lastDepositDate = lastDepositDate;
     }
 
     // Getter and Setter
 
-    public Long getId() {
-        return id;
+    public Long getGoalId() {
+        return goalId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setGoalId(Long id) {
+        this.goalId = goalId;
     }
 
     public User getUser() {
@@ -243,6 +253,14 @@ public class SavingsGoal {
 
     public void setDateUpdated(LocalDate dateUpdated) {
         this.dateUpdated = dateUpdated;
+    }
+
+    public LocalDate getLastDepositDate() {
+        return lastDepositDate;
+    }
+
+    public void setLastDepositDate(LocalDate lastDepositDate) {
+        this.lastDepositDate = lastDepositDate;
     }
 }
 

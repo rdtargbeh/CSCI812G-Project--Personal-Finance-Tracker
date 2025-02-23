@@ -4,5 +4,6 @@ public enum ContributionFrequency {
     DAILY,
     WEEKLY,
     MONTHLY,
-    CUSTOM
+    CUSTOM,
+    BIWEEKLY
 }

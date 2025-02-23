@@ -20,7 +20,7 @@ public class Subscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "subscription_id")
-    private Long id;
+    private Long subscriptionId;
 
     /**
      * Foreign Key linking the subscription to a user.
@@ -99,9 +99,9 @@ public class Subscription {
 
     // Constructor
     public Subscription(){}
-    public Subscription(Long id, User user, String name, BigDecimal amount, LocalDateTime nextBillingDate, Account paymentMethod,
+    public Subscription(Long subscriptionId, User user, String name, BigDecimal amount, LocalDateTime nextBillingDate, Account paymentMethod,
                         boolean autoRenew, SubscriptionStatus status, LocalDateTime dateCreated, LocalDateTime dateUpdated) {
-        this.id = id;
+        this.subscriptionId = subscriptionId;
         this.user = user;
         this.name = name;
         this.amount = amount;
@@ -115,12 +115,12 @@ public class Subscription {
 
     // Getter and Setter
 
-    public Long getId() {
-        return id;
+    public Long getSubscriptionId() {
+        return subscriptionId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setSubscriptionId(Long subscriptionId) {
+        this.subscriptionId = subscriptionId;
     }
 
     public User getUser() {

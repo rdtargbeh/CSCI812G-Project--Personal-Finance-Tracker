@@ -11,27 +11,27 @@ import java.time.LocalDate;
 public class ReportDTO {
 
     /** Unique report ID */
-    private Long id;
-
+    private Long reportId;
+    private Long userId;
     /** Start and end dates for the report */
     private LocalDate startDate;
     private LocalDate endDate;
-
     /** Financial summary */
     private BigDecimal totalIncome;
     private BigDecimal totalExpense;
     private BigDecimal netBalance;
-
     /** Report metadata */
     private ReportGeneratedBy generatedBy;
     private ReportFileFormat fileFormat;
     private LocalDate dateCreated;
+    private LocalDate dateUpdated;
 
     // Constructor
     public ReportDTO(){}
-    public ReportDTO(Long id, LocalDate startDate, LocalDate endDate, BigDecimal totalIncome, BigDecimal totalExpense,
-                     BigDecimal netBalance, ReportGeneratedBy generatedBy, ReportFileFormat fileFormat, LocalDate dateCreated) {
-        this.id = id;
+    public ReportDTO(Long reportId, Long userId, LocalDate startDate, LocalDate endDate, BigDecimal totalIncome, BigDecimal totalExpense,
+                     BigDecimal netBalance, ReportGeneratedBy generatedBy, ReportFileFormat fileFormat, LocalDate dateCreated, LocalDate dateUpdated) {
+        this.reportId = reportId;
+        this.userId = userId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.totalIncome = totalIncome;
@@ -40,15 +40,16 @@ public class ReportDTO {
         this.generatedBy = generatedBy;
         this.fileFormat = fileFormat;
         this.dateCreated = dateCreated;
+        this.dateUpdated = dateUpdated;
     }
 
     // Getter and Setter
-    public Long getId() {
-        return id;
+    public Long getReportId() {
+        return reportId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setReportId(Long id) {
+        this.reportId = reportId;
     }
 
     public LocalDate getStartDate() {
@@ -114,5 +115,22 @@ public class ReportDTO {
     public void setDateCreated(LocalDate dateCreated) {
         this.dateCreated = dateCreated;
     }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public LocalDate getDateUpdated() {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(LocalDate dateUpdated) {
+        this.dateUpdated = dateUpdated;
+    }
 }
+
 

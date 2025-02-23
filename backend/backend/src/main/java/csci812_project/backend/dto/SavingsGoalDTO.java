@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class SavingsGoalDTO {
 
     /** Unique savings goal ID */
-    private Long id;
+    private Long goalId;
 
     /** User ID associated with the savings goal */
     private Long userId;
@@ -50,10 +50,10 @@ public class SavingsGoalDTO {
 
     // Constructor
     public SavingsGoalDTO(){}
-    public SavingsGoalDTO(Long id, Long userId, String goalName, BigDecimal targetAmount, BigDecimal currentAmount,
+    public SavingsGoalDTO(Long goalId, Long userId, String goalName, BigDecimal targetAmount, BigDecimal currentAmount,
                           LocalDate deadline, String status, boolean autoSave, String priorityLevel, String contributionFrequency,
                           boolean isDeleted, LocalDateTime dateCreated, LocalDateTime dateUpdated) {
-        this.id = id;
+        this.goalId = goalId;
         this.userId = userId;
         this.goalName = goalName;
         this.targetAmount = targetAmount;
@@ -69,12 +69,12 @@ public class SavingsGoalDTO {
     }
 
     // Getter and Setter
-    public Long getId() {
-        return id;
+    public Long getGoalId() {
+        return goalId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setGoalId(Long id) {
+        this.goalId = id;
     }
 
     public Long getUserId() {
