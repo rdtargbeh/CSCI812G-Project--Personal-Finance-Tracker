@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class TransactionDTO {
 
     /** Unique transaction ID */
-    private Long id;
+    private Long transactionId;
 
     /** User ID associated with the transaction */
     private Long userId;
@@ -43,13 +43,17 @@ public class TransactionDTO {
     private String receiptUrl;
 
     /** Indicates whether the transaction is recurring */
-    private boolean recurring;
+    private boolean isRecurring;
+
+    private String recurringInterval;
+    private LocalDateTime nextDueDate;
 
     /** Parent transaction ID (if part of a split or related transaction) */
     private Long parentTransactionId;
 
     /** Status of the transaction (PENDING, COMPLETED, FAILED) */
     private String status;
+    private Long toAccountId; // Added for transfers
 
     /** Indicates whether the transaction is deleted (soft delete) */
     private boolean isDeleted;

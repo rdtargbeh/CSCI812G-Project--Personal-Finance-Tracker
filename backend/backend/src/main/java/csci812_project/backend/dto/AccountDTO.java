@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class AccountDTO {
 
     /** Unique account ID */
-    private Long id;
+    private Long accountId;
 
     /** User ID associated with the account */
     private Long userId;

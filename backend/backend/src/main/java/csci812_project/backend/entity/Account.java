@@ -26,7 +26,7 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "account_id")
-    private Long id;
+    private Long accountId;
 
     /**
      * Foreign Key linking this account to a user.

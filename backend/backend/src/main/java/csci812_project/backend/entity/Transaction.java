@@ -1,6 +1,7 @@
 package csci812_project.backend.entity;
 
 import csci812_project.backend.enums.PaymentMethod;
+import csci812_project.backend.enums.RecurringInterval;
 import csci812_project.backend.enums.TransactionStatus;
 import csci812_project.backend.enums.TransactionType;
 import jakarta.persistence.*;
@@ -27,7 +28,7 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "transaction_id")
-    private Long id;
+    private Long transactionId;
 
     /**
      * Foreign Key linking the transaction to a user.
@@ -44,6 +45,11 @@ public class Transaction {
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false, foreignKey = @ForeignKey(name = "fk_transaction_account"))
     private Account account;
+
+    /** Target account for transfers (nullable) */
+    @ManyToOne
+    @JoinColumn(name = "to_account_id", foreignKey = @ForeignKey(name = "fk_transaction_to_account"))
+    private Account toAccount; // Added for transfers
 
     /**
      * Foreign Key linking the transaction to a category.
@@ -99,7 +105,16 @@ public class Transaction {
      * Indicates whether this transaction is a recurring payment.
      */
     @Column(name = "recurring", nullable = false)
-    private boolean recurring = false;
+    private boolean isRecurring  = false;
+
+    /** Recurring interval (DAILY, WEEKLY, MONTHLY, YEARLY) */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "recurring_interval")
+    private RecurringInterval recurringInterval;
+
+    /** The next date the transaction should recur */
+    @Column(name = "next_due_date")
+    private LocalDateTime nextDueDate;
 
     /**
      * Parent transaction for split transactions.
@@ -145,4 +160,6 @@ public class Transaction {
     protected void onUpdate() {
         this.dateUpdated = LocalDateTime.now();
     }
+
+
 }
