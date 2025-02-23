@@ -5,20 +5,12 @@ import csci812_project.backend.enums.ReportGeneratedBy;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-
 @Entity
 @Table(name = "reports")
-@Builder
 public class Report {
 
     /**
@@ -110,6 +102,113 @@ public class Report {
     @PreUpdate
     protected void onUpdate() {
         this.dateUpdated = LocalDate.now();
+    }
+
+    // Constructor
+    public Report(){}
+    public Report(Long id, User user, LocalDate startDate, LocalDate endDate, BigDecimal totalIncome, BigDecimal totalExpense,
+                  BigDecimal netBalance, ReportGeneratedBy generatedBy, ReportFileFormat fileFormat, LocalDate dateCreated, LocalDate dateUpdated) {
+        this.id = id;
+        this.user = user;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.totalIncome = totalIncome;
+        this.totalExpense = totalExpense;
+        this.netBalance = netBalance;
+        this.generatedBy = generatedBy;
+        this.fileFormat = fileFormat;
+        this.dateCreated = dateCreated;
+        this.dateUpdated = dateUpdated;
+    }
+
+    // Getter and Setter
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public @NotNull(message = "Start date is required") LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(@NotNull(message = "Start date is required") LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public @NotNull(message = "End date is required") LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(@NotNull(message = "End date is required") LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public @DecimalMin(value = "0.00", message = "Total income cannot be negative") BigDecimal getTotalIncome() {
+        return totalIncome;
+    }
+
+    public void setTotalIncome(@DecimalMin(value = "0.00", message = "Total income cannot be negative") BigDecimal totalIncome) {
+        this.totalIncome = totalIncome;
+    }
+
+    public @DecimalMin(value = "0.00", message = "Total expense cannot be negative") BigDecimal getTotalExpense() {
+        return totalExpense;
+    }
+
+    public void setTotalExpense(@DecimalMin(value = "0.00", message = "Total expense cannot be negative") BigDecimal totalExpense) {
+        this.totalExpense = totalExpense;
+    }
+
+    public BigDecimal getNetBalance() {
+        return netBalance;
+    }
+
+    public void setNetBalance(BigDecimal netBalance) {
+        this.netBalance = netBalance;
+    }
+
+    public ReportGeneratedBy getGeneratedBy() {
+        return generatedBy;
+    }
+
+    public void setGeneratedBy(ReportGeneratedBy generatedBy) {
+        this.generatedBy = generatedBy;
+    }
+
+    public ReportFileFormat getFileFormat() {
+        return fileFormat;
+    }
+
+    public void setFileFormat(ReportFileFormat fileFormat) {
+        this.fileFormat = fileFormat;
+    }
+
+    public LocalDate getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(LocalDate dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public LocalDate getDateUpdated() {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(LocalDate dateUpdated) {
+        this.dateUpdated = dateUpdated;
     }
 }
 

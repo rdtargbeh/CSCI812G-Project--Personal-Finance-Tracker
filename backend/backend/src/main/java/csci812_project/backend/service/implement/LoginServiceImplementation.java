@@ -6,18 +6,21 @@ import csci812_project.backend.mapper.LoginMapper;
 import csci812_project.backend.repository.LoginRepository;
 import csci812_project.backend.service.LoginService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class LoginServiceImplementation implements LoginService {
 
-    private final LoginRepository loginRepository;
-    private final LoginMapper loginMapper;
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private LoginRepository loginRepository;
+    @Autowired
+    private LoginMapper loginMapper;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public LoginDTO registerUser(String userName, String email, String password) {

@@ -8,18 +8,21 @@ import csci812_project.backend.repository.AccountRepository;
 import csci812_project.backend.repository.UserRepository;
 import csci812_project.backend.service.AccountService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class AccountServiceImplementation implements AccountService {
 
-    private final AccountRepository accountRepository;
-    private final UserRepository userRepository;
-    private final AccountMapper accountMapper;
+    @Autowired
+    private AccountRepository accountRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private AccountMapper accountMapper;
 
     @Override
     public AccountDTO createAccount(Long userId, AccountDTO accountDTO) {
@@ -41,7 +44,7 @@ public class AccountServiceImplementation implements AccountService {
 
     @Override
     public List<AccountDTO> getAccountsByUser(Long userId) {
-        return accountRepository.findByUserId(userId)
+        return accountRepository.findByUser_UserId(userId)
                 .stream()
                 .map(accountMapper::toDTO)
                 .collect(Collectors.toList());

@@ -3,15 +3,16 @@ package csci812_project.backend.controller;
 import csci812_project.backend.dto.LoginDTO;
 import csci812_project.backend.service.LoginService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@RequiredArgsConstructor
 public class LoginController {
 
-    private final LoginService loginService;
+    @Autowired
+    private LoginService loginService;
 
     @PostMapping("/register")
     public ResponseEntity<LoginDTO> register(@RequestParam String userName,

@@ -6,19 +6,12 @@ import csci812_project.backend.enums.TransactionStatus;
 import csci812_project.backend.enums.TransactionType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-
 @Entity
 @Table(name = "transactions")
-@Builder
 public class Transaction {
 
     /**
@@ -162,4 +155,185 @@ public class Transaction {
     }
 
 
+    // Constructor
+    public Transaction(){}
+    public Transaction(Long transactionId, User user, Account account, Account toAccount, Category category, BigDecimal amount,
+                       TransactionType transactionType, LocalDateTime date, String description, PaymentMethod paymentMethod,
+                       String receiptUrl, boolean isRecurring, RecurringInterval recurringInterval, LocalDateTime nextDueDate,
+                       Transaction parentTransaction, TransactionStatus status, boolean isDeleted, LocalDateTime dateCreated,
+                       LocalDateTime dateUpdated) {
+        this.transactionId = transactionId;
+        this.user = user;
+        this.account = account;
+        this.toAccount = toAccount;
+        this.category = category;
+        this.amount = amount;
+        this.transactionType = transactionType;
+        this.date = date;
+        this.description = description;
+        this.paymentMethod = paymentMethod;
+        this.receiptUrl = receiptUrl;
+        this.isRecurring = isRecurring;
+        this.recurringInterval = recurringInterval;
+        this.nextDueDate = nextDueDate;
+        this.parentTransaction = parentTransaction;
+        this.status = status;
+        this.isDeleted = isDeleted;
+        this.dateCreated = dateCreated;
+        this.dateUpdated = dateUpdated;
+    }
+
+    // Getter and Setter
+
+    public Long getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(Long transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+    public Account getToAccount() {
+        return toAccount;
+    }
+
+    public void setToAccount(Account toAccount) {
+        this.toAccount = toAccount;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public @DecimalMin(value = "0.00", message = "Amount cannot be negative") BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(@DecimalMin(value = "0.00", message = "Amount cannot be negative") BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public TransactionType getTransactionType() {
+        return transactionType;
+    }
+
+    public void setTransactionType(TransactionType transactionType) {
+        this.transactionType = transactionType;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public String getReceiptUrl() {
+        return receiptUrl;
+    }
+
+    public void setReceiptUrl(String receiptUrl) {
+        this.receiptUrl = receiptUrl;
+    }
+
+    public boolean isRecurring() {
+        return isRecurring;
+    }
+
+    public void setRecurring(boolean recurring) {
+        isRecurring = recurring;
+    }
+
+    public RecurringInterval getRecurringInterval() {
+        return recurringInterval;
+    }
+
+    public void setRecurringInterval(RecurringInterval recurringInterval) {
+        this.recurringInterval = recurringInterval;
+    }
+
+    public LocalDateTime getNextDueDate() {
+        return nextDueDate;
+    }
+
+    public void setNextDueDate(LocalDateTime nextDueDate) {
+        this.nextDueDate = nextDueDate;
+    }
+
+    public Transaction getParentTransaction() {
+        return parentTransaction;
+    }
+
+    public void setParentTransaction(Transaction parentTransaction) {
+        this.parentTransaction = parentTransaction;
+    }
+
+    public TransactionStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TransactionStatus status) {
+        this.status = status;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public LocalDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(LocalDateTime dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public LocalDateTime getDateUpdated() {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(LocalDateTime dateUpdated) {
+        this.dateUpdated = dateUpdated;
+    }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
 
     /** Find logs by user ID */
-    List<AuditLog> findByUserId(Long userId);
+    List<AuditLog> findByUser_UserId(Long userId);
 
     /** Find logs by entity type (e.g., "Transaction", "Account") */
     List<AuditLog> findByEntity(String entity);

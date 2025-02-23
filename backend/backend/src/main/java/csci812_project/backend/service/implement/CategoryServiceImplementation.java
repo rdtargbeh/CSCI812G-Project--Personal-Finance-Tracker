@@ -9,28 +9,33 @@ import csci812_project.backend.repository.CategoryRepository;
 import csci812_project.backend.repository.UserRepository;
 import csci812_project.backend.service.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class CategoryServiceImplementation implements CategoryService {
 
-    private final CategoryRepository categoryRepository;
-    private final UserRepository userRepository;
-    private final CategoryMapper categoryMapper;
+    @Autowired
+    private CategoryRepository categoryRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private CategoryMapper categoryMapper;
 
     @Override
     public CategoryDTO createCategory(CategoryDTO categoryDTO) {
-        Category category = categoryMapper.toEntity(categoryDTO);
+        User user = null; // ✅ Default to null in case it's a system category
 
         if (categoryDTO.getUserId() != null) {
-            User user = userRepository.findById(categoryDTO.getUserId())
+            user = userRepository.findById(categoryDTO.getUserId())
                     .orElseThrow(() -> new RuntimeException("User not found"));
-            category.setUser(user);
         }
+
+        // ✅ Pass all required arguments to `toEntity()`
+        Category category = categoryMapper.toEntity(categoryDTO, user);
 
         return categoryMapper.toDTO(categoryRepository.save(category));
     }

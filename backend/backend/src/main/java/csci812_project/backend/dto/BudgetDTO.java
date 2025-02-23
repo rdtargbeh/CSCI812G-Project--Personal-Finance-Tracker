@@ -1,16 +1,9 @@
 package csci812_project.backend.dto;
 
-import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class BudgetDTO {
 
     /** Unique budget ID */
@@ -46,4 +39,111 @@ public class BudgetDTO {
 
     /** Timestamp for when the budget was last updated */
     private LocalDateTime dateUpdated;
+
+    // Constructor
+    public BudgetDTO(){}
+    public BudgetDTO(Long budgetId, Long userId, Long categoryId, BigDecimal amountLimit, LocalDate startDate, LocalDate endDate,
+                     String budgetType, BigDecimal rolloverAmount, boolean isDeleted, LocalDateTime dateCreated,
+                     LocalDateTime dateUpdated) {
+        this.budgetId = budgetId;
+        this.userId = userId;
+        this.categoryId = categoryId;
+        this.amountLimit = amountLimit;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.budgetType = budgetType;
+        this.rolloverAmount = rolloverAmount;
+        this.isDeleted = isDeleted;
+        this.dateCreated = dateCreated;
+        this.dateUpdated = dateUpdated;
+    }
+
+    // Getter and Setter
+    public Long getBudgetId() {
+        return budgetId;
+    }
+
+    public void setBudgetId(Long budgetId) {
+        this.budgetId = budgetId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public BigDecimal getAmountLimit() {
+        return amountLimit;
+    }
+
+    public void setAmountLimit(BigDecimal amountLimit) {
+        this.amountLimit = amountLimit;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getBudgetType() {
+        return budgetType;
+    }
+
+    public void setBudgetType(String budgetType) {
+        this.budgetType = budgetType;
+    }
+
+    public BigDecimal getRolloverAmount() {
+        return rolloverAmount;
+    }
+
+    public void setRolloverAmount(BigDecimal rolloverAmount) {
+        this.rolloverAmount = rolloverAmount;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public LocalDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(LocalDateTime dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public LocalDateTime getDateUpdated() {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(LocalDateTime dateUpdated) {
+        this.dateUpdated = dateUpdated;
+    }
 }

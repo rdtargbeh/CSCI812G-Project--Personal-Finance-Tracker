@@ -2,19 +2,12 @@ package csci812_project.backend.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotNull;
-import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "loan_payments")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class LoanPayment {
 
     /**
@@ -64,4 +57,66 @@ public class LoanPayment {
     @Column(name = "remaining_balance", nullable = false, precision = 15, scale = 2)
     @DecimalMin(value = "0.00", message = "Remaining balance cannot be negative")
     private BigDecimal remainingBalance;
+
+    // Constructor
+    public LoanPayment(){}
+    public LoanPayment(Long id, Loan loan, User user, BigDecimal paymentAmount, LocalDateTime paymentDate,
+                       BigDecimal remainingBalance) {
+        this.id = id;
+        this.loan = loan;
+        this.user = user;
+        this.paymentAmount = paymentAmount;
+        this.paymentDate = paymentDate;
+        this.remainingBalance = remainingBalance;
+    }
+
+    // Getter and Setter
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Loan getLoan() {
+        return loan;
+    }
+
+    public void setLoan(Loan loan) {
+        this.loan = loan;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public @DecimalMin(value = "0.00", message = "Payment amount cannot be negative") BigDecimal getPaymentAmount() {
+        return paymentAmount;
+    }
+
+    public void setPaymentAmount(@DecimalMin(value = "0.00", message = "Payment amount cannot be negative") BigDecimal paymentAmount) {
+        this.paymentAmount = paymentAmount;
+    }
+
+    public LocalDateTime getPaymentDate() {
+        return paymentDate;
+    }
+
+    public void setPaymentDate(LocalDateTime paymentDate) {
+        this.paymentDate = paymentDate;
+    }
+
+    public @DecimalMin(value = "0.00", message = "Remaining balance cannot be negative") BigDecimal getRemainingBalance() {
+        return remainingBalance;
+    }
+
+    public void setRemainingBalance(@DecimalMin(value = "0.00", message = "Remaining balance cannot be negative") BigDecimal remainingBalance) {
+        this.remainingBalance = remainingBalance;
+    }
 }

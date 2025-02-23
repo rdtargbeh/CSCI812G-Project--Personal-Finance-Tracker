@@ -3,6 +3,7 @@ package csci812_project.backend.controller;
 import csci812_project.backend.dto.UserDTO;
 import csci812_project.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
-@RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+    @Autowired
+    private UserService userService;
 
     @PostMapping
     public UserDTO createUser(@RequestBody UserDTO userDTO) {

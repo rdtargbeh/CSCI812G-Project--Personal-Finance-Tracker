@@ -13,16 +13,14 @@ import java.util.List;
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
 
     /** Find budgets by user ID */
-    List<Budget> findByUserId(Long userId);
+    List<Budget> findByUser_UserId(Long userId);
 
     /** ✅ Find budgets by user ID and category ID */
-    List<Budget> findByUser_UserIdAndCategory_Id(Long userId, Long categoryId);
+    List<Budget> findByUser_UserIdAndCategory_CategoryId(Long userId, Long categoryId);
 
     /** ✅ Calculate the total amount spent within a budget */
     @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t WHERE t.category.id = :categoryId AND t.user.userId = :userId")
     BigDecimal getTotalSpentInBudget(@Param("userId") Long userId, @Param("categoryId") Long categoryId);
-
-
 
     /** Find active budgets (not deleted) */
     List<Budget> findByIsDeletedFalse();

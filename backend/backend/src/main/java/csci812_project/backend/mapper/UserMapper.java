@@ -14,21 +14,22 @@ public class UserMapper {
      */
     public UserDTO toDTO(User user) {
         if (user == null) return null;
-        return UserDTO.builder()
-                .userId(user.getUserId())  // Changed from 'id' to 'userId'
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .phoneNumber(user.getPhoneNumber())
-                .address(user.getAddress())
-                .currency(user.getCurrency())
-                .timezone(user.getTimezone())
-                .profilePicture(user.getProfilePicture())
-                .notificationPreferences(user.getNotificationPreferences())
-                .preferredLanguage(user.getPreferredLanguage())
-                .isDeleted(user.isDeleted())
-                .dateCreated(user.getDateCreated())
-                .dateUpdated(user.getDateUpdated())
-                .build();
+
+        UserDTO dto = new UserDTO();
+        dto.setUserId(user.getUserId()); // Changed from 'id' to 'userId'
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setPhoneNumber(user.getPhoneNumber());
+        dto.setAddress(user.getAddress());
+        dto.setCurrency(user.getCurrency());
+        dto.setTimezone(user.getTimezone());
+        dto.setProfilePicture(user.getProfilePicture());
+        dto.setNotificationPreferences(user.getNotificationPreferences());
+        dto.setPreferredLanguage(user.getPreferredLanguage());
+        dto.setDeleted(user.isDeleted());
+        dto.setDateCreated(user.getDateCreated());
+        dto.setDateUpdated(user.getDateUpdated());
+        return dto;
     }
 
     /**
@@ -37,25 +38,23 @@ public class UserMapper {
      * @return User entity representing the UserDTO.
      */
     public User toEntity(UserDTO userDTO) {
-        if (userDTO == null) {
-            return null;
-        }
+        if (userDTO == null) return null;
 
-        return User.builder()
-                .userId(userDTO.getUserId())  // Changed from 'id' to 'userId'
-                .firstName(userDTO.getFirstName())
-                .lastName(userDTO.getLastName())
-                .phoneNumber(userDTO.getPhoneNumber())
-                .address(userDTO.getAddress())
-                .currency(userDTO.getCurrency())
-                .timezone(userDTO.getTimezone())
-                .profilePicture(userDTO.getProfilePicture())
-                .notificationPreferences(userDTO.getNotificationPreferences())
-                .preferredLanguage(userDTO.getPreferredLanguage())
-                .isDeleted(userDTO.isDeleted())
-                .dateCreated(userDTO.getDateCreated())
-                .dateUpdated(userDTO.getDateUpdated())
-                .build();
+        User user = new User();
+        user.setUserId(userDTO.getUserId()); // Changed from 'id' to 'userId'
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setPhoneNumber(userDTO.getPhoneNumber());
+        user.setAddress(userDTO.getAddress());
+        user.setCurrency(userDTO.getCurrency());
+        user.setTimezone(userDTO.getTimezone());
+        user.setProfilePicture(userDTO.getProfilePicture());
+        user.setNotificationPreferences(userDTO.getNotificationPreferences());
+        user.setPreferredLanguage(userDTO.getPreferredLanguage());
+        user.setDeleted(userDTO.isDeleted());
+        user.setDateCreated(userDTO.getDateCreated());
+        user.setDateUpdated(userDTO.getDateUpdated());
+        return user;
     }
 }
 

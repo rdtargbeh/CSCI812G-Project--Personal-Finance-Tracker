@@ -3,6 +3,7 @@ package csci812_project.backend.controller;
 import csci812_project.backend.dto.AccountDTO;
 import csci812_project.backend.service.AccountService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,10 +11,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/accounts")
-@RequiredArgsConstructor
+
 public class AccountController {
 
-    private final AccountService accountService;
+    @Autowired
+    private  AccountService accountService;
 
     /**
      * Creates a new account for a user.

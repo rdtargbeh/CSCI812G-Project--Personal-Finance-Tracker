@@ -11,6 +11,7 @@ import csci812_project.backend.repository.CategoryRepository;
 import csci812_project.backend.repository.UserRepository;
 import csci812_project.backend.service.BudgetService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -18,13 +19,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class BudgetServiceImplementation implements BudgetService {
 
-    private final BudgetRepository budgetRepository;
-    private final UserRepository userRepository;
-    private final CategoryRepository categoryRepository;
-    private final BudgetMapper budgetMapper;
+    @Autowired
+    private BudgetRepository budgetRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
+    @Autowired
+    private BudgetMapper budgetMapper;
 
     @Override
     public BudgetDTO createBudget(BudgetDTO budgetDTO) {
@@ -34,7 +38,7 @@ public class BudgetServiceImplementation implements BudgetService {
         Category category = categoryRepository.findById(budgetDTO.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
-        Budget budget = budgetMapper.toEntity(budgetDTO);
+        Budget budget = budgetMapper.toEntity(budgetDTO, user, category);
         budget.setUser(user);
         budget.setCategory(category);
 
@@ -50,7 +54,7 @@ public class BudgetServiceImplementation implements BudgetService {
 
     @Override
     public List<BudgetDTO> getBudgetsByUser(Long userId) {
-        return budgetRepository.findByUserId(userId)
+        return budgetRepository.findByUser_UserId(userId)
                 .stream()
                 .map(budgetMapper::toDTO)
                 .collect(Collectors.toList());
@@ -83,7 +87,7 @@ public class BudgetServiceImplementation implements BudgetService {
      */
     @Override
     public boolean checkBudgetUsage(Long userId, Long categoryId, BigDecimal transactionAmount) {
-        List<Budget> budgets = budgetRepository.findByUser_UserIdAndCategory_Id(userId, categoryId);
+        List<Budget> budgets = budgetRepository.findByUser_UserIdAndCategory_CategoryId(userId, categoryId);
 
         for (Budget budget : budgets) {
             BigDecimal spentAmount = budgetRepository.getTotalSpentInBudget(userId, categoryId);

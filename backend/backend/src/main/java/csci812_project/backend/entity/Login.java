@@ -3,17 +3,10 @@ package csci812_project.backend.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
-
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "login")
-@Builder
 public class Login {
 
     /** User ID (Primary Key, links to `users`) */
@@ -54,5 +47,85 @@ public class Login {
     @MapsId
     @JoinColumn(name = "user_id")
     private User user;
+
+    // Constructor
+    public Login(){}
+    public Login(Long userId, String userName, String email, String password, boolean isVerified, LocalDateTime lastLogin,
+                 boolean isDeleted, User user) {
+        this.userId = userId;
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
+        this.isVerified = isVerified;
+        this.lastLogin = lastLogin;
+        this.isDeleted = isDeleted;
+        this.user = user;
+    }
+
+    // Getter and Setter
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public @NotBlank(message = "Username is required") String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(@NotBlank(message = "Username is required") String userName) {
+        this.userName = userName;
+    }
+
+    public @Email(message = "Invalid email format") @NotBlank(message = "Email is required") String getEmail() {
+        return email;
+    }
+
+    public void setEmail(@Email(message = "Invalid email format") @NotBlank(message = "Email is required") String email) {
+        this.email = email;
+    }
+
+    public @NotBlank(message = "Password is required") String getPassword() {
+        return password;
+    }
+
+    public void setPassword(@NotBlank(message = "Password is required") String password) {
+        this.password = password;
+    }
+
+    public boolean isVerified() {
+        return isVerified;
+    }
+
+    public void setVerified(boolean verified) {
+        isVerified = verified;
+    }
+
+    public LocalDateTime getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(LocalDateTime lastLogin) {
+        this.lastLogin = lastLogin;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
 

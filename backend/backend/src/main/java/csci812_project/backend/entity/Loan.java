@@ -138,4 +138,139 @@ public class Loan {
     protected void onUpdate() {
         this.dateUpdated = LocalDateTime.now();
     }
+
+    // Constructor
+    public Loan(){}
+    public Loan(Long id, User user, String lenderName, BigDecimal amountBorrowed, BigDecimal outstandingBalance, BigDecimal interestRate,
+                BigDecimal interestPaid, BigDecimal monthlyPayment, BigDecimal totalAmountPaid, int numberYears, LocalDate dueDate,
+                LoanStatus status, LocalDateTime dateCreated, LocalDateTime dateUpdated) {
+        this.id = id;
+        this.user = user;
+        this.lenderName = lenderName;
+        this.amountBorrowed = amountBorrowed;
+        this.outstandingBalance = outstandingBalance;
+        this.interestRate = interestRate;
+        this.interestPaid = interestPaid;
+        this.monthlyPayment = monthlyPayment;
+        this.totalAmountPaid = totalAmountPaid;
+        this.numberYears = numberYears;
+        this.dueDate = dueDate;
+        this.status = status;
+        this.dateCreated = dateCreated;
+        this.dateUpdated = dateUpdated;
+    }
+
+    // Getter and Setter
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public @NotBlank(message = "Lender name is required") String getLenderName() {
+        return lenderName;
+    }
+
+    public void setLenderName(@NotBlank(message = "Lender name is required") String lenderName) {
+        this.lenderName = lenderName;
+    }
+
+    public @DecimalMin(value = "0.00", message = "Amount borrowed cannot be negative") BigDecimal getAmountBorrowed() {
+        return amountBorrowed;
+    }
+
+    public void setAmountBorrowed(@DecimalMin(value = "0.00", message = "Amount borrowed cannot be negative") BigDecimal amountBorrowed) {
+        this.amountBorrowed = amountBorrowed;
+    }
+
+    public @DecimalMin(value = "0.00", message = "Outstanding balance cannot be negative") BigDecimal getOutstandingBalance() {
+        return outstandingBalance;
+    }
+
+    public void setOutstandingBalance(@DecimalMin(value = "0.00", message = "Outstanding balance cannot be negative") BigDecimal outstandingBalance) {
+        this.outstandingBalance = outstandingBalance;
+    }
+
+    public @DecimalMin(value = "0.00", message = "Interest rate cannot be negative") BigDecimal getInterestRate() {
+        return interestRate;
+    }
+
+    public void setInterestRate(@DecimalMin(value = "0.00", message = "Interest rate cannot be negative") BigDecimal interestRate) {
+        this.interestRate = interestRate;
+    }
+
+    public @DecimalMin(value = "0.00", message = "Interest paid cannot be negative") BigDecimal getInterestPaid() {
+        return interestPaid;
+    }
+
+    public void setInterestPaid(@DecimalMin(value = "0.00", message = "Interest paid cannot be negative") BigDecimal interestPaid) {
+        this.interestPaid = interestPaid;
+    }
+
+    public @DecimalMin(value = "0.00", message = "Monthly payment cannot be negative") BigDecimal getMonthlyPayment() {
+        return monthlyPayment;
+    }
+
+    public void setMonthlyPayment(@DecimalMin(value = "0.00", message = "Monthly payment cannot be negative") BigDecimal monthlyPayment) {
+        this.monthlyPayment = monthlyPayment;
+    }
+
+    public @DecimalMin(value = "0.00", message = "Total amount paid cannot be negative") BigDecimal getTotalAmountPaid() {
+        return totalAmountPaid;
+    }
+
+    public void setTotalAmountPaid(@DecimalMin(value = "0.00", message = "Total amount paid cannot be negative") BigDecimal totalAmountPaid) {
+        this.totalAmountPaid = totalAmountPaid;
+    }
+
+    @Min(value = 1, message = "Loan term must be at least 1 year")
+    public int getNumberYears() {
+        return numberYears;
+    }
+
+    public void setNumberYears(@Min(value = 1, message = "Loan term must be at least 1 year") int numberYears) {
+        this.numberYears = numberYears;
+    }
+
+    public @NotNull(message = "Due date is required") LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(@NotNull(message = "Due date is required") LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public LoanStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(LoanStatus status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(LocalDateTime dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public LocalDateTime getDateUpdated() {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(LocalDateTime dateUpdated) {
+        this.dateUpdated = dateUpdated;
+    }
 }

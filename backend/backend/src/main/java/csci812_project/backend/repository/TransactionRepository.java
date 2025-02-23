@@ -12,10 +12,10 @@ import java.util.List;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
     /** Find all transactions by user ID */
-    List<Transaction> findByUserId(Long userId);
+    List<Transaction> findByUser_UserId(Long userId);
 
     /** Find all transactions for a specific account */
-    List<Transaction> findByAccountId(Long accountId);
+    List<Transaction> findByAccount_AccountId(Long accountId);
 
     /** Find all transactions by transaction type */
     List<Transaction> findByTransactionType(TransactionType transactionType);

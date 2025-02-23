@@ -9,24 +9,26 @@ public class LoginMapper {
 
     public LoginDTO toDTO(Login login) {
         if (login == null) return null;
-        return LoginDTO.builder()
-                .userId(login.getUserId())
-                .userName(login.getUserName())
-                .email(login.getEmail())
-                .isVerified(login.isVerified())
-                .isDeleted(login.isDeleted())
-                .build();
+
+        LoginDTO dto = new LoginDTO();
+        dto.setUserId(login.getUserId());
+        dto.setUserName(login.getUserName());
+        dto.setEmail(login.getEmail());
+        dto.setVerified(login.isVerified());
+        dto.setDeleted(login.isDeleted());
+        return dto;
     }
 
     public Login toEntity(LoginDTO loginDTO) {
         if (loginDTO == null) return null;
-        return Login.builder()
-                .userId(loginDTO.getUserId())
-                .userName(loginDTO.getUserName())
-                .email(loginDTO.getEmail())
-                .isVerified(loginDTO.isVerified())
-                .isDeleted(loginDTO.isDeleted())
-                .build();
+
+        Login login = new Login();
+        login.setUserId(loginDTO.getUserId());
+        login.setUserName(loginDTO.getUserName());
+        login.setEmail(loginDTO.getEmail());
+        login.setVerified(loginDTO.isVerified());
+        login.setDeleted(loginDTO.isDeleted());
+        return login;
     }
 }
 

@@ -5,18 +5,12 @@ import csci812_project.backend.enums.PriorityLevel;
 import csci812_project.backend.enums.SavingsGoalStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "savings_goals")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class SavingsGoal {
 
     /**
@@ -123,6 +117,132 @@ public class SavingsGoal {
     @PreUpdate
     protected void onUpdate() {
         this.dateUpdated = LocalDate.now();
+    }
+
+    // Constructor
+    public SavingsGoal(){}
+    public SavingsGoal(Long id, User user, String goalName, BigDecimal targetAmount, BigDecimal currentAmount, LocalDate deadline,
+                       SavingsGoalStatus status, boolean autoSave, PriorityLevel priorityLevel, ContributionFrequency contributionFrequency,
+                       boolean isDeleted, LocalDate dateCreated, LocalDate dateUpdated) {
+        this.id = id;
+        this.user = user;
+        this.goalName = goalName;
+        this.targetAmount = targetAmount;
+        this.currentAmount = currentAmount;
+        this.deadline = deadline;
+        this.status = status;
+        this.autoSave = autoSave;
+        this.priorityLevel = priorityLevel;
+        this.contributionFrequency = contributionFrequency;
+        this.isDeleted = isDeleted;
+        this.dateCreated = dateCreated;
+        this.dateUpdated = dateUpdated;
+    }
+
+    // Getter and Setter
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public @NotBlank(message = "Goal name is required") String getGoalName() {
+        return goalName;
+    }
+
+    public void setGoalName(@NotBlank(message = "Goal name is required") String goalName) {
+        this.goalName = goalName;
+    }
+
+    public @DecimalMin(value = "0.00", message = "Target amount cannot be negative") BigDecimal getTargetAmount() {
+        return targetAmount;
+    }
+
+    public void setTargetAmount(@DecimalMin(value = "0.00", message = "Target amount cannot be negative") BigDecimal targetAmount) {
+        this.targetAmount = targetAmount;
+    }
+
+    public @DecimalMin(value = "0.00", message = "Current amount cannot be negative") BigDecimal getCurrentAmount() {
+        return currentAmount;
+    }
+
+    public void setCurrentAmount(@DecimalMin(value = "0.00", message = "Current amount cannot be negative") BigDecimal currentAmount) {
+        this.currentAmount = currentAmount;
+    }
+
+    public LocalDate getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(LocalDate deadline) {
+        this.deadline = deadline;
+    }
+
+    public SavingsGoalStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(SavingsGoalStatus status) {
+        this.status = status;
+    }
+
+    public boolean isAutoSave() {
+        return autoSave;
+    }
+
+    public void setAutoSave(boolean autoSave) {
+        this.autoSave = autoSave;
+    }
+
+    public PriorityLevel getPriorityLevel() {
+        return priorityLevel;
+    }
+
+    public void setPriorityLevel(PriorityLevel priorityLevel) {
+        this.priorityLevel = priorityLevel;
+    }
+
+    public ContributionFrequency getContributionFrequency() {
+        return contributionFrequency;
+    }
+
+    public void setContributionFrequency(ContributionFrequency contributionFrequency) {
+        this.contributionFrequency = contributionFrequency;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public LocalDate getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(LocalDate dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public LocalDate getDateUpdated() {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(LocalDate dateUpdated) {
+        this.dateUpdated = dateUpdated;
     }
 }
 

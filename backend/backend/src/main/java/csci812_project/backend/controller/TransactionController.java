@@ -3,6 +3,7 @@ package csci812_project.backend.controller;
 import csci812_project.backend.dto.TransactionDTO;
 import csci812_project.backend.service.TransactionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,10 +12,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/transactions")
-@RequiredArgsConstructor
 public class TransactionController {
 
-    private final TransactionService transactionService;
+    @Autowired
+    private  TransactionService transactionService;
 
     /**
      * Deposit money into an account.

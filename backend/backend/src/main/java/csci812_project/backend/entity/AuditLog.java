@@ -3,18 +3,11 @@ package csci812_project.backend.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-
 @Entity
 @Table(name = "audit_logs")
-@Builder
 public class AuditLog {
 
     /**
@@ -75,4 +68,84 @@ public class AuditLog {
      */
     @Column(name = "timestamp", nullable = false, updatable = false)
     private LocalDateTime timestamp = LocalDateTime.now();
+
+    // Constructor
+    public AuditLog(){}
+    public AuditLog(Long logId, User user, String action, String entity, Long entityId, String oldValue,
+                    String newValue, LocalDateTime timestamp) {
+        this.logId = logId;
+        this.user = user;
+        this.action = action;
+        this.entity = entity;
+        this.entityId = entityId;
+        this.oldValue = oldValue;
+        this.newValue = newValue;
+        this.timestamp = timestamp;
+    }
+
+    // Getter and Setter
+
+    public Long getLogId() {
+        return logId;
+    }
+
+    public void setLogId(Long logId) {
+        this.logId = logId;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public @NotBlank(message = "Action description is required") String getAction() {
+        return action;
+    }
+
+    public void setAction(@NotBlank(message = "Action description is required") String action) {
+        this.action = action;
+    }
+
+    public @NotBlank(message = "Entity name is required") String getEntity() {
+        return entity;
+    }
+
+    public void setEntity(@NotBlank(message = "Entity name is required") String entity) {
+        this.entity = entity;
+    }
+
+    public @NotNull(message = "Entity ID is required") Long getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(@NotNull(message = "Entity ID is required") Long entityId) {
+        this.entityId = entityId;
+    }
+
+    public String getOldValue() {
+        return oldValue;
+    }
+
+    public void setOldValue(String oldValue) {
+        this.oldValue = oldValue;
+    }
+
+    public String getNewValue() {
+        return newValue;
+    }
+
+    public void setNewValue(String newValue) {
+        this.newValue = newValue;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
 }

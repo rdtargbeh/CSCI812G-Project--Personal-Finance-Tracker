@@ -3,20 +3,12 @@ package csci812_project.backend.entity;
 import csci812_project.backend.enums.BudgetType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-
-
 @Entity
 @Table(name = "budgets")
-@Builder
 public class Budget {
 
     /**
@@ -107,5 +99,111 @@ public class Budget {
     @PreUpdate
     protected void onUpdate() {
         this.dateUpdated = LocalDate.now();
+    }
+
+    // Constructor
+    public Budget(){}
+    public Budget(Long budgetId, User user, Category category, BigDecimal amountLimit, LocalDate startDate, LocalDate endDate,
+                  BudgetType budgetType, BigDecimal rolloverAmount, boolean isDeleted, LocalDate dateCreated, LocalDate dateUpdated) {
+        this.budgetId = budgetId;
+        this.user = user;
+        this.category = category;
+        this.amountLimit = amountLimit;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.budgetType = budgetType;
+        this.rolloverAmount = rolloverAmount;
+        this.isDeleted = isDeleted;
+        this.dateCreated = dateCreated;
+        this.dateUpdated = dateUpdated;
+    }
+
+    // Getter and Setter
+    public Long getBudgetId() {
+        return budgetId;
+    }
+
+    public void setBudgetId(Long budgetId) {
+        this.budgetId = budgetId;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public @DecimalMin(value = "0.00", message = "Budget limit cannot be negative") BigDecimal getAmountLimit() {
+        return amountLimit;
+    }
+
+    public void setAmountLimit(@DecimalMin(value = "0.00", message = "Budget limit cannot be negative") BigDecimal amountLimit) {
+        this.amountLimit = amountLimit;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public BudgetType getBudgetType() {
+        return budgetType;
+    }
+
+    public void setBudgetType(BudgetType budgetType) {
+        this.budgetType = budgetType;
+    }
+
+    public @DecimalMin(value = "0.00", message = "Rollover amount cannot be negative") BigDecimal getRolloverAmount() {
+        return rolloverAmount;
+    }
+
+    public void setRolloverAmount(@DecimalMin(value = "0.00", message = "Rollover amount cannot be negative") BigDecimal rolloverAmount) {
+        this.rolloverAmount = rolloverAmount;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public LocalDate getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(LocalDate dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public LocalDate getDateUpdated() {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(LocalDate dateUpdated) {
+        this.dateUpdated = dateUpdated;
     }
 }

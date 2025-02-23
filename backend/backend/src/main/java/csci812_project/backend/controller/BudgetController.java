@@ -3,6 +3,7 @@ package csci812_project.backend.controller;
 import csci812_project.backend.dto.BudgetDTO;
 import csci812_project.backend.service.BudgetService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,10 +11,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/budgets")
-@RequiredArgsConstructor
 public class BudgetController {
 
-    private final BudgetService budgetService;
+    @Autowired
+    private  BudgetService budgetService;
 
     /**
      * ✅ Create a new budget.

@@ -23,10 +23,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -36,20 +36,25 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Service
-@RequiredArgsConstructor
 public class TransactionServiceImplementation implements TransactionService {
 
-    private final TransactionRepository transactionRepository;
-    private final AccountRepository accountRepository;
-    private final UserRepository userRepository;
-    private final TransactionMapper transactionMapper;
-    private final BudgetService budgetService;
-    private final EmailService emailService;
-    private final LoginRepository loginRepository; // ✅ Inject LoginRepository
-
-    private final CategoryRepository categoryRepository;
+    @Autowired
+    private TransactionRepository transactionRepository;
+    @Autowired
+    private AccountRepository accountRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private TransactionMapper transactionMapper;
+    @Autowired
+    private BudgetService budgetService;
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private LoginRepository loginRepository; // ✅ Inject LoginRepository
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Override
     public TransactionDTO deposit(Long userId, Long accountId, TransactionDTO transactionDTO) {
@@ -58,7 +63,7 @@ public class TransactionServiceImplementation implements TransactionService {
 
         account.setBalance(account.getBalance().add(transactionDTO.getAmount()));
 
-        Transaction transaction = transactionMapper.toEntity(transactionDTO);
+        Transaction transaction = transactionMapper.toEntity(transactionDTO, account.getUser(), account, null);
         transaction.setUser(account.getUser());
         transaction.setAccount(account);
 
@@ -78,7 +83,7 @@ public class TransactionServiceImplementation implements TransactionService {
 
         account.setBalance(account.getBalance().subtract(transactionDTO.getAmount()));
 
-        Transaction transaction = transactionMapper.toEntity(transactionDTO);
+        Transaction transaction = transactionMapper.toEntity(transactionDTO, account.getUser(), account, null);
         transaction.setUser(account.getUser());
         transaction.setAccount(account);
 
@@ -102,7 +107,7 @@ public class TransactionServiceImplementation implements TransactionService {
         fromAccount.setBalance(fromAccount.getBalance().subtract(transactionDTO.getAmount()));
         toAccount.setBalance(toAccount.getBalance().add(transactionDTO.getAmount()));
 
-        Transaction transaction = transactionMapper.toEntity(transactionDTO);
+        Transaction transaction = transactionMapper.toEntity(transactionDTO, fromAccount.getUser(), fromAccount, toAccount);
         transaction.setUser(fromAccount.getUser());
         transaction.setAccount(fromAccount);
         transaction.setToAccount(toAccount);
@@ -118,7 +123,7 @@ public class TransactionServiceImplementation implements TransactionService {
      */
     @Override
     public List<TransactionDTO> getTransactionsByUser(Long userId) {
-        List<Transaction> transactions = transactionRepository.findByUserId(userId);
+        List<Transaction> transactions = transactionRepository.findByUser_UserId(userId);
         return transactions.stream()
                 .map(transactionMapper::toDTO)
                 .collect(Collectors.toList());
@@ -129,7 +134,7 @@ public class TransactionServiceImplementation implements TransactionService {
      */
     @Override
     public List<TransactionDTO> getTransactionsByAccount(Long accountId) {
-        List<Transaction> transactions = transactionRepository.findByAccountId(accountId);
+        List<Transaction> transactions = transactionRepository.findByAccount_AccountId(accountId);
         return transactions.stream()
                 .map(transactionMapper::toDTO)
                 .collect(Collectors.toList());
@@ -158,26 +163,23 @@ public class TransactionServiceImplementation implements TransactionService {
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
             for (CSVRecord record : csvParser) {
-                String accountIdStr = record.get("Account ID");
-                String amountStr = record.get("Amount");
-                String transactionTypeStr = record.get("Transaction Type");
+                Long accountId = Long.parseLong(record.get("Account ID"));
+                BigDecimal amount = new BigDecimal(record.get("Amount"));
+                TransactionType transactionType = TransactionType.valueOf(record.get("Transaction Type").toUpperCase());
                 String description = record.get("Description");
-
-                Long accountId = Long.parseLong(accountIdStr);
-                BigDecimal amount = new BigDecimal(amountStr);
-                TransactionType transactionType = TransactionType.valueOf(transactionTypeStr.toUpperCase());
 
                 Account account = accountRepository.findById(accountId)
                         .orElseThrow(() -> new RuntimeException("Account not found"));
 
-                Transaction transaction = Transaction.builder()
-                        .user(user)
-                        .account(account)
-                        .amount(amount)
-                        .transactionType(transactionType)
-                        .description(description)
-                        .dateCreated(LocalDateTime.now())
-                        .build();
+                TransactionDTO transactionDTO = new TransactionDTO();
+                transactionDTO.setUserId(user.getUserId());
+                transactionDTO.setAccountId(account.getAccountId());
+                transactionDTO.setAmount(amount);
+                transactionDTO.setTransactionType(transactionType.name());
+                transactionDTO.setDescription(description);
+
+                // ✅ Pass `transactionDTO`, `user`, and `account` to `toEntity()`
+                Transaction transaction = transactionMapper.toEntity(transactionDTO, user, account, null);
 
                 transactionRepository.save(transaction);
             }
@@ -185,6 +187,7 @@ public class TransactionServiceImplementation implements TransactionService {
             throw new RuntimeException("Error processing CSV file: " + e.getMessage());
         }
     }
+
 
     @Override
     public TransactionDTO addManualTransaction(TransactionDTO transactionDTO) {
@@ -201,7 +204,7 @@ public class TransactionServiceImplementation implements TransactionService {
         Login login = loginRepository.findByUserId(user.getUserId())
                 .orElseThrow(() -> new RuntimeException("User login details not found"));
 
-        Transaction transaction = transactionMapper.toEntity(transactionDTO);
+        Transaction transaction = transactionMapper.toEntity(transactionDTO, user, account, null);
         transaction.setUser(user);
         transaction.setAccount(account);
         transaction.setCategory(category);
@@ -233,20 +236,21 @@ public class TransactionServiceImplementation implements TransactionService {
     public void processRecurringTransactions() {
         LocalDateTime now = LocalDateTime.now();
         List<Transaction> recurringTransactions = transactionRepository.findByIsRecurringTrueAndNextDueDateBefore(now);
+
         for (Transaction transaction : recurringTransactions) {
-            Transaction newTransaction = Transaction.builder()
-                    .user(transaction.getUser())
-                    .account(transaction.getAccount())
-                    .amount(transaction.getAmount())
-                    .transactionType(transaction.getTransactionType())
-                    .description(transaction.getDescription())
-                    .isRecurring(false) // The new transaction itself is not recurring
-                    .dateCreated(now)
-                    .build();
+            TransactionDTO transactionDTO = new TransactionDTO();
+            transactionDTO.setUserId(transaction.getUser().getUserId());
+            transactionDTO.setAccountId(transaction.getAccount().getAccountId());
+            transactionDTO.setAmount(transaction.getAmount());
+            transactionDTO.setTransactionType(transaction.getTransactionType().name());
+            transactionDTO.setDescription(transaction.getDescription());
+            transactionDTO.setRecurring(false);
+            transactionDTO.setDateCreated(now);
+
+            // ✅ Pass `transactionDTO`, `transaction.getUser()`, `transaction.getAccount()` to `toEntity()`
+            Transaction newTransaction = transactionMapper.toEntity(transactionDTO, transaction.getUser(), transaction.getAccount(), null);
 
             transactionRepository.save(newTransaction);
-
-            // Update the next due date
             transaction.setNextDueDate(calculateNextDueDate(transaction));
             transactionRepository.save(transaction);
         }
@@ -275,9 +279,6 @@ public class TransactionServiceImplementation implements TransactionService {
         Account account = accountRepository.findById(transactionDTO.getAccountId())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
-        RecurringInterval recurringInterval = RecurringInterval.valueOf(transactionDTO.getRecurringInterval().toUpperCase());
-
-        // ✅ Fetch category details using categoryId
         Category category = categoryRepository.findById(transactionDTO.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
@@ -285,17 +286,16 @@ public class TransactionServiceImplementation implements TransactionService {
         Login login = loginRepository.findByUserId(user.getUserId())
                 .orElseThrow(() -> new RuntimeException("User login details not found"));
 
-        Transaction transaction = Transaction.builder()
-                .user(user)
-                .account(account)
-                .amount(transactionDTO.getAmount())
-                .transactionType(TransactionType.valueOf(transactionDTO.getTransactionType().toUpperCase()))
-                .description(transactionDTO.getDescription())
-                .isRecurring(true)
-                .recurringInterval(recurringInterval)
-                .nextDueDate(LocalDateTime.now().plusDays(1)) // Start from tomorrow
-                .dateCreated(LocalDateTime.now())
-                .build();
+        RecurringInterval recurringInterval = RecurringInterval.valueOf(transactionDTO.getRecurringInterval().toUpperCase());
+
+        // ✅ Set recurring values
+        transactionDTO.setRecurring(true);
+        transactionDTO.setDateCreated(LocalDateTime.now());
+        transactionDTO.setNextDueDate(LocalDateTime.now().plusDays(1)); // Start from tomorrow
+
+        // ✅ Convert DTO to Entity with Correct Arguments
+        Transaction transaction = transactionMapper.toEntity(transactionDTO, user, account, null);
+        transaction.setRecurringInterval(recurringInterval);
 
         transaction = transactionRepository.save(transaction);
 
@@ -307,13 +307,14 @@ public class TransactionServiceImplementation implements TransactionService {
         );
 
         if (isBudgetExceeded) {
-            // ✅ Use email from Login entity and fetch category name from `Category`
+            // ✅ Send budget alert email
             emailService.sendBudgetAlert(login.getEmail(), category.getName(), transaction.getAmount());
             System.out.println("⚠️ ALERT: Budget limit warning email sent to " + login.getEmail());
         }
 
         return transactionMapper.toDTO(transaction);
     }
+
 
 
 }

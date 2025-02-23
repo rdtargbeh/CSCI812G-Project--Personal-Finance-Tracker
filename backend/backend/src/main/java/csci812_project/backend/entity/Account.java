@@ -3,20 +3,12 @@ package csci812_project.backend.entity;
 import csci812_project.backend.enums.AccountType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-
 @Entity
 @Table(name = "accounts")
-@Builder
 public class Account {
 
     /**
@@ -125,6 +117,131 @@ public class Account {
     @PreUpdate
     protected void onUpdate() {
         this.dateUpdated = LocalDateTime.now();
+    }
+
+    // Constructor
+public Account(){}
+    public Account(Long accountId, User user, String name, AccountType type, BigDecimal balance, String currency, String institutionName,
+                   String accountNumber, BigDecimal interestRate, boolean isDefault, boolean isDeleted, LocalDateTime dateCreated, LocalDateTime dateUpdated) {
+        this.accountId = accountId;
+        this.user = user;
+        this.name = name;
+        this.type = type;
+        this.balance = balance;
+        this.currency = currency;
+        this.institutionName = institutionName;
+        this.accountNumber = accountNumber;
+        this.interestRate = interestRate;
+        this.isDefault = isDefault;
+        this.isDeleted = isDeleted;
+        this.dateCreated = dateCreated;
+        this.dateUpdated = dateUpdated;
+    }
+
+    // Getter and Setter
+
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public @NotBlank(message = "Account name is required") String getName() {
+        return name;
+    }
+
+    public void setName(@NotBlank(message = "Account name is required") String name) {
+        this.name = name;
+    }
+
+    public AccountType getType() {
+        return type;
+    }
+
+    public void setType(AccountType type) {
+        this.type = type;
+    }
+
+    public @DecimalMin(value = "0.00", message = "Balance cannot be negative") BigDecimal getBalance() {
+        return balance;
+    }
+
+    public void setBalance(@DecimalMin(value = "0.00", message = "Balance cannot be negative") BigDecimal balance) {
+        this.balance = balance;
+    }
+
+    public @Pattern(regexp = "^[A-Z]{3}$", message = "Currency must be a valid 3-letter ISO code") String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(@Pattern(regexp = "^[A-Z]{3}$", message = "Currency must be a valid 3-letter ISO code") String currency) {
+        this.currency = currency;
+    }
+
+    public String getInstitutionName() {
+        return institutionName;
+    }
+
+    public void setInstitutionName(String institutionName) {
+        this.institutionName = institutionName;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+
+    public @DecimalMin(value = "0.00", message = "Interest rate cannot be negative") BigDecimal getInterestRate() {
+        return interestRate;
+    }
+
+    public void setInterestRate(@DecimalMin(value = "0.00", message = "Interest rate cannot be negative") BigDecimal interestRate) {
+        this.interestRate = interestRate;
+    }
+
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean aDefault) {
+        isDefault = aDefault;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public LocalDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(LocalDateTime dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public LocalDateTime getDateUpdated() {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(LocalDateTime dateUpdated) {
+        this.dateUpdated = dateUpdated;
     }
 }
 

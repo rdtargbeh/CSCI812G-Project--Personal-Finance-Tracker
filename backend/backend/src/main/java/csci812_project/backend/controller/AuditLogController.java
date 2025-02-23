@@ -3,6 +3,7 @@ package csci812_project.backend.controller;
 import csci812_project.backend.dto.AuditLogDTO;
 import csci812_project.backend.service.AuditLogService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,10 +11,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/audit-logs")
-@RequiredArgsConstructor
 public class AuditLogController {
 
-    private final AuditLogService auditLogService;
+    @Autowired
+    private  AuditLogService auditLogService;
 
     /**
      * Retrieves audit logs for a specific user.

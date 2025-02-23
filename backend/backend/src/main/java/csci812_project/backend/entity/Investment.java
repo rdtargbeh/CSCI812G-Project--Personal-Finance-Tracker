@@ -5,20 +5,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
-
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-
 
 @Entity
 @Table(name = "investments")
-@Builder
 public class Investment {
 
     /**
@@ -28,7 +21,7 @@ public class Investment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "investment_id")
-    private Long id;
+    private Long investmentId;
 
     /**
      * Foreign Key linking the investment to a user.
@@ -77,6 +70,10 @@ public class Investment {
     @NotNull(message = "Purchase date is required")
     private LocalDateTime purchaseDate;
 
+    @Column(name = "performance", precision = 5, scale = 2)
+    private BigDecimal performance;
+
+
     /**
      * Last updated timestamp for the investment valuation.
      * Automatically updates on modification.
@@ -98,12 +95,144 @@ public class Investment {
     @Column(name = "date_created", updatable = false)
     private LocalDateTime dateCreated = LocalDateTime.now();
 
-    /**
-     * Lifecycle hook to update the timestamp before updating.
-     */
+
     @PreUpdate
-    protected void onUpdate() {
+    private void beforeUpdate() {  // ✅ Only ONE @PreUpdate method now
         this.lastUpdated = LocalDateTime.now();
+        calculatePerformance();
+    }
+
+    /**
+     * ✅ Performance calculation logic.
+     */
+    private void calculatePerformance() {
+        if (amountInvested != null && amountInvested.compareTo(BigDecimal.ZERO) > 0) {
+            this.performance = currentValue.subtract(amountInvested)
+                    .divide(amountInvested, 2, RoundingMode.HALF_UP)
+                    .multiply(BigDecimal.valueOf(100));
+        } else {
+            this.performance = BigDecimal.ZERO;
+        }
+    }
+
+    /**
+     * ✅ Ensure initial values are set when persisting a new record.
+     */
+    @PrePersist
+    protected void onCreate() {
+        this.lastUpdated = LocalDateTime.now();
+        if (this.currentValue == null) {
+            this.currentValue = this.amountInvested;
+        }
+    }
+
+
+
+    // Constructor
+    public Investment(){}
+    public Investment(Long investmentId, User user, InvestmentType investmentType, String assetName, BigDecimal amountInvested,
+                      BigDecimal currentValue, LocalDateTime purchaseDate, LocalDateTime lastUpdated, boolean isDeleted,
+                      LocalDateTime dateCreated, BigDecimal performance) {
+        this.investmentId = investmentId;
+        this.user = user;
+        this.investmentType = investmentType;
+        this.assetName = assetName;
+        this.amountInvested = amountInvested;
+        this.currentValue = currentValue;
+        this.purchaseDate = purchaseDate;
+        this.lastUpdated = lastUpdated;
+        this.isDeleted = isDeleted;
+        this.dateCreated = dateCreated;
+        this.performance = performance;
+    }
+
+    // Getter and Setter
+
+    public Long getInvestmentId() {
+        return investmentId;
+    }
+
+    public void setInvestmentId(Long investmentId) {
+        this.investmentId = investmentId;
+    }
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public InvestmentType getInvestmentType() {
+        return investmentType;
+    }
+
+    public void setInvestmentType(InvestmentType investmentType) {
+        this.investmentType = investmentType;
+    }
+
+    public @NotBlank(message = "Asset name is required") String getAssetName() {
+        return assetName;
+    }
+
+    public void setAssetName(@NotBlank(message = "Asset name is required") String assetName) {
+        this.assetName = assetName;
+    }
+
+    public @DecimalMin(value = "0.00", message = "Investment amount cannot be negative") BigDecimal getAmountInvested() {
+        return amountInvested;
+    }
+
+    public void setAmountInvested(@DecimalMin(value = "0.00", message = "Investment amount cannot be negative") BigDecimal amountInvested) {
+        this.amountInvested = amountInvested;
+    }
+
+    public @DecimalMin(value = "0.00", message = "Current value cannot be negative") BigDecimal getCurrentValue() {
+        return currentValue;
+    }
+
+    public void setCurrentValue(@DecimalMin(value = "0.00", message = "Current value cannot be negative") BigDecimal currentValue) {
+        this.currentValue = currentValue;
+    }
+
+    public @NotNull(message = "Purchase date is required") LocalDateTime getPurchaseDate() {
+        return purchaseDate;
+    }
+
+    public void setPurchaseDate(@NotNull(message = "Purchase date is required") LocalDateTime purchaseDate) {
+        this.purchaseDate = purchaseDate;
+    }
+
+    public LocalDateTime getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(LocalDateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public LocalDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(LocalDateTime dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public BigDecimal getPerformance() {
+        return performance;
+    }
+
+    public void setPerformance(BigDecimal performance) {
+        this.performance = performance;
     }
 }
 

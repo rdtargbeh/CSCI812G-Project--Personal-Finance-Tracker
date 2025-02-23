@@ -5,19 +5,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "subscriptions")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Subscription {
 
     /**
@@ -102,6 +95,104 @@ public class Subscription {
     @PreUpdate
     protected void onUpdate() {
         this.dateUpdated = LocalDateTime.now();
+    }
+
+    // Constructor
+    public Subscription(){}
+    public Subscription(Long id, User user, String name, BigDecimal amount, LocalDateTime nextBillingDate, Account paymentMethod,
+                        boolean autoRenew, SubscriptionStatus status, LocalDateTime dateCreated, LocalDateTime dateUpdated) {
+        this.id = id;
+        this.user = user;
+        this.name = name;
+        this.amount = amount;
+        this.nextBillingDate = nextBillingDate;
+        this.paymentMethod = paymentMethod;
+        this.autoRenew = autoRenew;
+        this.status = status;
+        this.dateCreated = dateCreated;
+        this.dateUpdated = dateUpdated;
+    }
+
+    // Getter and Setter
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public @NotBlank(message = "Subscription name is required") String getName() {
+        return name;
+    }
+
+    public void setName(@NotBlank(message = "Subscription name is required") String name) {
+        this.name = name;
+    }
+
+    public @DecimalMin(value = "0.00", message = "Amount cannot be negative") BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(@DecimalMin(value = "0.00", message = "Amount cannot be negative") BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public @FutureOrPresent(message = "Next billing date must be today or in the future") LocalDateTime getNextBillingDate() {
+        return nextBillingDate;
+    }
+
+    public void setNextBillingDate(@FutureOrPresent(message = "Next billing date must be today or in the future") LocalDateTime nextBillingDate) {
+        this.nextBillingDate = nextBillingDate;
+    }
+
+    public Account getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(Account paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public boolean isAutoRenew() {
+        return autoRenew;
+    }
+
+    public void setAutoRenew(boolean autoRenew) {
+        this.autoRenew = autoRenew;
+    }
+
+    public SubscriptionStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(SubscriptionStatus status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(LocalDateTime dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public LocalDateTime getDateUpdated() {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(LocalDateTime dateUpdated) {
+        this.dateUpdated = dateUpdated;
     }
 }
 

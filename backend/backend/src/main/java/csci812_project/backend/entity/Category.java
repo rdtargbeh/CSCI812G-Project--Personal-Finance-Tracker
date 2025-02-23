@@ -4,19 +4,12 @@ package csci812_project.backend.entity;
 import csci812_project.backend.enums.CategoryType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.*;
 
 import java.time.LocalDateTime;
 
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-
 @Entity
 @Table(name = "categories")
-@Builder
 public class Category {
 
     /**
@@ -79,4 +72,84 @@ public class Category {
      */
     @Column(name = "date_created", updatable = false)
     private LocalDateTime dateCreated = LocalDateTime.now();
+
+    // Constructor
+    public Category(){}
+    public Category(Long categoryId, String name, CategoryType type, String icon, String colorCode, User user,
+                    boolean isDeleted, LocalDateTime dateCreated) {
+        this.categoryId = categoryId;
+        this.name = name;
+        this.type = type;
+        this.icon = icon;
+        this.colorCode = colorCode;
+        this.user = user;
+        this.isDeleted = isDeleted;
+        this.dateCreated = dateCreated;
+    }
+
+    // Getter and Setter
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public @NotBlank(message = "Category name is required") String getName() {
+        return name;
+    }
+
+    public void setName(@NotBlank(message = "Category name is required") String name) {
+        this.name = name;
+    }
+
+    public CategoryType getType() {
+        return type;
+    }
+
+    public void setType(CategoryType type) {
+        this.type = type;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public String getColorCode() {
+        return colorCode;
+    }
+
+    public void setColorCode(String colorCode) {
+        this.colorCode = colorCode;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public LocalDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(LocalDateTime dateCreated) {
+        this.dateCreated = dateCreated;
+    }
 }

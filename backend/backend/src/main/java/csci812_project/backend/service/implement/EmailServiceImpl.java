@@ -3,6 +3,7 @@ package csci812_project.backend.service.implement;
 import csci812_project.backend.service.EmailService;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -12,10 +13,10 @@ import jakarta.mail.internet.MimeMessage;
 import java.math.BigDecimal;
 
 @Service
-@RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
 
-    private final JavaMailSender mailSender;
+    @Autowired
+    private JavaMailSender mailSender;
 
     @Override
     public void sendBudgetAlert(String email, String categoryName, BigDecimal budgetLimit) {

@@ -6,10 +6,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class SavingsGoalDTO {
 
@@ -51,5 +47,130 @@ public class SavingsGoalDTO {
 
     /** Timestamp for when the savings goal was last updated */
     private LocalDateTime dateUpdated;
+
+    // Constructor
+    public SavingsGoalDTO(){}
+    public SavingsGoalDTO(Long id, Long userId, String goalName, BigDecimal targetAmount, BigDecimal currentAmount,
+                          LocalDate deadline, String status, boolean autoSave, String priorityLevel, String contributionFrequency,
+                          boolean isDeleted, LocalDateTime dateCreated, LocalDateTime dateUpdated) {
+        this.id = id;
+        this.userId = userId;
+        this.goalName = goalName;
+        this.targetAmount = targetAmount;
+        this.currentAmount = currentAmount;
+        this.deadline = deadline;
+        this.status = status;
+        this.autoSave = autoSave;
+        this.priorityLevel = priorityLevel;
+        this.contributionFrequency = contributionFrequency;
+        this.isDeleted = isDeleted;
+        this.dateCreated = dateCreated;
+        this.dateUpdated = dateUpdated;
+    }
+
+    // Getter and Setter
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getGoalName() {
+        return goalName;
+    }
+
+    public void setGoalName(String goalName) {
+        this.goalName = goalName;
+    }
+
+    public BigDecimal getTargetAmount() {
+        return targetAmount;
+    }
+
+    public void setTargetAmount(BigDecimal targetAmount) {
+        this.targetAmount = targetAmount;
+    }
+
+    public BigDecimal getCurrentAmount() {
+        return currentAmount;
+    }
+
+    public void setCurrentAmount(BigDecimal currentAmount) {
+        this.currentAmount = currentAmount;
+    }
+
+    public LocalDate getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(LocalDate deadline) {
+        this.deadline = deadline;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public boolean isAutoSave() {
+        return autoSave;
+    }
+
+    public void setAutoSave(boolean autoSave) {
+        this.autoSave = autoSave;
+    }
+
+    public String getPriorityLevel() {
+        return priorityLevel;
+    }
+
+    public void setPriorityLevel(String priorityLevel) {
+        this.priorityLevel = priorityLevel;
+    }
+
+    public String getContributionFrequency() {
+        return contributionFrequency;
+    }
+
+    public void setContributionFrequency(String contributionFrequency) {
+        this.contributionFrequency = contributionFrequency;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public LocalDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(LocalDateTime dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public LocalDateTime getDateUpdated() {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(LocalDateTime dateUpdated) {
+        this.dateUpdated = dateUpdated;
+    }
 }
 
