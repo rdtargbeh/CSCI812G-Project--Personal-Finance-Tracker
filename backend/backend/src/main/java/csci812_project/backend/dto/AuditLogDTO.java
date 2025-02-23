@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class AuditLogDTO {
 
     /** Unique log ID */
-    private Long id;
+    private Long logId;
 
     /** User ID associated with the action */
     private Long userId;

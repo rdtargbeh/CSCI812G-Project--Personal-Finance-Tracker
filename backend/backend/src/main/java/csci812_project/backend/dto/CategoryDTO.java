@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class CategoryDTO {
 
     /** Unique category ID */
-    private Long id;
+    private Long categoryId;
 
     /** Name of the category (e.g., "Food", "Salary") */
     private String name;

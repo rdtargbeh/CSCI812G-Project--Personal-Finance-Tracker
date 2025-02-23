@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class BudgetDTO {
 
     /** Unique budget ID */
-    private Long id;
+    private Long budgetId;
 
     /** User ID associated with the budget */
     private Long userId;
@@ -33,6 +33,7 @@ public class BudgetDTO {
 
     /** Budget type (STRICT or FLEXIBLE) */
     private String budgetType;
+
 
     /** Amount that rolls over to the next period (if applicable) */
     private BigDecimal rolloverAmount;

@@ -24,7 +24,7 @@ public class AuditLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "log_id")
-    private Long id;
+    private Long logId;
 
     /**
      * Foreign Key linking the log entry to a user.

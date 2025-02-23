@@ -2,15 +2,23 @@ package csci812_project.backend.service.implement;
 
 import csci812_project.backend.dto.TransactionDTO;
 import csci812_project.backend.entity.Account;
+import csci812_project.backend.entity.Category;
 import csci812_project.backend.entity.Transaction;
 import csci812_project.backend.entity.User;
 import csci812_project.backend.enums.RecurringInterval;
 import csci812_project.backend.enums.TransactionType;
 import csci812_project.backend.mapper.TransactionMapper;
 import csci812_project.backend.repository.AccountRepository;
+import csci812_project.backend.repository.CategoryRepository;
 import csci812_project.backend.repository.TransactionRepository;
 import csci812_project.backend.repository.UserRepository;
+import csci812_project.backend.service.BudgetService;
+import csci812_project.backend.service.EmailService;
 import csci812_project.backend.service.TransactionService;
+import csci812_project.backend.entity.Login;
+import csci812_project.backend.repository.LoginRepository;
+
+
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -18,6 +26,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -36,6 +45,11 @@ public class TransactionServiceImplementation implements TransactionService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
     private final TransactionMapper transactionMapper;
+    private final BudgetService budgetService;
+    private final EmailService emailService;
+    private final LoginRepository loginRepository; // ✅ Inject LoginRepository
+
+    private final CategoryRepository categoryRepository;
 
     @Override
     public TransactionDTO deposit(Long userId, Long accountId, TransactionDTO transactionDTO) {
@@ -172,7 +186,6 @@ public class TransactionServiceImplementation implements TransactionService {
         }
     }
 
-
     @Override
     public TransactionDTO addManualTransaction(TransactionDTO transactionDTO) {
         User user = userRepository.findById(transactionDTO.getUserId())
@@ -181,11 +194,33 @@ public class TransactionServiceImplementation implements TransactionService {
         Account account = accountRepository.findById(transactionDTO.getAccountId())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
+        Category category = categoryRepository.findById(transactionDTO.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        // ✅ Fetch the user's email from the Login entity
+        Login login = loginRepository.findByUserId(user.getUserId())
+                .orElseThrow(() -> new RuntimeException("User login details not found"));
+
         Transaction transaction = transactionMapper.toEntity(transactionDTO);
         transaction.setUser(user);
         transaction.setAccount(account);
+        transaction.setCategory(category);
 
         transaction = transactionRepository.save(transaction);
+
+        // ✅ Check if the budget limit is about to be exceeded
+        boolean isBudgetExceeded = budgetService.checkBudgetUsage(
+                transaction.getUser().getUserId(),
+                transaction.getCategory().getCategoryId(),
+                transaction.getAmount()
+        );
+
+        if (isBudgetExceeded) {
+            // ✅ Use email from Login entity
+            emailService.sendBudgetAlert(login.getEmail(), category.getName(), transaction.getAmount());
+            System.out.println("⚠️ ALERT: Budget limit warning email sent to " + login.getEmail());
+        }
+
         return transactionMapper.toDTO(transaction);
     }
 
@@ -242,6 +277,14 @@ public class TransactionServiceImplementation implements TransactionService {
 
         RecurringInterval recurringInterval = RecurringInterval.valueOf(transactionDTO.getRecurringInterval().toUpperCase());
 
+        // ✅ Fetch category details using categoryId
+        Category category = categoryRepository.findById(transactionDTO.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        // ✅ Fetch the user's email from the Login entity
+        Login login = loginRepository.findByUserId(user.getUserId())
+                .orElseThrow(() -> new RuntimeException("User login details not found"));
+
         Transaction transaction = Transaction.builder()
                 .user(user)
                 .account(account)
@@ -255,7 +298,22 @@ public class TransactionServiceImplementation implements TransactionService {
                 .build();
 
         transaction = transactionRepository.save(transaction);
+
+        // ✅ Check if the budget limit is about to be exceeded
+        boolean isBudgetExceeded = budgetService.checkBudgetUsage(
+                transaction.getUser().getUserId(),
+                transactionDTO.getCategoryId(),
+                transaction.getAmount()
+        );
+
+        if (isBudgetExceeded) {
+            // ✅ Use email from Login entity and fetch category name from `Category`
+            emailService.sendBudgetAlert(login.getEmail(), category.getName(), transaction.getAmount());
+            System.out.println("⚠️ ALERT: Budget limit warning email sent to " + login.getEmail());
+        }
+
         return transactionMapper.toDTO(transaction);
     }
+
 
 }

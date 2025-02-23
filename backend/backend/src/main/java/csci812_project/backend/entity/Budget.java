@@ -26,7 +26,7 @@ public class Budget {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "budget_id")
-    private Long id;
+    private Long budgetId;
 
     /**
      * Foreign Key linking the budget to a user.
