@@ -92,6 +92,9 @@ public class User {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Login login; // ✅ Link to Login entity
+
     /**
      * Timestamp for when the user was created.
      * Automatically set when a new record is inserted.
@@ -118,7 +121,7 @@ public class User {
     public User(){}
     public User(Long userId, String userName, String firstName, String lastName, String phoneNumber, String address, String currency,
                 String timezone, String profilePicture, String notificationPreferences, String preferredLanguage, boolean isDeleted,
-                LocalDateTime dateCreated, LocalDateTime dateUpdated) {
+                LocalDateTime dateCreated, LocalDateTime dateUpdated, Login login) {
         this.userId = userId;
         this.userName = userName;
         this.firstName = firstName;
@@ -133,6 +136,7 @@ public class User {
         this.isDeleted = isDeleted;
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
+        this.login= login;
     }
 
     // Getter and Setter
@@ -248,4 +252,8 @@ public class User {
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
+
+    public Login getLogin() {return login;}
+
+    public void setLogin(Login login) {this.login = login;}
 }

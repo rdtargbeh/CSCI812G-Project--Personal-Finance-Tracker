@@ -6,19 +6,14 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "loans")
-@Builder
 public class Loan {
 
     /**
@@ -28,7 +23,7 @@ public class Loan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "loan_id")
-    private Long id;
+    private Long loanId;
 
     /**
      * Foreign Key linking the loan to a user.
@@ -131,6 +126,7 @@ public class Loan {
     @Column(name = "date_updated")
     private LocalDateTime dateUpdated = LocalDateTime.now();
 
+
     /**
      * Lifecycle hook to update the timestamp before updating.
      */
@@ -139,12 +135,70 @@ public class Loan {
         this.dateUpdated = LocalDateTime.now();
     }
 
+    /**
+     * ✅ Calculates the fixed monthly payment based on loan terms.
+     */
+    public void calculateMonthlyPayment() {
+        if (interestRate.compareTo(BigDecimal.ZERO) == 0) {
+            // If 0% interest, simple division
+            this.monthlyPayment = amountBorrowed
+                    .divide(BigDecimal.valueOf(numberYears * 12), 2, RoundingMode.HALF_UP);
+        } else {
+            BigDecimal monthlyInterestRate = interestRate.divide(BigDecimal.valueOf(12 * 100), 10, RoundingMode.HALF_UP);
+            int totalPayments = numberYears * 12;
+
+            BigDecimal numerator = amountBorrowed.multiply(monthlyInterestRate)
+                    .multiply((BigDecimal.ONE.add(monthlyInterestRate)).pow(totalPayments));
+
+            BigDecimal denominator = (BigDecimal.ONE.add(monthlyInterestRate)).pow(totalPayments).subtract(BigDecimal.ONE);
+
+            this.monthlyPayment = numerator.divide(denominator, 2, RoundingMode.HALF_UP);
+        }
+    }
+
+
+    /**
+     * ✅ Calculates the total amount paid over the loan period.
+     */
+    public void calculateTotalAmountPaid() {
+        int totalMonths = numberYears * 12;
+        this.totalAmountPaid = this.monthlyPayment.multiply(BigDecimal.valueOf(totalMonths));
+    }
+
+    /**
+     * ✅ Calculates the total interest paid over the loan period.
+     */
+    public void calculateTotalInterestPaid() {
+        this.interestPaid = this.totalAmountPaid.subtract(this.amountBorrowed);
+    }
+
+    /**
+     * ✅ Updates the due date for the next monthly payment.
+     */
+    public void updateNextDueDate() {
+        this.dueDate = (this.dueDate == null) ? LocalDate.now().plusMonths(1) : this.dueDate.plusMonths(1);
+    }
+
+
+    /**
+     * ✅ Updates the loan status based on repayment progress.
+     */
+    public void updateLoanStatus() {
+        if (outstandingBalance.compareTo(BigDecimal.ZERO) == 0) {
+            this.status = LoanStatus.PAID_OFF;
+        } else if (dueDate.isBefore(LocalDate.now().minusDays(60))) {
+            this.status = LoanStatus.DEFAULTED;
+        } else {
+            this.status = LoanStatus.ACTIVE;
+        }
+    }
+
     // Constructor
     public Loan(){}
-    public Loan(Long id, User user, String lenderName, BigDecimal amountBorrowed, BigDecimal outstandingBalance, BigDecimal interestRate,
+    public Loan(Long loanId, User user, String lenderName, BigDecimal amountBorrowed, BigDecimal outstandingBalance, BigDecimal interestRate,
                 BigDecimal interestPaid, BigDecimal monthlyPayment, BigDecimal totalAmountPaid, int numberYears, LocalDate dueDate,
                 LoanStatus status, LocalDateTime dateCreated, LocalDateTime dateUpdated) {
-        this.id = id;
+        this.loanId = loanId;
         this.user = user;
         this.lenderName = lenderName;
         this.amountBorrowed = amountBorrowed;
@@ -158,15 +212,16 @@ public class Loan {
         this.status = status;
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
+
     }
 
     // Getter and Setter
-    public Long getId() {
-        return id;
+    public Long getLoanId() {
+        return loanId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setLoanId(Long loanId) {
+        this.loanId = loanId;
     }
 
     public User getUser() {
@@ -273,4 +328,6 @@ public class Loan {
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
+
+
 }

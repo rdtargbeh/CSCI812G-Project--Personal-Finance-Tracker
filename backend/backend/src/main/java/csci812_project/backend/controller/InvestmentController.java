@@ -50,16 +50,27 @@ public class InvestmentController {
     }
 
     /**
+     * ✅ Manually trigger scheduled investment updates.
+     * ⚠️ This is optional for testing, `@Scheduled` runs automatically.
+     */
+    @PostMapping("/update-all")
+    public ResponseEntity<String> triggerInvestmentUpdates() {
+        investmentService.updateAllInvestments();
+        return ResponseEntity.ok("Investment updates triggered!");
+    }
+
+
+    /**
      * ✅ Update an existing investment
      * @param id The ID of the investment to update.
      * @param investmentDTO The new investment details.
      * @return The updated investment.
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<InvestmentDTO> updateInvestment(@PathVariable Long id, @RequestBody InvestmentDTO investmentDTO) {
-        InvestmentDTO updatedInvestment = investmentService.updateInvestment(id, investmentDTO);
-        return ResponseEntity.ok(updatedInvestment);
-    }
+//    @PutMapping("/{id}")
+//    public ResponseEntity<InvestmentDTO> updateInvestment(@PathVariable Long id, @RequestBody InvestmentDTO investmentDTO) {
+//        InvestmentDTO updatedInvestment = investmentService.updateInvestment(id, investmentDTO);
+//        return ResponseEntity.ok(updatedInvestment);
+//    }
 
 }
 

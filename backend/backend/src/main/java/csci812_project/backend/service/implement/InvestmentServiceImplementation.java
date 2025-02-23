@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,22 +42,38 @@ public class InvestmentServiceImplementation implements InvestmentService {
         return investmentMapper.toDTO(investment);
     }
 
-    @Override
-    @Scheduled(cron = "0 0 12 * * ?") // Runs daily at noon
-    public InvestmentDTO updateInvestment(Long id, InvestmentDTO investmentDTO) {
-        Investment investment = investmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Investment not found"));
+    @Scheduled(cron = "0 0 12 * * ?") // ✅ Runs daily at noon
+    public void updateAllInvestments() {
+        List<Investment> investments = investmentRepository.findAll(); // ✅ Fetch all investments
 
-        investment.setAssetName(investmentDTO.getAssetName());
-        investment.setAmountInvested(investmentDTO.getAmountInvested());
-        investment.setCurrentValue(investmentDTO.getCurrentValue());
-        investment.setInvestmentType(investmentDTO.getInvestmentType());
-        investment.setLastUpdated(LocalDateTime.now());
+        for (Investment investment : investments) {
+            // ✅ Perform investment updates (Example: Simulating market fluctuations)
+            BigDecimal newMarketValue = investment.getCurrentValue().multiply(BigDecimal.valueOf(1.02)); // Simulated 2% increase
+            investment.setCurrentValue(newMarketValue);
+            investment.setLastUpdated(LocalDateTime.now());
 
-        investmentRepository.save(investment); // ✅ `@PreUpdate` triggers performance calculation
+            investmentRepository.save(investment);
+        }
 
-        return investmentMapper.toDTO(investment);
+        System.out.println("✅ Scheduled investment updates completed.");
     }
+
+//    @Override
+//    @Scheduled(cron = "0 0 12 * * ?") // Runs daily at noon
+//    public InvestmentDTO updateInvestment(Long id, InvestmentDTO investmentDTO) {
+//        Investment investment = investmentRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Investment not found"));
+//
+//        investment.setAssetName(investmentDTO.getAssetName());
+//        investment.setAmountInvested(investmentDTO.getAmountInvested());
+//        investment.setCurrentValue(investmentDTO.getCurrentValue());
+//        investment.setInvestmentType(investmentDTO.getInvestmentType());
+//        investment.setLastUpdated(LocalDateTime.now());
+//
+//        investmentRepository.save(investment); // ✅ `@PreUpdate` triggers performance calculation
+//
+//        return investmentMapper.toDTO(investment);
+//    }
 
 
     @Override

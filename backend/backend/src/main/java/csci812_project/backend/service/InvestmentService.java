@@ -7,7 +7,9 @@ import java.util.List;
 public interface InvestmentService {
     InvestmentDTO addInvestment(InvestmentDTO investmentDTO);
 
-    InvestmentDTO updateInvestment(Long id, InvestmentDTO investmentDTO);
+//    InvestmentDTO updateInvestment(Long id, InvestmentDTO investmentDTO);
+
+    void updateAllInvestments();
 
     InvestmentDTO getInvestmentById(Long id);
 

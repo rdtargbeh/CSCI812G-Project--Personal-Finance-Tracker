@@ -37,4 +37,30 @@ public class EmailServiceImpl implements EmailService {
             throw new RuntimeException("Failed to send email alert: " + e.getMessage());
         }
     }
+
+    /**
+     * ✅ Sends a loan payment reminder email
+     */
+    @Override
+    public void sendLoanReminder(String toEmail, String loanName, String dueDate, BigDecimal amountDue) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(toEmail);
+            helper.setSubject("Loan Payment Reminder - " + loanName);
+            helper.setText(
+                    "Hello,\n\n" +
+                            "This is a friendly reminder that your loan payment for **" + loanName + "** is due on **" + dueDate + "**.\n" +
+                            "The amount due is: **$" + amountDue + "**.\n\n" +
+                            "Please ensure timely payment to avoid late fees.\n\n" +
+                            "Best regards,\nYour Personal Finance Tracker", true
+            );
+
+            mailSender.send(message);
+            System.out.println("✅ Loan Reminder Sent to: " + toEmail);
+        } catch (MessagingException e) {
+            throw new RuntimeException("❌ Error sending loan reminder email: " + e.getMessage());
+        }
+    }
 }

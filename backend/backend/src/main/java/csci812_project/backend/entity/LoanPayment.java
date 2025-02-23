@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,7 +18,7 @@ public class LoanPayment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_id")
-    private Long id;
+    private Long paymentId;
 
     /**
      * Foreign Key linking the payment to a loan.
@@ -58,43 +59,56 @@ public class LoanPayment {
     @DecimalMin(value = "0.00", message = "Remaining balance cannot be negative")
     private BigDecimal remainingBalance;
 
+    @Column(name = "last_payment_date")
+    private LocalDate lastPaymentDate; // ✅ Track last payment date
+
+    @Column(name = "next_due_date", nullable = false)
+    private LocalDate nextDueDate; // ✅ Track next due dat
+
+
+    // ✅ Auto-update next due date after every payment
+    public void updateNextDueDate() {
+        this.lastPaymentDate = LocalDate.now();
+        this.nextDueDate = this.lastPaymentDate.plusMonths(1);
+    }
+
+
+
+
     // Constructor
     public LoanPayment(){}
-    public LoanPayment(Long id, Loan loan, User user, BigDecimal paymentAmount, LocalDateTime paymentDate,
-                       BigDecimal remainingBalance) {
-        this.id = id;
+
+    public void initializePayment(Loan loan, User user, BigDecimal paymentAmount) {
         this.loan = loan;
         this.user = user;
         this.paymentAmount = paymentAmount;
-        this.paymentDate = paymentDate;
-        this.remainingBalance = remainingBalance;
+        this.paymentDate = LocalDateTime.now();
+        this.remainingBalance = loan.getOutstandingBalance().subtract(paymentAmount);
+        this.lastPaymentDate = LocalDate.now();
+        this.nextDueDate = this.lastPaymentDate.plusMonths(1); // Next due date 1 month later
     }
 
+//    public LoanPayment(Long paymentId, Loan loan, User user, BigDecimal paymentAmount, LocalDateTime paymentDate,
+//                       BigDecimal remainingBalance, LocalDate lastPaymentDate, LocalDate nextDueDate) {
+//        this.paymentId = paymentId;
+//        this.loan = loan;
+//        this.user = user;
+//        this.paymentAmount = paymentAmount;
+//        this.paymentDate = paymentDate;
+//        this.remainingBalance = remainingBalance;
+//        this.lastPaymentDate = lastPaymentDate;
+////        this.nextDueDate = nextDueDate;
+//    }
     // Getter and Setter
 
-    public Long getId() {
-        return id;
-    }
+    public Long getPaymentId() {return paymentId;}
+    public void setPaymentId(Long paymentId) {this.paymentId = paymentId;}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Loan getLoan() {return loan;}
+    public void setLoan(Loan loan) {this.loan = loan;}
 
-    public Loan getLoan() {
-        return loan;
-    }
-
-    public void setLoan(Loan loan) {
-        this.loan = loan;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
+    public User getUser() {return user;}
+    public void setUser(User user) {this.user = user;}
 
     public @DecimalMin(value = "0.00", message = "Payment amount cannot be negative") BigDecimal getPaymentAmount() {
         return paymentAmount;
@@ -118,5 +132,21 @@ public class LoanPayment {
 
     public void setRemainingBalance(@DecimalMin(value = "0.00", message = "Remaining balance cannot be negative") BigDecimal remainingBalance) {
         this.remainingBalance = remainingBalance;
+    }
+
+    public LocalDate getLastPaymentDate() {
+        return lastPaymentDate;
+    }
+
+    public void setLastPaymentDate(LocalDate lastPaymentDate) {
+        this.lastPaymentDate = lastPaymentDate;
+    }
+
+    public LocalDate getNextDueDate() {
+        return nextDueDate;
+    }
+
+    public void setNextDueDate(LocalDate nextDueDate) {
+        this.nextDueDate = nextDueDate;
     }
 }

@@ -1,0 +1,45 @@
+package csci812_project.backend.mapper;
+
+import csci812_project.backend.dto.LoanPaymentDTO;
+import csci812_project.backend.entity.Loan;
+import csci812_project.backend.entity.LoanPayment;
+import csci812_project.backend.entity.User;
+import org.springframework.stereotype.Component;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Component
+public class LoanPaymentMapper {
+
+    public LoanPaymentDTO toDTO(LoanPayment loanPayment) {
+        if (loanPayment == null) return null;
+
+        LoanPaymentDTO dto = new LoanPaymentDTO();
+        dto.setPaymentId(loanPayment.getPaymentId());
+        dto.setLoanId(loanPayment.getLoan().getLoanId());
+        dto.setUserId(loanPayment.getUser().getUserId());
+        dto.setPaymentAmount(loanPayment.getPaymentAmount());
+        dto.setPaymentDate(loanPayment.getPaymentDate());
+        dto.setRemainingBalance(loanPayment.getRemainingBalance());
+        dto.setLastPaymentDate(loanPayment.getLastPaymentDate());
+        dto.setNextDueDate(loanPayment.getNextDueDate());
+
+        return dto;
+    }
+
+    public LoanPayment toEntity(LoanPaymentDTO dto, Loan loan, User user) {
+        if (dto == null) return null;
+
+        LoanPayment loanPayment = new LoanPayment();
+        loanPayment.setLoan(loan);
+        loanPayment.setUser(user);
+        loanPayment.setPaymentAmount(dto.getPaymentAmount());
+        loanPayment.setPaymentDate(LocalDateTime.now());
+        loanPayment.setRemainingBalance(dto.getRemainingBalance());
+        loanPayment.setLastPaymentDate(LocalDateTime.now().toLocalDate());
+        loanPayment.setNextDueDate(LocalDateTime.now().toLocalDate().plusMonths(1));
+
+        return loanPayment;
+    }
+}
+

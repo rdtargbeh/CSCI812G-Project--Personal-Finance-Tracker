@@ -3,48 +3,43 @@ package csci812_project.backend.dto;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Builder
 public class LoanPaymentDTO {
-
-    /** Unique payment ID */
-    private Long id;
-
-    /** Loan ID this payment is associated with */
+    private Long paymentId;
     private Long loanId;
-
-    /** User ID making the payment */
     private Long userId;
-
-    /** Amount paid */
     private BigDecimal paymentAmount;
-
-    /** Payment date */
     private LocalDateTime paymentDate;
-
-    /** Remaining balance after this payment */
     private BigDecimal remainingBalance;
+    private LocalDate lastPaymentDate;
+    private LocalDate nextDueDate;
 
     // Constructor
     public LoanPaymentDTO(){}
-    public LoanPaymentDTO(Long id, Long loanId, Long userId, BigDecimal paymentAmount, LocalDateTime paymentDate,
-                          BigDecimal remainingBalance) {
-        this.id = id;
+
+    public LoanPaymentDTO(Long paymentId, Long loanId, Long userId, BigDecimal paymentAmount, LocalDateTime paymentDate,
+                          BigDecimal remainingBalance, LocalDate lastPaymentDate, LocalDate nextDueDate) {
+        this.paymentId = paymentId;
         this.loanId = loanId;
         this.userId = userId;
         this.paymentAmount = paymentAmount;
         this.paymentDate = paymentDate;
         this.remainingBalance = remainingBalance;
+        this.lastPaymentDate = lastPaymentDate;
+        this.nextDueDate = nextDueDate;
     }
 
     // Getter and Setter
-    public Long getId() {
-        return id;
+
+    public Long getPaymentId() {
+        return paymentId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setPaymentId(Long paymentId) {
+        this.paymentId = paymentId;
     }
 
     public Long getLoanId() {
@@ -85,6 +80,22 @@ public class LoanPaymentDTO {
 
     public void setRemainingBalance(BigDecimal remainingBalance) {
         this.remainingBalance = remainingBalance;
+    }
+
+    public LocalDate getLastPaymentDate() {
+        return lastPaymentDate;
+    }
+
+    public void setLastPaymentDate(LocalDate lastPaymentDate) {
+        this.lastPaymentDate = lastPaymentDate;
+    }
+
+    public LocalDate getNextDueDate() {
+        return nextDueDate;
+    }
+
+    public void setNextDueDate(LocalDate nextDueDate) {
+        this.nextDueDate = nextDueDate;
     }
 }
 

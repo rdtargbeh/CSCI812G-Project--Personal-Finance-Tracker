@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 public class LoanDTO {
 
     /** Unique loan ID */
-    private Long id;
+    private Long loanId;
+    private Long userId;
 
     /** Lender name (Bank, Credit Card Company, etc.) */
     private String lenderName;
@@ -48,10 +49,10 @@ public class LoanDTO {
 
     // Constructor
     public LoanDTO(){}
-    public LoanDTO(Long id, String lenderName, BigDecimal amountBorrowed, BigDecimal outstandingBalance, BigDecimal interestRate,
+    public LoanDTO(Long loanId, String lenderName, BigDecimal amountBorrowed, BigDecimal outstandingBalance, BigDecimal interestRate,
                    BigDecimal interestPaid, BigDecimal monthlyPayment, BigDecimal totalAmountPaid, int numberYears, LocalDate dueDate,
-                   LoanStatus status, LocalDateTime dateCreated) {
-        this.id = id;
+                   LoanStatus status, LocalDateTime dateCreated, Long userId) {
+        this.loanId = loanId;
         this.lenderName = lenderName;
         this.amountBorrowed = amountBorrowed;
         this.outstandingBalance = outstandingBalance;
@@ -63,15 +64,16 @@ public class LoanDTO {
         this.dueDate = dueDate;
         this.status = status;
         this.dateCreated = dateCreated;
+        this.userId = userId;
     }
 
     // Getter and Setter
-    public Long getId() {
-        return id;
+    public Long getLoanId() {
+        return loanId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setLoanId(Long loanId) {
+        this.loanId = loanId;
     }
 
     public String getLenderName() {
@@ -160,6 +162,14 @@ public class LoanDTO {
 
     public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }
 
