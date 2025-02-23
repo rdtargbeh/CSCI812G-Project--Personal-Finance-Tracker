@@ -12,17 +12,11 @@ import java.time.LocalDateTime;
 public class UserDTO {
 
     /** Unique user ID */
-    private Long id;
-
-    /** Unique username for login */
-    private String userName;
+    private Long userId;
 
     /** First and last name of the user */
     private String firstName;
     private String lastName;
-
-    /** User's email address */
-    private String email;
 
     /** Phone number of the user */
     private String phoneNumber;

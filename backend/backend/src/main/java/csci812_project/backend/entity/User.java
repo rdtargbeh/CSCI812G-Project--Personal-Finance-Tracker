@@ -24,7 +24,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Long id;
+    private Long userId;
 
     /**
      * Unique username for login. Cannot be null or duplicate.
@@ -46,21 +46,6 @@ public class User {
     @Column(name = "last_name", nullable = false, length = 30)
     @NotBlank(message = "Last name is required")
     private String lastName;
-
-    /**
-     * Email of the user. Must be unique and follow a valid email format.
-     */
-    @Column(name = "email", unique = true, nullable = false, length = 50)
-    @Email(message = "Invalid email format")
-    @NotBlank(message = "Email is required")
-    private String email;
-
-    /**
-     * Encrypted password for authentication. Stored securely using BCrypt.
-     */
-    @Column(name = "password", nullable = false, length = 255)
-    @NotBlank(message = "Password is required")
-    private String password;
 
     /**
      * User's phone number. Optional field, stored as a string to support country codes.

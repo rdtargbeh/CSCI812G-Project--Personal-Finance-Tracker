@@ -1,11 +1,8 @@
 
 CREATE TABLE users (
     user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_name VARCHAR(50) UNIQUE NOT NULL
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
-    email VARCHAR(50) UNIQUE NOT NULL CHECK (email LIKE '%@%.%'),
-    password VARCHAR(80) NOT NULL,
     phone_number int(15)
     address VARCHAR(100)
     currency VARCHAR(3) DEFAULT 'USD' CHECK (LENGTH(currency) = 3),
@@ -20,6 +17,16 @@ CREATE TABLE users (
 
 -- Index for faster email lookup
 CREATE INDEX idx_user_email ON users(email);
+
+CREATE TABLE login (
+    user_id BIGINT PRIMARY KEY,
+    user_name VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(50) UNIQUE NOT NULL CHECK (email LIKE '%@%.%'),
+    password VARCHAR(255) NOT NULL,
+    is_verified BOOLEAN DEFAULT FALSE,
+    last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
 
 
 CREATE TABLE accounts (
