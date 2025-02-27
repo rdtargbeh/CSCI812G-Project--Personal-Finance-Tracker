@@ -1,6 +1,7 @@
 package csci812_project.backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
@@ -14,32 +15,37 @@ public class User {
      * Non Auto-incremented by the database.
      */
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", nullable = false, updatable = false)
     private Long userId;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @MapsId
-    @JoinColumn(name = "user_id", nullable = false)
-    private Login login; // ✅ Link to Login entity
-
-    /**
-     * Unique username for login. Cannot be null or duplicate.
-     */
+    /** Unique username for authentication */
     @Column(name = "user_name", unique = true, nullable = false, length = 50)
     @NotBlank(message = "Username is required")
     private String userName;
 
+    /** User email (unique, required) */
+    @Column(name = "email", unique = true, nullable = false, length = 50)
+    @Email(message = "Invalid email format")
+    @NotBlank(message = "Email is required")
+    private String email;
+
+    /** Hashed password */
+    @Column(name = "password", nullable = false, length = 255)
+    @NotBlank(message = "Password is required")
+    private String password;
+
     /**
      * First name of the user. Required field.
      */
-    @Column(name = "first_name", nullable = false, length = 30)
+    @Column(name = "first_name", length = 30)
     @NotBlank(message = "First name is required")
     private String firstName;
 
     /**
      * Last name of the user. Required field.
      */
-    @Column(name = "last_name", nullable = false, length = 30)
+    @Column(name = "last_name", length = 30)
     @NotBlank(message = "Last name is required")
     private String lastName;
 
@@ -96,6 +102,14 @@ public class User {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
+    /** Email verification status */
+    @Column(name = "is_verified", nullable = false)
+    private boolean isVerified = false;
+
+    /** Timestamp for the last login */
+    @Column(name = "last_login")
+    private LocalDateTime lastLogin = LocalDateTime.now();
+
     /**
      * Timestamp for when the user was created.
      * Automatically set when a new record is inserted.
@@ -120,11 +134,15 @@ public class User {
 
     // Constructor
     public User(){}
-    public User(Long userId, String userName, String firstName, String lastName, String phoneNumber, String address, String currency,
-                String timezone, String profilePicture, String notificationPreferences, String preferredLanguage, boolean isDeleted,
-                LocalDateTime dateCreated, LocalDateTime dateUpdated, Login login) {
+
+    public User(Long userId, String userName, String email, String password, String firstName, String lastName, String phoneNumber,
+                String address, String currency, String timezone, String profilePicture, String notificationPreferences,
+                String preferredLanguage, boolean isDeleted, boolean isVerified, LocalDateTime lastLogin, LocalDateTime dateCreated,
+                LocalDateTime dateUpdated) {
         this.userId = userId;
         this.userName = userName;
+        this.email = email;
+        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
@@ -135,11 +153,11 @@ public class User {
         this.notificationPreferences = notificationPreferences;
         this.preferredLanguage = preferredLanguage;
         this.isDeleted = isDeleted;
+        this.isVerified = isVerified;
+        this.lastLogin = lastLogin;
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
-        this.login= login;
     }
-
     // Getter and Setter
 
     public Long getUserId() {
@@ -156,6 +174,22 @@ public class User {
 
     public void setUserName(@NotBlank(message = "Username is required") String userName) {
         this.userName = userName;
+    }
+
+    public @Email(message = "Invalid email format") @NotBlank(message = "Email is required") String getEmail() {
+        return email;
+    }
+
+    public void setEmail(@Email(message = "Invalid email format") @NotBlank(message = "Email is required") String email) {
+        this.email = email;
+    }
+
+    public @NotBlank(message = "Password is required") String getPassword() {
+        return password;
+    }
+
+    public void setPassword(@NotBlank(message = "Password is required") String password) {
+        this.password = password;
     }
 
     public @NotBlank(message = "First name is required") String getFirstName() {
@@ -238,6 +272,22 @@ public class User {
         isDeleted = deleted;
     }
 
+    public boolean isVerified() {
+        return isVerified;
+    }
+
+    public void setVerified(boolean verified) {
+        isVerified = verified;
+    }
+
+    public LocalDateTime getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(LocalDateTime lastLogin) {
+        this.lastLogin = lastLogin;
+    }
+
     public LocalDateTime getDateCreated() {
         return dateCreated;
     }
@@ -253,8 +303,4 @@ public class User {
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
-
-    public Login getLogin() {return login;}
-
-    public void setLogin(Login login) {this.login = login;}
 }

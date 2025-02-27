@@ -82,7 +82,7 @@ public class LoanPaymentServiceImplementation implements LoanPaymentService {
         List<LoanPayment> upcomingPayments = loanPaymentRepository.findByNextDueDate(reminderDate);
 
         for (LoanPayment payment : upcomingPayments) {
-            String userEmail = payment.getUser().getLogin().getEmail();
+            String userEmail = payment.getUser().getEmail();
             String loanName = payment.getLoan().getLenderName();
             BigDecimal amountDue = payment.getPaymentAmount();
             String dueDate = payment.getNextDueDate().toString();

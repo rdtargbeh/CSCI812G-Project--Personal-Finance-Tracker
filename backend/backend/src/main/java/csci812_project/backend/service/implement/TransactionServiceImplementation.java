@@ -15,11 +15,7 @@ import csci812_project.backend.repository.UserRepository;
 import csci812_project.backend.service.BudgetService;
 import csci812_project.backend.service.EmailService;
 import csci812_project.backend.service.TransactionService;
-import csci812_project.backend.entity.Login;
-import csci812_project.backend.repository.LoginRepository;
 
-
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -51,8 +47,6 @@ public class TransactionServiceImplementation implements TransactionService {
     private BudgetService budgetService;
     @Autowired
     private EmailService emailService;
-    @Autowired
-    private LoginRepository loginRepository; // ✅ Inject LoginRepository
     @Autowired
     private CategoryRepository categoryRepository;
 
@@ -200,10 +194,6 @@ public class TransactionServiceImplementation implements TransactionService {
         Category category = categoryRepository.findById(transactionDTO.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
-        // ✅ Fetch the user's email from the Login entity
-        Login login = loginRepository.findByLoginId(user.getUserId())
-                .orElseThrow(() -> new RuntimeException("User login details not found"));
-
         Transaction transaction = transactionMapper.toEntity(transactionDTO, user, account, null);
         transaction.setUser(user);
         transaction.setAccount(account);
@@ -220,8 +210,8 @@ public class TransactionServiceImplementation implements TransactionService {
 
         if (isBudgetExceeded) {
             // ✅ Use email from Login entity
-            emailService.sendBudgetAlert(login.getEmail(), category.getName(), transaction.getAmount());
-            System.out.println("⚠️ ALERT: Budget limit warning email sent to " + login.getEmail());
+            emailService.sendBudgetAlert(user.getEmail(), category.getName(), transaction.getAmount());
+            System.out.println("⚠️ ALERT: Budget limit warning email sent to " + user.getEmail());
         }
 
         return transactionMapper.toDTO(transaction);
@@ -282,10 +272,6 @@ public class TransactionServiceImplementation implements TransactionService {
         Category category = categoryRepository.findById(transactionDTO.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
-        // ✅ Fetch the user's email from the Login entity
-        Login login = loginRepository.findByLoginId(user.getUserId())
-                .orElseThrow(() -> new RuntimeException("User login details not found"));
-
         RecurringInterval recurringInterval = RecurringInterval.valueOf(transactionDTO.getRecurringInterval().toUpperCase());
 
         // ✅ Set recurring values
@@ -308,8 +294,8 @@ public class TransactionServiceImplementation implements TransactionService {
 
         if (isBudgetExceeded) {
             // ✅ Send budget alert email
-            emailService.sendBudgetAlert(login.getEmail(), category.getName(), transaction.getAmount());
-            System.out.println("⚠️ ALERT: Budget limit warning email sent to " + login.getEmail());
+            emailService.sendBudgetAlert(user.getEmail(), category.getName(), transaction.getAmount());
+            System.out.println("⚠️ ALERT: Budget limit warning email sent to " + user.getEmail());
         }
 
         return transactionMapper.toDTO(transaction);

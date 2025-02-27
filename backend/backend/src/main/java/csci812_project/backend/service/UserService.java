@@ -1,6 +1,7 @@
 package csci812_project.backend.service;
 
 import csci812_project.backend.dto.UserDTO;
+import csci812_project.backend.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,7 +16,8 @@ public interface UserService {
      * @param userId ID of the user.
      * @return UserDTO containing user information.
      */
-    Optional<UserDTO> getUserById(Long userId);
+    UserDTO getUserById(Long userId);
+
 
     /**
      * Retrieves a paginated list of users.
@@ -42,7 +44,7 @@ public interface UserService {
      * Restores a soft-deleted user account.
      * @param userId ID of the user to restore.
      */
-    void restoreUser(Long userId);
+    void restoreDeletedUser(Long userId);
 
 
     /**
@@ -50,6 +52,13 @@ public interface UserService {
      * @param userDTO User registration data.
      * @return Created UserDTO with user details.
      */
-//    UserDTO createUser(UserDTO userDTO);
+    UserDTO register(UserDTO userDTO);
+
+    boolean authenticate(String username, String password);
+
+
+//    UserDTO authenticate(String username, String password);
+
+//    String login(UserDTO userDTO);
 
 }

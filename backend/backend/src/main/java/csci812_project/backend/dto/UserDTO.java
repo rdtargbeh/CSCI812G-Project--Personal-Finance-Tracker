@@ -7,50 +7,37 @@ import java.time.LocalDateTime;
 @Builder
 public class UserDTO {
 
-    /** Unique user ID */
-    private Long loginId;
-
-    /** First and last name of the user */
+    private Long userId;
+    private String userName;
+    private String email;
+    private String password; // Should be handled securely, avoid exposing in responses.
     private String firstName;
     private String lastName;
-
-    /** Phone number of the user */
     private String phoneNumber;
-
-    /** Physical address of the user */
     private String address;
-
-    /** Preferred currency (USD, EUR, etc.) */
-    private String currency;
-
-    /** Preferred timezone for financial tracking */
+    private String currency = "USD";
     private String timezone;
-
-    /** Profile picture (URL or Base64) */
     private String profilePicture;
-
-    /** Notification preferences stored in JSON format */
     private String notificationPreferences;
-
-    /** Preferred language for localization */
     private String preferredLanguage;
-
-    /** Indicates whether the user is deleted (soft delete) */
     private boolean isDeleted;
-
-    /** Timestamp for when the user was created */
+    private boolean isVerified;
+    private LocalDateTime lastLogin;
     private LocalDateTime dateCreated;
-
-    /** Timestamp for when the user was last updated */
     private LocalDateTime dateUpdated;
 
 
     // Constructor
     public UserDTO(){}
-    public UserDTO(Long loginId, String firstName, String lastName, String phoneNumber, String address, String currency,
-                   String timezone, String profilePicture, String notificationPreferences, String preferredLanguage,
-                   boolean isDeleted, LocalDateTime dateCreated, LocalDateTime dateUpdated) {
-        this.loginId = loginId;
+
+    public UserDTO(Long userId, String userName, String email, String password, String firstName, String lastName, String phoneNumber,
+                   String address, String currency, String timezone, String profilePicture, String notificationPreferences,
+                   String preferredLanguage, boolean isDeleted, boolean isVerified, LocalDateTime lastLogin, LocalDateTime dateCreated,
+                   LocalDateTime dateUpdated) {
+        this.userId = userId;
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
@@ -61,17 +48,51 @@ public class UserDTO {
         this.notificationPreferences = notificationPreferences;
         this.preferredLanguage = preferredLanguage;
         this.isDeleted = isDeleted;
+        this.isVerified = isVerified;
+        this.lastLogin = lastLogin;
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
     }
 
-    // Getter and Setter
-    public Long getLoginId() {
-        return loginId;
+    // ✅ Overloaded Constructor (Matches the 4 parameters)
+    public UserDTO(Long userId, String userName, String email, String currency) {
+        this.userId = userId;
+        this.userName = userName;
+        this.email = email;
+        this.currency = currency;
     }
 
-    public void setLoginId(Long loginId) {
-        this.loginId = loginId;
+    // Getter and Setter
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getFirstName() {
@@ -152,6 +173,22 @@ public class UserDTO {
 
     public void setDeleted(boolean deleted) {
         isDeleted = deleted;
+    }
+
+    public boolean isVerified() {
+        return isVerified;
+    }
+
+    public void setVerified(boolean verified) {
+        isVerified = verified;
+    }
+
+    public LocalDateTime getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(LocalDateTime lastLogin) {
+        this.lastLogin = lastLogin;
     }
 
     public LocalDateTime getDateCreated() {

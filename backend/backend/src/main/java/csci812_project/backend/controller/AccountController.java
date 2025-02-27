@@ -1,14 +1,19 @@
 package csci812_project.backend.controller;
 
 import csci812_project.backend.dto.AccountDTO;
+import csci812_project.backend.entity.Account;
+import csci812_project.backend.mapper.AccountMapper;
+import csci812_project.backend.repository.AccountRepository;
 import csci812_project.backend.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -16,6 +21,10 @@ public class AccountController {
 
     @Autowired
     private  AccountService accountService;
+    @Autowired
+    private AccountRepository accountRepository;
+    @Autowired
+    private AccountMapper accountMapper;
 
     /**
      * Creates a new account for a user.
@@ -29,9 +38,16 @@ public class AccountController {
      * Retrieves account details by account ID.
      */
     @GetMapping("/{accountId}")
-    public ResponseEntity<AccountDTO> getAccountById(@PathVariable Long accountId) {
-        return ResponseEntity.ok(accountService.getAccountById(accountId));
+    public ResponseEntity<?> getAccountById(@PathVariable Long accountId) {
+        Optional<Account> account = accountRepository.findById(accountId);
+
+        if (account.isPresent()) {
+            return ResponseEntity.ok(accountMapper.toDTO(account.get())); // ✅ 200 OK if found
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Account Not Found"); // ✅ 404 Response
+        }
     }
+
 
     /**
      * Retrieves all accounts for a specific user.

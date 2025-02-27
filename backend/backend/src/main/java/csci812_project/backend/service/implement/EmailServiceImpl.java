@@ -81,7 +81,7 @@ public class EmailServiceImpl implements EmailService {
                 + "Keep up the great work and reach your goal soon!\n\n"
                 + "Best,\nYour Personal Finance Tracker";
 
-        sendEmail(user.getLogin().getEmail(), subject, message);
+        sendEmail(user.getEmail(), subject, message);
     }
 
     /** ✅ Helper method to send email */
@@ -110,7 +110,7 @@ public class EmailServiceImpl implements EmailService {
                 + "Keep saving and reach your goal!\n\n"
                 + "Best,\nYour Personal Finance Tracker";
 
-        sendEmail(user.getLogin().getEmail(), subject, message);
+        sendEmail(user.getEmail(), subject, message);
     }
 
 }

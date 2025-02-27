@@ -16,7 +16,9 @@ public class UserMapper {
         if (user == null) return null;
 
         UserDTO dto = new UserDTO();
-        dto.setLoginId(user.getUserId()); // Changed from 'id' to 'userId'
+        dto.setUserId(user.getUserId());
+        dto.setUserName(user.getUserName());
+        dto.setEmail(user.getEmail());
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
         dto.setPhoneNumber(user.getPhoneNumber());
@@ -27,6 +29,7 @@ public class UserMapper {
         dto.setNotificationPreferences(user.getNotificationPreferences());
         dto.setPreferredLanguage(user.getPreferredLanguage());
         dto.setDeleted(user.isDeleted());
+        dto.setVerified(user.isVerified());
         dto.setDateCreated(user.getDateCreated());
         dto.setDateUpdated(user.getDateUpdated());
         return dto;
@@ -41,7 +44,10 @@ public class UserMapper {
         if (userDTO == null) return null;
 
         User user = new User();
-        user.setUserId(userDTO.getLoginId()); // Changed from 'id' to 'userId'
+        user.setUserId(userDTO.getUserId());
+        user.setUserName(userDTO.getUserName());
+        user.setEmail(userDTO.getEmail());
+        user.setPassword(userDTO.getPassword()); // ⚠️ Ensure password is hashed before saving.
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
         user.setPhoneNumber(userDTO.getPhoneNumber());
@@ -52,6 +58,7 @@ public class UserMapper {
         user.setNotificationPreferences(userDTO.getNotificationPreferences());
         user.setPreferredLanguage(userDTO.getPreferredLanguage());
         user.setDeleted(userDTO.isDeleted());
+        user.setVerified(userDTO.isVerified());
         user.setDateCreated(userDTO.getDateCreated());
         user.setDateUpdated(userDTO.getDateUpdated());
         return user;

@@ -3,11 +3,12 @@ package csci812_project.backend.service.implement;
 import csci812_project.backend.dto.AccountDTO;
 import csci812_project.backend.entity.Account;
 import csci812_project.backend.entity.User;
+import csci812_project.backend.enums.AccountType;
+import csci812_project.backend.exception.UserNotFoundException;
 import csci812_project.backend.mapper.AccountMapper;
 import csci812_project.backend.repository.AccountRepository;
 import csci812_project.backend.repository.UserRepository;
 import csci812_project.backend.service.AccountService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,10 +25,11 @@ public class AccountServiceImplementation implements AccountService {
     @Autowired
     private AccountMapper accountMapper;
 
+
     @Override
     public AccountDTO createAccount(Long userId, AccountDTO accountDTO) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException ("User not found"));
 
         Account account = accountMapper.toEntity(accountDTO);
         account.setUser(user);
@@ -38,14 +40,22 @@ public class AccountServiceImplementation implements AccountService {
     @Override
     public AccountDTO getAccountById(Long accountId) {
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .filter(a -> !a.isDeleted()) // ✅ Exclude soft-deleted accounts
+                .orElseThrow(() -> new UserNotFoundException("Account not found or has been deleted"));
+
         return accountMapper.toDTO(account);
     }
 
     @Override
     public List<AccountDTO> getAccountsByUser(Long userId) {
+
+        // ✅ Check if the user exists before fetching accounts
+        if (!userRepository.existsById(userId)) {
+            throw new UserNotFoundException ("User with ID " + userId + " not found"); // ✅ Throws a 404 error
+        }
         return accountRepository.findByUser_UserId(userId)
                 .stream()
+                .filter(account -> !account.isDeleted()) // ✅ Exclude soft-deleted accounts
                 .map(accountMapper::toDTO)
                 .collect(Collectors.toList());
     }
@@ -53,10 +63,13 @@ public class AccountServiceImplementation implements AccountService {
     @Override
     public AccountDTO updateAccount(Long accountId, AccountDTO accountDTO) {
         Account existingAccount = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new UserNotFoundException ("Account not found"));
 
         existingAccount.setName(accountDTO.getName());
         existingAccount.setBalance(accountDTO.getBalance());
+        existingAccount.setInterestRate(accountDTO.getInterestRate());
+        existingAccount.setInstitutionName(accountDTO.getInstitutionName());
+        existingAccount.setCurrency(accountDTO.getCurrency());
 
         accountRepository.save(existingAccount);
         return accountMapper.toDTO(existingAccount);
@@ -65,7 +78,7 @@ public class AccountServiceImplementation implements AccountService {
     @Override
     public void deleteAccount(Long accountId) {
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new UserNotFoundException("Account not found"));
         account.setDeleted(true);
         accountRepository.save(account);
     }
@@ -73,7 +86,7 @@ public class AccountServiceImplementation implements AccountService {
     @Override
     public void restoreAccount(Long accountId) {
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new UserNotFoundException ("Account not found"));
         account.setDeleted(false);
         accountRepository.save(account);
     }
