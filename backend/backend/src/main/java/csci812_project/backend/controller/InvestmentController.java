@@ -19,21 +19,41 @@ public class InvestmentController {
         return ResponseEntity.ok(investmentService.addInvestment(dto));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<InvestmentDTO> getInvestment(@PathVariable Long id) {
-        return ResponseEntity.ok(investmentService.getInvestmentById(id));
+    @GetMapping("/{investmentId}")
+    public ResponseEntity<InvestmentDTO> getInvestmentById(@PathVariable Long investmentId) {
+        return ResponseEntity.ok(investmentService.getInvestmentById(investmentId));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteInvestment(@PathVariable Long id) {
-        investmentService.deleteInvestment(id);
+    /**
+     * ✅ Update an existing investment
+     * @param investmentId The ID of the investment to update.
+     * @param investmentDTO The new investment details.
+     * @return The updated investment.
+     */
+    @PutMapping("/{investmentId}")
+    public ResponseEntity<InvestmentDTO> updateInvestment(
+            @PathVariable Long investmentId,
+            @RequestBody InvestmentDTO investmentDTO) {
+
+        InvestmentDTO updatedInvestment = investmentService.updateInvestment(investmentId, investmentDTO);
+        return ResponseEntity.ok(updatedInvestment);
+    }
+
+    /**
+     * ✅ Delete an existing investment
+     * @param investmentId The ID of the investment to update.
+     * @return The updated investment.
+     */
+    @DeleteMapping("/{investmentId}")
+    public ResponseEntity<Void> deleteInvestment(@PathVariable Long investmentId) {
+        investmentService.deleteInvestment(investmentId);
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/restore/{id}")
-    public ResponseEntity<Void> restoreInvestment(@PathVariable Long id) {
-        investmentService.restoreInvestment(id);
-        return ResponseEntity.noContent().build();
+    @PutMapping("/restore/{investmentId}")
+    public ResponseEntity<String> restoreInvestment(@PathVariable Long investmentId) {
+        investmentService.restoreInvestment(investmentId);
+        return ResponseEntity.ok("Investment restored successfully.");
     }
 
     /**
@@ -47,28 +67,8 @@ public class InvestmentController {
         return ResponseEntity.ok(investments);
     }
 
-    /**
-     * ✅ Manually trigger scheduled investment updates.
-     * ⚠️ This is optional for testing, `@Scheduled` runs automatically.
-     */
-    @PostMapping("/update-all")
-    public ResponseEntity<String> triggerInvestmentUpdates() {
-        investmentService.updateAllInvestments();
-        return ResponseEntity.ok("Investment updates triggered!");
-    }
 
 
-    /**
-     * ✅ Update an existing investment
-     * @param id The ID of the investment to update.
-     * @param investmentDTO The new investment details.
-     * @return The updated investment.
-     */
-//    @PutMapping("/{id}")
-//    public ResponseEntity<InvestmentDTO> updateInvestment(@PathVariable Long id, @RequestBody InvestmentDTO investmentDTO) {
-//        InvestmentDTO updatedInvestment = investmentService.updateInvestment(id, investmentDTO);
-//        return ResponseEntity.ok(updatedInvestment);
-//    }
 
 }
 

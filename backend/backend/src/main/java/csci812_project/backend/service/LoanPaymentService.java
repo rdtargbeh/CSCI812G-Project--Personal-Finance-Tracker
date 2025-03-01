@@ -7,9 +7,10 @@ import java.util.List;
 
 public interface LoanPaymentService {
 
-    LoanPaymentDTO makePayment(Long loanId, BigDecimal amount);
+    LoanPaymentDTO makePayment(Long loanId, BigDecimal paymentAmount, BigDecimal extraPayment);
 
     List<LoanPaymentDTO> getPaymentsByLoan(Long loanId);
 
     void sendLoanPaymentReminders();
+
 }

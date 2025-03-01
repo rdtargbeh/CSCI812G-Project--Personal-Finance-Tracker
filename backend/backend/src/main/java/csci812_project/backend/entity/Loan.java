@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "loans")
@@ -50,12 +52,12 @@ public class Loan {
     private BigDecimal amountBorrowed;
 
     /**
-     * Outstanding balance on the loan.
-     * Cannot be negative.
+     * Loan term in years.
+     * Must be greater than 0.
      */
-    @Column(name = "outstanding_balance", nullable = false, precision = 15, scale = 2)
-    @DecimalMin(value = "0.00", message = "Outstanding balance cannot be negative")
-    private BigDecimal outstandingBalance;
+    @Column(name = "number_of_years", nullable = false)
+    @Min(value = 1, message = "Loan term must be at least 1 year")
+    private int numberOfYears;
 
     /**
      * Annual interest rate (%).
@@ -66,36 +68,28 @@ public class Loan {
     private BigDecimal interestRate = BigDecimal.ZERO;
 
     /**
-     * Total interest paid over the loan lifetime.
-     * Cannot be negative.
-     */
-    @Column(name = "interest_paid", precision = 15, scale = 2)
-    @DecimalMin(value = "0.00", message = "Interest paid cannot be negative")
-    private BigDecimal interestPaid = BigDecimal.ZERO;
-
-    /**
      * Fixed monthly installment payment amount.
      * Cannot be negative.
      */
-    @Column(name = "monthly_payment", nullable = false, precision = 15, scale = 2)
+    @Column(name = "monthly_payment", precision = 15, scale = 2)
     @DecimalMin(value = "0.00", message = "Monthly payment cannot be negative")
     private BigDecimal monthlyPayment;
 
     /**
-     * Total amount repaid (principal + interest).
+     * Outstanding balance on the loan.
      * Cannot be negative.
      */
-    @Column(name = "total_amount_paid", precision = 15, scale = 2)
-    @DecimalMin(value = "0.00", message = "Total amount paid cannot be negative")
-    private BigDecimal totalAmountPaid = BigDecimal.ZERO;
+    @Column(name = "outstanding_balance", precision = 15, scale = 2)
+    private BigDecimal outstandingBalance = BigDecimal.ZERO;
 
-    /**
-     * Loan term in years.
-     * Must be greater than 0.
-     */
-    @Column(name = "number_years", nullable = false)
-    @Min(value = 1, message = "Loan term must be at least 1 year")
-    private int numberYears;
+    @Column(name = "number_of_loans", nullable = false)
+    private Integer  numberOfLoans = 0; // Total number of active loans
+
+    @Column(name = "total_loan_borrowed", precision = 15, scale = 2)
+    private BigDecimal totalLoanBorrowed = BigDecimal.ZERO; // Sum of all loans
+
+    @Column(name = "total_outstanding_balance", precision = 15, scale = 2)
+    private BigDecimal totalOutstandingBalance = BigDecimal.ZERO; // Remaining debt
 
     /**
      * Next due date for loan repayment.
@@ -112,6 +106,9 @@ public class Loan {
     @Enumerated(EnumType.STRING)
     private LoanStatus status = LoanStatus.ACTIVE;
 
+    @OneToMany(mappedBy = "loan", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LoanPayment> payments = new ArrayList<>();
+
     /**
      * Timestamp for when the loan record was created.
      * Automatically set when a new record is inserted.
@@ -126,7 +123,6 @@ public class Loan {
     @Column(name = "date_updated")
     private LocalDateTime dateUpdated = LocalDateTime.now();
 
-
     /**
      * Lifecycle hook to update the timestamp before updating.
      */
@@ -139,44 +135,30 @@ public class Loan {
      * ✅ Calculates the fixed monthly payment based on loan terms.
      */
     public void calculateMonthlyPayment() {
-        if (interestRate.compareTo(BigDecimal.ZERO) == 0) {
-            // If 0% interest, simple division
-            this.monthlyPayment = amountBorrowed
-                    .divide(BigDecimal.valueOf(numberYears * 12), 2, RoundingMode.HALF_UP);
-        } else {
-            BigDecimal monthlyInterestRate = interestRate.divide(BigDecimal.valueOf(12 * 100), 10, RoundingMode.HALF_UP);
-            int totalPayments = numberYears * 12;
-
-            BigDecimal numerator = amountBorrowed.multiply(monthlyInterestRate)
-                    .multiply((BigDecimal.ONE.add(monthlyInterestRate)).pow(totalPayments));
-
-            BigDecimal denominator = (BigDecimal.ONE.add(monthlyInterestRate)).pow(totalPayments).subtract(BigDecimal.ONE);
-
-            this.monthlyPayment = numerator.divide(denominator, 2, RoundingMode.HALF_UP);
+        if (numberOfYears <= 0) {
+            throw new RuntimeException("Loan term must be at least 1 year!");
         }
-    }
 
+        if (interestRate.compareTo(BigDecimal.ZERO) == 0) {
+            // ✅ Handle 0% interest case separately
+            this.monthlyPayment = amountBorrowed
+                    .divide(BigDecimal.valueOf(numberOfYears * 12), 2, RoundingMode.HALF_UP);
+            return;
+        }
 
-    /**
-     * ✅ Calculates the total amount paid over the loan period.
-     */
-    public void calculateTotalAmountPaid() {
-        int totalMonths = numberYears * 12;
-        this.totalAmountPaid = this.monthlyPayment.multiply(BigDecimal.valueOf(totalMonths));
-    }
+        BigDecimal monthlyInterestRate = interestRate.divide(BigDecimal.valueOf(100 * 12), 10, RoundingMode.HALF_UP);
+        int totalPayments = numberOfYears * 12;
 
-    /**
-     * ✅ Calculates the total interest paid over the loan period.
-     */
-    public void calculateTotalInterestPaid() {
-        this.interestPaid = this.totalAmountPaid.subtract(this.amountBorrowed);
-    }
+        BigDecimal numerator = amountBorrowed.multiply(monthlyInterestRate)
+                .multiply((BigDecimal.ONE.add(monthlyInterestRate)).pow(totalPayments));
 
-    /**
-     * ✅ Updates the due date for the next monthly payment.
-     */
-    public void updateNextDueDate() {
-        this.dueDate = (this.dueDate == null) ? LocalDate.now().plusMonths(1) : this.dueDate.plusMonths(1);
+        BigDecimal denominator = (BigDecimal.ONE.add(monthlyInterestRate)).pow(totalPayments).subtract(BigDecimal.ONE);
+
+        if (denominator.compareTo(BigDecimal.ZERO) == 0) {
+            throw new RuntimeException("Invalid loan parameters: Division by zero in monthly payment calculation.");
+        }
+
+        this.monthlyPayment = numerator.divide(denominator, 2, RoundingMode.HALF_UP);
     }
 
 
@@ -193,26 +175,41 @@ public class Loan {
         }
     }
 
+    /**
+     * ✅ Updates the next due date after a payment.
+     */
+    public void updateNextDueDate() {
+        if (this.dueDate == null) {
+            this.dueDate = LocalDate.now().plusMonths(1); // ✅ Set first due date if missing
+        } else {
+            this.dueDate = this.dueDate.plusMonths(1); // ✅ Move due date forward by 1 month
+        }
+    }
+
+
     // Constructor
     public Loan(){}
-    public Loan(Long loanId, User user, String lenderName, BigDecimal amountBorrowed, BigDecimal outstandingBalance, BigDecimal interestRate,
-                BigDecimal interestPaid, BigDecimal monthlyPayment, BigDecimal totalAmountPaid, int numberYears, LocalDate dueDate,
-                LoanStatus status, LocalDateTime dateCreated, LocalDateTime dateUpdated) {
+
+    public Loan(Long loanId, User user, String lenderName, BigDecimal amountBorrowed, int numberOfYears, BigDecimal interestRate,
+                BigDecimal monthlyPayment, BigDecimal outstandingBalance, Integer  numberOfLoans, BigDecimal totalLoanBorrowed,
+                BigDecimal totalOutstandingBalance, LocalDate dueDate, LoanStatus status, List<LoanPayment> payments,
+                LocalDateTime dateCreated, LocalDateTime dateUpdated) {
         this.loanId = loanId;
         this.user = user;
         this.lenderName = lenderName;
         this.amountBorrowed = amountBorrowed;
-        this.outstandingBalance = outstandingBalance;
+        this.numberOfYears = numberOfYears;
         this.interestRate = interestRate;
-        this.interestPaid = interestPaid;
         this.monthlyPayment = monthlyPayment;
-        this.totalAmountPaid = totalAmountPaid;
-        this.numberYears = numberYears;
+        this.outstandingBalance = outstandingBalance;
+        this.numberOfLoans = numberOfLoans;
+        this.totalLoanBorrowed = totalLoanBorrowed;
+        this.totalOutstandingBalance = totalOutstandingBalance;
         this.dueDate = dueDate;
         this.status = status;
+        this.payments = payments;
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
-
     }
 
     // Getter and Setter
@@ -248,28 +245,12 @@ public class Loan {
         this.amountBorrowed = amountBorrowed;
     }
 
-    public @DecimalMin(value = "0.00", message = "Outstanding balance cannot be negative") BigDecimal getOutstandingBalance() {
-        return outstandingBalance;
-    }
-
-    public void setOutstandingBalance(@DecimalMin(value = "0.00", message = "Outstanding balance cannot be negative") BigDecimal outstandingBalance) {
-        this.outstandingBalance = outstandingBalance;
-    }
-
     public @DecimalMin(value = "0.00", message = "Interest rate cannot be negative") BigDecimal getInterestRate() {
         return interestRate;
     }
 
     public void setInterestRate(@DecimalMin(value = "0.00", message = "Interest rate cannot be negative") BigDecimal interestRate) {
         this.interestRate = interestRate;
-    }
-
-    public @DecimalMin(value = "0.00", message = "Interest paid cannot be negative") BigDecimal getInterestPaid() {
-        return interestPaid;
-    }
-
-    public void setInterestPaid(@DecimalMin(value = "0.00", message = "Interest paid cannot be negative") BigDecimal interestPaid) {
-        this.interestPaid = interestPaid;
     }
 
     public @DecimalMin(value = "0.00", message = "Monthly payment cannot be negative") BigDecimal getMonthlyPayment() {
@@ -280,21 +261,13 @@ public class Loan {
         this.monthlyPayment = monthlyPayment;
     }
 
-    public @DecimalMin(value = "0.00", message = "Total amount paid cannot be negative") BigDecimal getTotalAmountPaid() {
-        return totalAmountPaid;
-    }
-
-    public void setTotalAmountPaid(@DecimalMin(value = "0.00", message = "Total amount paid cannot be negative") BigDecimal totalAmountPaid) {
-        this.totalAmountPaid = totalAmountPaid;
-    }
-
     @Min(value = 1, message = "Loan term must be at least 1 year")
-    public int getNumberYears() {
-        return numberYears;
+    public int getNumberOfYears() {
+        return numberOfYears;
     }
 
-    public void setNumberYears(@Min(value = 1, message = "Loan term must be at least 1 year") int numberYears) {
-        this.numberYears = numberYears;
+    public void setNumberOfYears(@Min(value = 1, message = "Loan term must be at least 1 year") int numberOfYears) {
+        this.numberOfYears = numberOfYears;
     }
 
     public @NotNull(message = "Due date is required") LocalDate getDueDate() {
@@ -329,5 +302,43 @@ public class Loan {
         this.dateUpdated = dateUpdated;
     }
 
+    public List<LoanPayment> getPayments() {
+        return payments;
+    }
 
+    public void setPayments(List<LoanPayment> payments) {
+        this.payments = payments;
+    }
+
+    public BigDecimal getOutstandingBalance() {
+        return outstandingBalance;
+    }
+
+    public void setOutstandingBalance(BigDecimal outstandingBalance) {
+        this.outstandingBalance = outstandingBalance;
+    }
+
+    public Integer  getNumberOfLoans() {
+        return numberOfLoans;
+    }
+
+    public void setNumberOfLoans(Integer  numberOfLoans) {
+        this.numberOfLoans = numberOfLoans;
+    }
+
+    public BigDecimal getTotalLoanBorrowed() {
+        return totalLoanBorrowed;
+    }
+
+    public void setTotalLoanBorrowed(BigDecimal totalLoanBorrowed) {
+        this.totalLoanBorrowed = totalLoanBorrowed;
+    }
+
+    public BigDecimal getTotalOutstandingBalance() {
+        return totalOutstandingBalance;
+    }
+
+    public void setTotalOutstandingBalance(BigDecimal totalOutstandingBalance) {
+        this.totalOutstandingBalance = totalOutstandingBalance;
+    }
 }

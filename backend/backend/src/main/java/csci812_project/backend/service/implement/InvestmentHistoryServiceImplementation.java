@@ -3,6 +3,7 @@ package csci812_project.backend.service.implement;
 import csci812_project.backend.dto.InvestmentHistoryDTO;
 import csci812_project.backend.entity.Investment;
 import csci812_project.backend.entity.InvestmentHistory;
+import csci812_project.backend.exception.NotFoundException;
 import csci812_project.backend.mapper.InvestmentHistoryMapper;
 import csci812_project.backend.repository.InvestmentHistoryRepository;
 import csci812_project.backend.repository.InvestmentRepository;
@@ -31,7 +32,7 @@ public class InvestmentHistoryServiceImplementation implements InvestmentHistory
     @Transactional
     public void recordInvestmentHistory(Long investmentId) {
         Investment investment = investmentRepository.findById(investmentId)
-                .orElseThrow(() -> new RuntimeException("Investment not found"));
+                .orElseThrow(() -> new NotFoundException("Investment not found"));
 
         BigDecimal performance = investment.getCurrentValue()
                 .subtract(investment.getAmountInvested())
@@ -55,6 +56,10 @@ public class InvestmentHistoryServiceImplementation implements InvestmentHistory
     @Override
     public List<InvestmentHistoryDTO> getInvestmentHistory(Long investmentId) {
         List<InvestmentHistory> history = investmentHistoryRepository.findByInvestment_InvestmentId(investmentId);
+
+        if (history.isEmpty()) {
+            throw new NotFoundException("No investment history found for investment ID: " + investmentId);
+        }
         return history.stream().map(investmentHistoryMapper::toDTO).collect(Collectors.toList());
     }
 

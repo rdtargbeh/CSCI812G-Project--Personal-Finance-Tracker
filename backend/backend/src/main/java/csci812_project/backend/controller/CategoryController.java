@@ -24,9 +24,9 @@ public class CategoryController {
     }
 
     /** ✅ Get a category by ID */
-    @GetMapping("/{id}")
-    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Long id) {
-        return ResponseEntity.ok(categoryService.getCategoryById(id));
+    @GetMapping("/{categoryId}")
+    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Long categoryId) {
+        return ResponseEntity.ok(categoryService.getCategoryById(categoryId));
     }
 
     /** ✅ Get all categories for a specific user */
@@ -42,16 +42,25 @@ public class CategoryController {
     }
 
     /** ✅ Update a category */
-    @PutMapping("/{id}")
-    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long id, @RequestBody CategoryDTO categoryDTO) {
-        return ResponseEntity.ok(categoryService.updateCategory(id, categoryDTO));
+    @PutMapping("/{categoryId}")
+    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long categoryId, @RequestBody CategoryDTO categoryDTO) {
+        return ResponseEntity.ok(categoryService.updateCategory(categoryId, categoryDTO));
     }
 
     /** ✅ Soft delete a category */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCategory(@PathVariable Long id) {
-        categoryService.deleteCategory(id);
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId) {
+        categoryService.deleteCategory(categoryId);
         return ResponseEntity.ok("Category deleted successfully.");
+    }
+
+    /**
+     * Restores a previously soft-deleted account.
+     */
+    @PutMapping("/{categoryId}/restore")
+    public ResponseEntity<String> restoreAccount(@PathVariable Long categoryId) {
+        categoryService.restoreCategory(categoryId);
+        return ResponseEntity.ok("Category has been restored.");
     }
 }
 

@@ -19,6 +19,10 @@ public class LoanPaymentMapper {
         dto.setLoanId(loanPayment.getLoan().getLoanId());
         dto.setUserId(loanPayment.getUser().getUserId());
         dto.setPaymentAmount(loanPayment.getPaymentAmount());
+        dto.setExtraPayment(loanPayment.getExtraPayment());
+        dto.setPrincipalPaid(loanPayment.getPrincipalPaid());
+        dto.setInterestPaid(loanPayment.getInterestPaid());
+        dto.setTotalAmountPaid(loanPayment.getTotalAmountPaid());
         dto.setPaymentDate(loanPayment.getPaymentDate());
         dto.setRemainingBalance(loanPayment.getRemainingBalance());
         dto.setLastPaymentDate(loanPayment.getLastPaymentDate());
@@ -34,6 +38,10 @@ public class LoanPaymentMapper {
         loanPayment.setLoan(loan);
         loanPayment.setUser(user);
         loanPayment.setPaymentAmount(dto.getPaymentAmount());
+        loanPayment.setExtraPayment(dto.getExtraPayment());
+        loanPayment.setPrincipalPaid(dto.getPrincipalPaid());
+        loanPayment.setInterestPaid(dto.getInterestPaid());
+        loanPayment.setTotalAmountPaid(dto.getTotalAmountPaid());
         loanPayment.setPaymentDate(LocalDateTime.now());
         loanPayment.setRemainingBalance(dto.getRemainingBalance());
         loanPayment.setLastPaymentDate(LocalDateTime.now().toLocalDate());

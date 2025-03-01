@@ -3,8 +3,7 @@ package csci812_project.backend.service.implement;
 import csci812_project.backend.dto.AccountDTO;
 import csci812_project.backend.entity.Account;
 import csci812_project.backend.entity.User;
-import csci812_project.backend.enums.AccountType;
-import csci812_project.backend.exception.UserNotFoundException;
+import csci812_project.backend.exception.NotFoundException;
 import csci812_project.backend.mapper.AccountMapper;
 import csci812_project.backend.repository.AccountRepository;
 import csci812_project.backend.repository.UserRepository;
@@ -29,7 +28,7 @@ public class AccountServiceImplementation implements AccountService {
     @Override
     public AccountDTO createAccount(Long userId, AccountDTO accountDTO) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException ("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
         Account account = accountMapper.toEntity(accountDTO);
         account.setUser(user);
@@ -41,7 +40,7 @@ public class AccountServiceImplementation implements AccountService {
     public AccountDTO getAccountById(Long accountId) {
         Account account = accountRepository.findById(accountId)
                 .filter(a -> !a.isDeleted()) // ✅ Exclude soft-deleted accounts
-                .orElseThrow(() -> new UserNotFoundException("Account not found or has been deleted"));
+                .orElseThrow(() -> new NotFoundException("Account not found or has been deleted"));
 
         return accountMapper.toDTO(account);
     }
@@ -51,7 +50,7 @@ public class AccountServiceImplementation implements AccountService {
 
         // ✅ Check if the user exists before fetching accounts
         if (!userRepository.existsById(userId)) {
-            throw new UserNotFoundException ("User with ID " + userId + " not found"); // ✅ Throws a 404 error
+            throw new NotFoundException("User with ID " + userId + " not found"); // ✅ Throws a 404 error
         }
         return accountRepository.findByUser_UserId(userId)
                 .stream()
@@ -63,7 +62,7 @@ public class AccountServiceImplementation implements AccountService {
     @Override
     public AccountDTO updateAccount(Long accountId, AccountDTO accountDTO) {
         Account existingAccount = accountRepository.findById(accountId)
-                .orElseThrow(() -> new UserNotFoundException ("Account not found"));
+                .orElseThrow(() -> new NotFoundException("Account not found"));
 
         existingAccount.setName(accountDTO.getName());
         existingAccount.setBalance(accountDTO.getBalance());
@@ -78,7 +77,7 @@ public class AccountServiceImplementation implements AccountService {
     @Override
     public void deleteAccount(Long accountId) {
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new UserNotFoundException("Account not found"));
+                .orElseThrow(() -> new NotFoundException("Account not found"));
         account.setDeleted(true);
         accountRepository.save(account);
     }
@@ -86,7 +85,11 @@ public class AccountServiceImplementation implements AccountService {
     @Override
     public void restoreAccount(Long accountId) {
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new UserNotFoundException ("Account not found"));
+                .orElseThrow(() -> new NotFoundException("Account not found"));
+
+        if (!account.isDeleted()) {
+            throw new IllegalStateException("Account is already active.");
+        }
         account.setDeleted(false);
         accountRepository.save(account);
     }

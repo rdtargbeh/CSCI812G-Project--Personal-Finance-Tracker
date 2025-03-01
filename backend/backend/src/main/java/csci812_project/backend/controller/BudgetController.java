@@ -2,9 +2,7 @@ package csci812_project.backend.controller;
 
 import csci812_project.backend.dto.BudgetDTO;
 import csci812_project.backend.service.BudgetService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,9 +26,9 @@ public class BudgetController {
     /**
      * ✅ Get a budget by its ID.
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<BudgetDTO> getBudgetById(@PathVariable Long id) {
-        return ResponseEntity.ok(budgetService.getBudgetById(id));
+    @GetMapping("/{budgetId}")
+    public ResponseEntity<BudgetDTO> getBudgetById(@PathVariable Long budgetId) {
+        return ResponseEntity.ok(budgetService.getBudgetById(budgetId));
     }
 
     /**
@@ -44,17 +42,17 @@ public class BudgetController {
     /**
      * ✅ Update an existing budget.
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<BudgetDTO> updateBudget(@PathVariable Long id, @RequestBody BudgetDTO budgetDTO) {
-        return ResponseEntity.ok(budgetService.updateBudget(id, budgetDTO));
+    @PutMapping("/{budgetId}")
+    public ResponseEntity<BudgetDTO> updateBudget(@PathVariable Long budgetId, @RequestBody BudgetDTO budgetDTO) {
+        return ResponseEntity.ok(budgetService.updateBudget(budgetId, budgetDTO));
     }
 
     /**
      * ✅ Soft delete a budget (mark as deleted).
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteBudget(@PathVariable Long id) {
-        budgetService.deleteBudget(id);
+    @DeleteMapping("/{budgetId}")
+    public ResponseEntity<String> deleteBudget(@PathVariable Long budgetId) {
+        budgetService.deleteBudget(budgetId);
         return ResponseEntity.ok("Budget deleted successfully.");
     }
 }

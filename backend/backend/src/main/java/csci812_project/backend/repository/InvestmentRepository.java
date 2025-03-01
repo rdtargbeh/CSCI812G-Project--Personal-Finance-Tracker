@@ -9,6 +9,8 @@ public interface InvestmentRepository extends JpaRepository<Investment, Long> {
 
     List<Investment> findByUser_UserId(Long userId);
 
+    List<Investment> findByIsDeletedFalse();
+
     List<Investment> findByInvestmentType(InvestmentType investmentType);
 }
 

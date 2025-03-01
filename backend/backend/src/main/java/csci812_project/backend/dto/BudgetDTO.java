@@ -18,6 +18,8 @@ public class BudgetDTO {
     /** Maximum spending amount allowed within the budget period */
     private BigDecimal amountLimit;
 
+    private String description;
+
     /** Start date of the budget period */
     private LocalDate startDate;
 
@@ -44,7 +46,7 @@ public class BudgetDTO {
     public BudgetDTO(){}
     public BudgetDTO(Long budgetId, Long userId, Long categoryId, BigDecimal amountLimit, LocalDate startDate, LocalDate endDate,
                      String budgetType, BigDecimal rolloverAmount, boolean isDeleted, LocalDateTime dateCreated,
-                     LocalDateTime dateUpdated) {
+                     LocalDateTime dateUpdated, String description) {
         this.budgetId = budgetId;
         this.userId = userId;
         this.categoryId = categoryId;
@@ -56,6 +58,7 @@ public class BudgetDTO {
         this.isDeleted = isDeleted;
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
+        this.description = description;
     }
 
     // Getter and Setter
@@ -145,5 +148,13 @@ public class BudgetDTO {
 
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

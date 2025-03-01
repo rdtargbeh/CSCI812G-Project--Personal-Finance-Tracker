@@ -1,7 +1,6 @@
 package csci812_project.backend.dto;
 
 import csci812_project.backend.enums.LoanStatus;
-import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -9,61 +8,42 @@ import java.time.LocalDateTime;
 
 public class LoanDTO {
 
-    /** Unique loan ID */
     private Long loanId;
     private Long userId;
-
-    /** Lender name (Bank, Credit Card Company, etc.) */
     private String lenderName;
-
-    /** Amount borrowed (Principal loan amount) */
     private BigDecimal amountBorrowed;
-
-    /** Outstanding balance */
+    private int numberOfYears;
     private BigDecimal outstandingBalance;
-
-    /** Interest rate (Annual) */
+    private BigDecimal totalOutstandingBalance;
+    private BigDecimal totalLoanBorrowed;
+    private int numberOfLoans;
     private BigDecimal interestRate;
-
-    /** Total interest paid */
-    private BigDecimal interestPaid;
-
-    /** Monthly installment amount */
     private BigDecimal monthlyPayment;
-
-    /** Total amount paid (Principal + Interest) */
-    private BigDecimal totalAmountPaid;
-
-    /** Loan term in years */
-    private int numberYears;
-
-    /** Next due date */
     private LocalDate dueDate;
-
-    /** Loan status (ACTIVE, PAID_OFF, DEFAULTED) */
     private LoanStatus status;
-
-    /** Timestamp for when the loan record was created */
     private LocalDateTime dateCreated;
+
 
     // Constructor
     public LoanDTO(){}
-    public LoanDTO(Long loanId, String lenderName, BigDecimal amountBorrowed, BigDecimal outstandingBalance, BigDecimal interestRate,
-                   BigDecimal interestPaid, BigDecimal monthlyPayment, BigDecimal totalAmountPaid, int numberYears, LocalDate dueDate,
-                   LoanStatus status, LocalDateTime dateCreated, Long userId) {
+
+    public LoanDTO(Long loanId, Long userId, String lenderName, BigDecimal amountBorrowed, int numberOfYears, BigDecimal outstandingBalance,
+                   BigDecimal totalOutstandingBalance, BigDecimal totalLoanBorrowed, int numberOfLoans, BigDecimal interestRate,
+                   BigDecimal monthlyPayment, LocalDate dueDate, LoanStatus status, LocalDateTime dateCreated) {
         this.loanId = loanId;
+        this.userId = userId;
         this.lenderName = lenderName;
         this.amountBorrowed = amountBorrowed;
+        this.numberOfYears = numberOfYears;
         this.outstandingBalance = outstandingBalance;
+        this.totalOutstandingBalance = totalOutstandingBalance;
+        this.totalLoanBorrowed = totalLoanBorrowed;
+        this.numberOfLoans = numberOfLoans;
         this.interestRate = interestRate;
-        this.interestPaid = interestPaid;
         this.monthlyPayment = monthlyPayment;
-        this.totalAmountPaid = totalAmountPaid;
-        this.numberYears = numberYears;
         this.dueDate = dueDate;
         this.status = status;
         this.dateCreated = dateCreated;
-        this.userId = userId;
     }
 
     // Getter and Setter
@@ -107,13 +87,6 @@ public class LoanDTO {
         this.interestRate = interestRate;
     }
 
-    public BigDecimal getInterestPaid() {
-        return interestPaid;
-    }
-
-    public void setInterestPaid(BigDecimal interestPaid) {
-        this.interestPaid = interestPaid;
-    }
 
     public BigDecimal getMonthlyPayment() {
         return monthlyPayment;
@@ -123,20 +96,12 @@ public class LoanDTO {
         this.monthlyPayment = monthlyPayment;
     }
 
-    public BigDecimal getTotalAmountPaid() {
-        return totalAmountPaid;
+    public int getNumberOfYears() {
+        return numberOfYears;
     }
 
-    public void setTotalAmountPaid(BigDecimal totalAmountPaid) {
-        this.totalAmountPaid = totalAmountPaid;
-    }
-
-    public int getNumberYears() {
-        return numberYears;
-    }
-
-    public void setNumberYears(int numberYears) {
-        this.numberYears = numberYears;
+    public void setNumberOfYears(int numberOfYears) {
+        this.numberOfYears = numberOfYears;
     }
 
     public LocalDate getDueDate() {
@@ -169,6 +134,30 @@ public class LoanDTO {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public BigDecimal getTotalOutstandingBalance() {
+        return totalOutstandingBalance;
+    }
+
+    public void setTotalOutstandingBalance(BigDecimal totalOutstandingBalance) {
+        this.totalOutstandingBalance = totalOutstandingBalance;
+    }
+
+    public BigDecimal getTotalLoanBorrowed() {
+        return totalLoanBorrowed;
+    }
+
+    public void setTotalLoanBorrowed(BigDecimal totalLoanBorrowed) {
+        this.totalLoanBorrowed = totalLoanBorrowed;
+    }
+
+    public int getNumberOfLoans() {
+        return numberOfLoans;
+    }
+
+    public void setNumberOfLoans(int numberOfLoans) {
+        this.numberOfLoans = numberOfLoans;
     }
 }
 

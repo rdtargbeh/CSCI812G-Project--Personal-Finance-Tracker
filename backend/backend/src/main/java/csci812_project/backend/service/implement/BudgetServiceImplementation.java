@@ -5,12 +5,12 @@ import csci812_project.backend.entity.Budget;
 import csci812_project.backend.entity.Category;
 import csci812_project.backend.entity.User;
 import csci812_project.backend.enums.BudgetType;
+import csci812_project.backend.exception.NotFoundException;
 import csci812_project.backend.mapper.BudgetMapper;
 import csci812_project.backend.repository.BudgetRepository;
 import csci812_project.backend.repository.CategoryRepository;
 import csci812_project.backend.repository.UserRepository;
 import csci812_project.backend.service.BudgetService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,13 +30,14 @@ public class BudgetServiceImplementation implements BudgetService {
     @Autowired
     private BudgetMapper budgetMapper;
 
+
     @Override
     public BudgetDTO createBudget(BudgetDTO budgetDTO) {
         User user = userRepository.findById(budgetDTO.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
         Category category = categoryRepository.findById(budgetDTO.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new NotFoundException("Category not found"));
 
         Budget budget = budgetMapper.toEntity(budgetDTO, user, category);
         budget.setUser(user);
@@ -46,16 +47,19 @@ public class BudgetServiceImplementation implements BudgetService {
     }
 
     @Override
-    public BudgetDTO getBudgetById(Long id) {
-        Budget budget = budgetRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Budget not found"));
+    public BudgetDTO getBudgetById(Long budgetId) {
+        Budget budget = budgetRepository.findById(budgetId)
+                .filter(a -> !a.isDeleted())  // excludes soft deleted budgets
+                .orElseThrow(() -> new NotFoundException("Budget not found"));
         return budgetMapper.toDTO(budget);
+
     }
 
     @Override
     public List<BudgetDTO> getBudgetsByUser(Long userId) {
         return budgetRepository.findByUser_UserId(userId)
                 .stream()
+                .filter(budget -> !budget.isDeleted())   // ✅ Exclude soft-deleted accounts
                 .map(budgetMapper::toDTO)
                 .collect(Collectors.toList());
     }
@@ -63,11 +67,12 @@ public class BudgetServiceImplementation implements BudgetService {
     @Override
     public BudgetDTO updateBudget(Long id, BudgetDTO budgetDTO) {
         Budget budget = budgetRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Budget not found"));
+                .orElseThrow(() -> new NotFoundException("Budget not found"));
 
         budget.setAmountLimit(budgetDTO.getAmountLimit());
         budget.setStartDate(budgetDTO.getStartDate());
         budget.setEndDate(budgetDTO.getEndDate());
+        budget.setDescription(budget.getDescription());
         budget.setBudgetType(BudgetType.valueOf(budgetDTO.getBudgetType()));
 
         return budgetMapper.toDTO(budgetRepository.save(budget));
@@ -76,7 +81,7 @@ public class BudgetServiceImplementation implements BudgetService {
     @Override
     public void deleteBudget(Long id) {
         Budget budget = budgetRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Budget not found"));
+                .orElseThrow(() -> new NotFoundException("Budget not found"));
 
         budget.setDeleted(true);
         budgetRepository.save(budget);

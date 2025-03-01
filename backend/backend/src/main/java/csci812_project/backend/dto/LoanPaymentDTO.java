@@ -1,36 +1,44 @@
 package csci812_project.backend.dto;
 
-import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Builder
 public class LoanPaymentDTO {
     private Long paymentId;
     private Long loanId;
     private Long userId;
     private BigDecimal paymentAmount;
+    private BigDecimal extraPayment;
+    private BigDecimal totalAmountPaid;
+    private BigDecimal interestPaid;
+    private BigDecimal principalPaid;
     private LocalDateTime paymentDate;
     private BigDecimal remainingBalance;
     private LocalDate lastPaymentDate;
     private LocalDate nextDueDate;
 
+
+
     // Constructor
     public LoanPaymentDTO(){}
-
-    public LoanPaymentDTO(Long paymentId, Long loanId, Long userId, BigDecimal paymentAmount, LocalDateTime paymentDate,
+    public LoanPaymentDTO(Long paymentId, Long loanId, Long userId, BigDecimal paymentAmount, BigDecimal extraPayment,
+                          BigDecimal totalAmountPaid, BigDecimal interestPaid, BigDecimal principalPaid, LocalDateTime paymentDate,
                           BigDecimal remainingBalance, LocalDate lastPaymentDate, LocalDate nextDueDate) {
         this.paymentId = paymentId;
         this.loanId = loanId;
         this.userId = userId;
         this.paymentAmount = paymentAmount;
+        this.extraPayment = extraPayment;
+        this.totalAmountPaid = totalAmountPaid;
+        this.interestPaid = interestPaid;
+        this.principalPaid = principalPaid;
         this.paymentDate = paymentDate;
         this.remainingBalance = remainingBalance;
         this.lastPaymentDate = lastPaymentDate;
         this.nextDueDate = nextDueDate;
     }
+
 
     // Getter and Setter
 
@@ -64,6 +72,38 @@ public class LoanPaymentDTO {
 
     public void setPaymentAmount(BigDecimal paymentAmount) {
         this.paymentAmount = paymentAmount;
+    }
+
+    public BigDecimal getExtraPayment() {
+        return extraPayment;
+    }
+
+    public void setExtraPayment(BigDecimal extraPayment) {
+        this.extraPayment = extraPayment;
+    }
+
+    public BigDecimal getTotalAmountPaid() {
+        return totalAmountPaid;
+    }
+
+    public void setTotalAmountPaid(BigDecimal totalAmountPaid) {
+        this.totalAmountPaid = totalAmountPaid;
+    }
+
+    public BigDecimal getInterestPaid() {
+        return interestPaid;
+    }
+
+    public void setInterestPaid(BigDecimal interestPaid) {
+        this.interestPaid = interestPaid;
+    }
+
+    public BigDecimal getPrincipalPaid() {
+        return principalPaid;
+    }
+
+    public void setPrincipalPaid(BigDecimal principalPaid) {
+        this.principalPaid = principalPaid;
     }
 
     public LocalDateTime getPaymentDate() {

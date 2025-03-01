@@ -3,17 +3,19 @@ package csci812_project.backend.service.implement;
 import csci812_project.backend.dto.LoanPaymentDTO;
 import csci812_project.backend.entity.Loan;
 import csci812_project.backend.entity.LoanPayment;
-import csci812_project.backend.enums.LoanStatus;
+import csci812_project.backend.exception.NotFoundException;
 import csci812_project.backend.mapper.LoanPaymentMapper;
 import csci812_project.backend.repository.LoanPaymentRepository;
 import csci812_project.backend.repository.LoanRepository;
 import csci812_project.backend.service.EmailService;
 import csci812_project.backend.service.LoanPaymentService;
+import csci812_project.backend.service.LoanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,39 +31,141 @@ public class LoanPaymentServiceImplementation implements LoanPaymentService {
     private LoanPaymentMapper loanPaymentMapper;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private LoanService loanService;  // ✅ Inject LoanService
+
+
+
+
+
+    // METHOD TO MAKE AN INDIVIDUAL PAYMENT  +++++++++++++++++++++++++++++++++++++++
 
     @Override
     @Transactional
-    public LoanPaymentDTO makePayment(Long loanId, BigDecimal amount) {
+    public LoanPaymentDTO makePayment(Long loanId, BigDecimal paymentAmount, BigDecimal extraPayment) {
         Loan loan = loanRepository.findById(loanId)
-                .orElseThrow(() -> new RuntimeException("Loan not found"));
+                .orElseThrow(() -> new NotFoundException("Loan not found"));
 
-        if (amount.compareTo(loan.getOutstandingBalance()) > 0) {
-            throw new RuntimeException("Payment exceeds outstanding balance");
+        // ✅ Prevent `NullPointerException`
+        if (paymentAmount == null) paymentAmount = BigDecimal.ZERO;
+        if (extraPayment == null) extraPayment = BigDecimal.ZERO;
+
+        // ✅ Ensure at least one payment type is provided
+        if (paymentAmount.compareTo(BigDecimal.ZERO) <= 0 && extraPayment.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("You must provide either a monthly payment or an extra payment!");
         }
 
-        // ✅ Update loan balance
-        BigDecimal newBalance = loan.getOutstandingBalance().subtract(amount);
-        loan.setOutstandingBalance(newBalance);
-
-        // ✅ Update next due date
-        loan.updateNextDueDate();
-
-        // ✅ Mark loan as PAID_OFF if fully repaid
-        if (newBalance.compareTo(BigDecimal.ZERO) == 0) {
-            loan.setStatus(LoanStatus.PAID_OFF);
-        }
-
-        loanRepository.save(loan);
-
-        // ✅ Create LoanPayment record
         LoanPayment loanPayment = new LoanPayment();
-        loanPayment.initializePayment(loan, loan.getUser(), amount);
+        loanPayment.setLoan(loan);
+        loanPayment.setUser(loan.getUser());
+
+        if (paymentAmount.compareTo(BigDecimal.ZERO) > 0) {
+            processMonthlyPayment(loan, paymentAmount, loanPayment);
+        }
+
+        if (extraPayment.compareTo(BigDecimal.ZERO) > 0) {
+            loanPayment = processExtraPayment(loan, extraPayment);
+        }
 
         loanPaymentRepository.save(loanPayment);
+        // ✅ Recalculate Total Amount Paid & Interest Paid
+        BigDecimal totalAmountPaid = loanPaymentRepository.findTotalAmountPaidByLoanId(loanId).orElse(BigDecimal.ZERO);
+        BigDecimal totalInterestPaid = loanPaymentRepository.findTotalInterestPaidByLoanId(loanId).orElse(BigDecimal.ZERO);
+        // ✅ Update the Loan entity with new aggregated values
+        loan.setTotalOutstandingBalance(loan.getOutstandingBalance());
+
+        // ✅ Update Loan Entity
+        loanPayment.setTotalAmountPaid(totalAmountPaid);
+        loanPayment.setInterestPaid(totalInterestPaid);
+
+
+        loan.updateLoanStatus();
+        loanRepository.save(loan);
 
         return loanPaymentMapper.toDTO(loanPayment);
     }
+
+
+    /**
+     * ✅ Processes a **scheduled monthly payment**.
+     * - Deducts the interest & principal from the outstanding balance.
+     * - Updates next due date.
+     */
+    private void processMonthlyPayment(Loan loan, BigDecimal paymentAmount, LoanPayment loanPayment) {
+        // ✅ Calculate interest for the current month
+        BigDecimal monthlyInterestRate = loan.getInterestRate().divide(BigDecimal.valueOf(100 * 12), RoundingMode.HALF_UP);
+        BigDecimal interestForMonth = loan.getOutstandingBalance().multiply(monthlyInterestRate).setScale(2, RoundingMode.HALF_UP);
+
+        // ✅ Calculate principal portion
+        BigDecimal principalPaid = paymentAmount.subtract(interestForMonth);
+
+        // ✅ Prevent negative principal (in case interest > payment)
+        if (principalPaid.compareTo(BigDecimal.ZERO) < 0) {
+            principalPaid = BigDecimal.ZERO;
+        }
+
+        // ✅ Update Loan Balances
+        loan.setOutstandingBalance(loan.getOutstandingBalance().subtract(principalPaid));
+
+        // ✅ Prevent negative balance
+        if (loan.getOutstandingBalance().compareTo(BigDecimal.ZERO) < 0) {
+            loan.setOutstandingBalance(BigDecimal.ZERO);
+        }
+
+        // ✅ Set Loan Payment Details
+        loanPayment.setPaymentAmount(paymentAmount);
+        loanPayment.setPrincipalPaid(principalPaid);
+        loanPayment.setInterestPaid(interestForMonth);
+        loanPayment.setRemainingBalance(loan.getOutstandingBalance());
+
+        // ✅ Set Next Due Date for Regular Payments
+        loanPayment.setNextDueDate(LocalDate.now().plusMonths(1));
+    }
+
+
+    /**
+     * ✅ Processes an **extra principal-only payment**.
+     * - Directly reduces the principal.
+     * - Does NOT affect the next due date.
+     */
+    private LoanPayment processExtraPayment(Loan loan, BigDecimal extraPayment) {
+        if (extraPayment.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Extra payment must be greater than zero!");
+        }
+
+        // ✅ Reduce Principal Directly
+        loan.setOutstandingBalance(loan.getOutstandingBalance().subtract(extraPayment));
+
+        // ✅ Prevent negative balance
+        if (loan.getOutstandingBalance().compareTo(BigDecimal.ZERO) < 0) {
+            loan.setOutstandingBalance(BigDecimal.ZERO);
+        }
+
+        // ✅ Save Loan Payment Record using `recordLoanPayment`
+        return recordLoanPayment(loan, BigDecimal.ZERO, extraPayment, BigDecimal.ZERO, extraPayment);
+    }
+
+
+    /**
+     * ✅ Saves the loan payment record.
+     */
+    private LoanPayment recordLoanPayment(Loan loan, BigDecimal paymentAmount, BigDecimal principalPaid, BigDecimal interestPaid, BigDecimal extraPayment) {
+        LoanPayment payment = new LoanPayment();
+        payment.setLoan(loan);
+        payment.setUser(loan.getUser());
+        payment.setPaymentAmount(paymentAmount);
+        payment.setPrincipalPaid(principalPaid);
+        payment.setInterestPaid(interestPaid);
+        payment.setExtraPayment(extraPayment);
+        payment.setRemainingBalance(loan.getOutstandingBalance());
+        payment.setLastPaymentDate(LocalDate.now());
+        payment.setNextDueDate(loan.getDueDate());
+
+        return loanPaymentRepository.save(payment);
+    }
+
+
+
 
 
     @Override
@@ -90,5 +194,6 @@ public class LoanPaymentServiceImplementation implements LoanPaymentService {
             emailService.sendLoanReminder(userEmail, loanName, dueDate, amountDue);
         }
     }
+
 }
 

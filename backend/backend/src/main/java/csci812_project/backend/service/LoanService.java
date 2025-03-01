@@ -1,7 +1,9 @@
 package csci812_project.backend.service;
 
 import csci812_project.backend.dto.LoanDTO;
+import csci812_project.backend.entity.User;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface LoanService {
@@ -14,4 +16,11 @@ public interface LoanService {
     LoanDTO updateLoan(Long loanId, LoanDTO loanDTO);
 
     void deleteLoan(Long loanId);
+
+    void updateLoanStatus(Long loanId);
+
+    void updateNextDueDate(Long loanId);
+
+    void updateLoanStats(User user);
+
 }

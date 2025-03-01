@@ -36,6 +36,8 @@ public class Budget {
     @JoinColumn(name = "category_id", foreignKey = @ForeignKey(name = "fk_budget_category"))
     private Category category;
 
+    @Column(name = "description", length = 30)
+    private String description;
     /**
      * Maximum spending amount allowed within the budget period.
      * Cannot be negative.
@@ -104,7 +106,7 @@ public class Budget {
     // Constructor
     public Budget(){}
     public Budget(Long budgetId, User user, Category category, BigDecimal amountLimit, LocalDate startDate, LocalDate endDate,
-                  BudgetType budgetType, BigDecimal rolloverAmount, boolean isDeleted, LocalDate dateCreated, LocalDate dateUpdated) {
+                  BudgetType budgetType, BigDecimal rolloverAmount, boolean isDeleted, LocalDate dateCreated, LocalDate dateUpdated, String description) {
         this.budgetId = budgetId;
         this.user = user;
         this.category = category;
@@ -116,6 +118,7 @@ public class Budget {
         this.isDeleted = isDeleted;
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
+        this.description = description;
     }
 
     // Getter and Setter
@@ -205,5 +208,13 @@ public class Budget {
 
     public void setDateUpdated(LocalDate dateUpdated) {
         this.dateUpdated = dateUpdated;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
