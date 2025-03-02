@@ -7,6 +7,7 @@ import csci812_project.backend.entity.Transaction;
 import csci812_project.backend.entity.User;
 import csci812_project.backend.enums.RecurringInterval;
 import csci812_project.backend.enums.TransactionType;
+import csci812_project.backend.exception.NotFoundException;
 import csci812_project.backend.mapper.TransactionMapper;
 import csci812_project.backend.repository.AccountRepository;
 import csci812_project.backend.repository.CategoryRepository;
@@ -22,6 +23,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
@@ -55,11 +57,17 @@ public class TransactionServiceImplementation implements TransactionService {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
+        // ✅ Fetch Category using `categoryId` (instead of passing it in `toEntity()`)
+        Category category = categoryRepository.findById(transactionDTO.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
         account.setBalance(account.getBalance().add(transactionDTO.getAmount()));
 
         Transaction transaction = transactionMapper.toEntity(transactionDTO, account.getUser(), account, null);
         transaction.setUser(account.getUser());
         transaction.setAccount(account);
+        transaction.setDate(transaction.getDate());
+        transaction.setCategory(category);
 
         transactionRepository.save(transaction);
         accountRepository.save(account);
@@ -75,11 +83,25 @@ public class TransactionServiceImplementation implements TransactionService {
             throw new RuntimeException("Insufficient funds");
         }
 
+        // ✅ Fetch Category
+        Category category = categoryRepository.findById(transactionDTO.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        // ✅ Fetch Parent Transaction if `parentTransactionId` is provided
+        Transaction parentTransaction = null;
+        if (transactionDTO.getParentTransactionId() != null) {
+            parentTransaction = transactionRepository.findById(transactionDTO.getParentTransactionId())
+                    .orElseThrow(() -> new RuntimeException("Parent transaction not found"));
+        }
+
         account.setBalance(account.getBalance().subtract(transactionDTO.getAmount()));
 
         Transaction transaction = transactionMapper.toEntity(transactionDTO, account.getUser(), account, null);
         transaction.setUser(account.getUser());
         transaction.setAccount(account);
+        transaction.setCategory(category);
+        transaction.setParentTransaction(parentTransaction);
+
 
         transactionRepository.save(transaction);
         accountRepository.save(account);
@@ -88,6 +110,9 @@ public class TransactionServiceImplementation implements TransactionService {
 
     @Override
     public TransactionDTO transfer(Long userId, Long fromAccountId, Long toAccountId, TransactionDTO transactionDTO) {
+        if (toAccountId == null) {
+            throw new RuntimeException("Destination account (toAccountId) must not be null!");
+        }
         Account fromAccount = accountRepository.findById(fromAccountId)
                 .orElseThrow(() -> new RuntimeException("From account not found"));
 
@@ -117,17 +142,28 @@ public class TransactionServiceImplementation implements TransactionService {
      */
     @Override
     public List<TransactionDTO> getTransactionsByUser(Long userId) {
+        // ✅ Check if the user exists before fetching accounts
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("User with ID " + userId + " not found"); // ✅ Throws a 404 error
+        }
+
         List<Transaction> transactions = transactionRepository.findByUser_UserId(userId);
         return transactions.stream()
                 .map(transactionMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
+
     /**
      * Retrieves all transactions for a specific account.
      */
     @Override
     public List<TransactionDTO> getTransactionsByAccount(Long accountId) {
+        // ✅ Check if the user exists before fetching accounts
+        if (!accountRepository.existsById(accountId)) {
+            throw new NotFoundException("Account with ID " + accountId + " not found"); // ✅ Throws a 404 error
+        }
+
         List<Transaction> transactions = transactionRepository.findByAccount_AccountId(accountId);
         return transactions.stream()
                 .map(transactionMapper::toDTO)
@@ -184,6 +220,7 @@ public class TransactionServiceImplementation implements TransactionService {
 
 
     @Override
+    @Transactional
     public TransactionDTO addManualTransaction(TransactionDTO transactionDTO) {
         User user = userRepository.findById(transactionDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -194,14 +231,23 @@ public class TransactionServiceImplementation implements TransactionService {
         Category category = categoryRepository.findById(transactionDTO.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
+        // ✅ Handle Parent Transaction (if applicable)
+        Transaction parentTransaction = null;
+        if (transactionDTO.getParentTransactionId() != null) {
+            parentTransaction = transactionRepository.findById(transactionDTO.getParentTransactionId())
+                    .orElseThrow(() -> new RuntimeException("Parent transaction not found"));
+        }
+
+        // ✅ Convert DTO to Entity
         Transaction transaction = transactionMapper.toEntity(transactionDTO, user, account, null);
         transaction.setUser(user);
         transaction.setAccount(account);
         transaction.setCategory(category);
+        transaction.setParentTransaction(parentTransaction);  // ✅ Set Parent Transaction
 
         transaction = transactionRepository.save(transaction);
 
-        // ✅ Check if the budget limit is about to be exceeded
+        // ✅ Check if Budget Limit Exceeded
         boolean isBudgetExceeded = budgetService.checkBudgetUsage(
                 transaction.getUser().getUserId(),
                 transaction.getCategory().getCategoryId(),
@@ -209,13 +255,17 @@ public class TransactionServiceImplementation implements TransactionService {
         );
 
         if (isBudgetExceeded) {
-            // ✅ Use email from Login entity
-            emailService.sendBudgetAlert(user.getEmail(), category.getName(), transaction.getAmount());
-            System.out.println("⚠️ ALERT: Budget limit warning email sent to " + user.getEmail());
+            try {
+                emailService.sendBudgetAlert(user.getEmail(), category.getName(), transaction.getAmount());
+                System.out.println("⚠️ ALERT: Budget limit warning email sent to " + user.getEmail());
+            } catch (Exception e) {
+                System.err.println("⚠️ ERROR: Failed to send budget alert email: " + e.getMessage());
+            }
         }
 
         return transactionMapper.toDTO(transaction);
     }
+
 
 
     /**

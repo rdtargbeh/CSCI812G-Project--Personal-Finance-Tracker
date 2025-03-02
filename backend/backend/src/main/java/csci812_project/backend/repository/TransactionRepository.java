@@ -31,13 +31,13 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
      * ✅ Calculate Total Income within a Date Range
      */
     @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t WHERE t.user.userId = :userId AND t.transactionType = 'INCOME' AND t.date BETWEEN :startDate AND :endDate")
-    BigDecimal calculateTotalIncome(@Param("userId") Long userId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    BigDecimal calculateTotalIncome(@Param("userId") Long userId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
     /**
      * ✅ Calculate Total Expenses within a Date Range
      */
     @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t WHERE t.user.userId = :userId AND t.transactionType = 'EXPENSE' AND t.date BETWEEN :startDate AND :endDate")
-    BigDecimal calculateTotalExpense(@Param("userId") Long userId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    BigDecimal calculateTotalExpense(@Param("userId") Long userId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
 }
 

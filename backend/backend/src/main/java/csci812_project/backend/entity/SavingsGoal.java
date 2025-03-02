@@ -64,7 +64,7 @@ public class SavingsGoal {
      * Status of the savings goal (ACTIVE, COMPLETED, CANCELLED).
      * Defaults to ACTIVE.
      */
-    @Column(name = "status", nullable = false)
+    @Column(name = "status", nullable = false, length = 30)
     @Enumerated(EnumType.STRING)
     private SavingsGoalStatus status = SavingsGoalStatus.ACTIVE;
 

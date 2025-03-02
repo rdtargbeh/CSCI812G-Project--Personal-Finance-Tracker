@@ -33,6 +33,8 @@ public class SavingsGoalMapper {
         dto.setPriorityLevel(savingsGoal.getPriorityLevel().name()); // Convert Enum to String
         dto.setContributionFrequency(savingsGoal.getContributionFrequency().name()); // Convert Enum to String
         dto.setDeleted(savingsGoal.isDeleted());
+
+
         dto.setDateCreated(savingsGoal.getDateCreated().atStartOfDay());
         dto.setDateUpdated(savingsGoal.getDateUpdated().atStartOfDay());
 
@@ -50,16 +52,22 @@ public class SavingsGoalMapper {
         savingsGoal.setGoalName(dto.getGoalName());
         savingsGoal.setTargetAmount(dto.getTargetAmount());
         savingsGoal.setCurrentAmount(dto.getCurrentAmount() != null ? dto.getCurrentAmount() : BigDecimal.ZERO);
-        savingsGoal.setDeadline(dto.getDeadline());
+        // ✅ Ensure `deadline` is not null
+        savingsGoal.setDeadline(dto.getDeadline() != null ? dto.getDeadline() : LocalDate.now().plusMonths(6));
         savingsGoal.setStatus(SavingsGoalStatus.valueOf(dto.getStatus())); // Convert String to Enum
         savingsGoal.setAutoSave(dto.isAutoSave());
         savingsGoal.setPriorityLevel(PriorityLevel.valueOf(dto.getPriorityLevel())); // Convert String to Enum
         savingsGoal.setContributionFrequency(ContributionFrequency.valueOf(dto.getContributionFrequency())); // Convert String to Enum
         savingsGoal.setDeleted(dto.isDeleted());
-        savingsGoal.setDateCreated(dto.getDateCreated().toLocalDate());
-        savingsGoal.setDateUpdated(dto.getDateUpdated().toLocalDate());
+
+        // ✅ Ensure `dateCreated` is not null
+        savingsGoal.setDateCreated(dto.getDateCreated() != null ? dto.getDateCreated().toLocalDate() : LocalDateTime.now().toLocalDate());
+
+        // ✅ Ensure `dateUpdated` is not null
+        savingsGoal.setDateUpdated(dto.getDateUpdated() != null ? dto.getDateUpdated().toLocalDate() : LocalDateTime.now().toLocalDate());
 
         return savingsGoal;
     }
+
 }
 

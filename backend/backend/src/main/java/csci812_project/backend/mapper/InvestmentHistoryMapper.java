@@ -1,7 +1,6 @@
 package csci812_project.backend.mapper;
 
 import csci812_project.backend.dto.InvestmentHistoryDTO;
-import csci812_project.backend.entity.AuditLog;
 import csci812_project.backend.entity.Investment;
 import csci812_project.backend.entity.InvestmentHistory;
 import org.springframework.stereotype.Component;
@@ -19,6 +18,7 @@ public class InvestmentHistoryMapper {
         dto.setInvestmentId(history.getInvestment().getInvestmentId());
         dto.setCurrentValue(history.getCurrentValue());
         dto.setPerformance(history.getPerformance());
+        dto.setReturnsGenerated(history.getReturnsGenerated());
         dto.setRecordedAt(history.getRecordedAt());
 
         return dto;
@@ -33,6 +33,7 @@ public class InvestmentHistoryMapper {
         history.setCurrentValue(dto.getCurrentValue()); // ✅ Set current value
         history.setPerformance(dto.getPerformance()); // ✅ Set performance
         history.setRecordedAt(LocalDateTime.now()); // ✅ Set recorded timestamp
+        history.setReturnsGenerated(dto.getReturnsGenerated());
 
         return history;
     }

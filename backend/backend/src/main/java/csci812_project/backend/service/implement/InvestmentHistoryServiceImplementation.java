@@ -34,23 +34,62 @@ public class InvestmentHistoryServiceImplementation implements InvestmentHistory
         Investment investment = investmentRepository.findById(investmentId)
                 .orElseThrow(() -> new NotFoundException("Investment not found"));
 
-        BigDecimal performance = investment.getCurrentValue()
-                .subtract(investment.getAmountInvested())
-                .divide(investment.getAmountInvested(), 2, RoundingMode.HALF_UP)
-                .multiply(BigDecimal.valueOf(100));
+        BigDecimal amountInvested = investment.getAmountInvested();
+        BigDecimal currentValue = investment.getCurrentValue();
+
+        // ✅ Calculate `returnsGenerated`
+        BigDecimal returnsGenerated = currentValue.subtract(amountInvested);
+
+        // ✅ Avoid division by zero when calculating performance
+        BigDecimal performance = BigDecimal.ZERO;
+        if (amountInvested.compareTo(BigDecimal.ZERO) > 0) {
+            performance = returnsGenerated
+                    .divide(amountInvested, 2, RoundingMode.HALF_UP)
+                    .multiply(BigDecimal.valueOf(100));
+        }
 
         // ✅ Use DTO format first
         InvestmentHistoryDTO dto = new InvestmentHistoryDTO();
         dto.setInvestmentId(investment.getInvestmentId());
-        dto.setCurrentValue(investment.getCurrentValue());
+        dto.setCurrentValue(currentValue);
         dto.setPerformance(performance);
+        dto.setReturnsGenerated(returnsGenerated);
         dto.setRecordedAt(LocalDateTime.now());
 
-        // ✅ Convert DTO to Entity using your mapper
+        // ✅ Convert DTO to Entity using the mapper
         InvestmentHistory history = investmentHistoryMapper.toEntity(dto, investment);
 
         investmentHistoryRepository.save(history);
     }
+
+//    @Override
+//    @Transactional
+//    public void recordInvestmentHistory(Long investmentId) {
+//        Investment investment = investmentRepository.findById(investmentId)
+//                .orElseThrow(() -> new NotFoundException("Investment not found"));
+//
+//        // ✅ Calculate performance percentage
+//        BigDecimal performance = investment.getCurrentValue()
+//                .subtract(investment.getAmountInvested())
+//                .divide(investment.getAmountInvested(), 2, RoundingMode.HALF_UP)
+//                .multiply(BigDecimal.valueOf(100));
+//
+//        // ✅ Calculate `returns_generated`
+//        BigDecimal returnsGenerated = investment.getCurrentValue().subtract(investment.getAmountInvested());
+//
+//        // ✅ Use DTO format first
+//        InvestmentHistoryDTO dto = new InvestmentHistoryDTO();
+//        dto.setInvestmentId(investment.getInvestmentId());
+//        dto.setCurrentValue(investment.getCurrentValue());
+//        dto.setPerformance(performance);
+//        dto.setReturnsGenerated(returnsGenerated);  // 🔹 Set the `returns_generated`
+//        dto.setRecordedAt(LocalDateTime.now());
+//
+//        // ✅ Convert DTO to Entity using the mapper
+//        InvestmentHistory history = investmentHistoryMapper.toEntity(dto, investment);
+//
+//        investmentHistoryRepository.save(history);
+//    }
 
 
     @Override

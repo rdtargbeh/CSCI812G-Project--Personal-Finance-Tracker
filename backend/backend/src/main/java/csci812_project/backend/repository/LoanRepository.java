@@ -31,4 +31,10 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
     @Query("SELECT COALESCE(SUM(l.amountBorrowed), 0) FROM Loan l WHERE l.user.userId = :userId")
     Optional<BigDecimal> getTotalLoanBorrowedByUser(@Param("userId") Long userId);
 
+    @Query("SELECT COALESCE(SUM(l.amountBorrowed), 0) FROM Loan l WHERE l.user.userId = :userId")
+    BigDecimal getTotalLoanAmountByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT COALESCE(SUM(l.outstandingBalance), 0) FROM Loan l WHERE l.user.userId = :userId")
+    BigDecimal getOutstandingLoanBalanceByUserId(@Param("userId") Long userId);
+
 }

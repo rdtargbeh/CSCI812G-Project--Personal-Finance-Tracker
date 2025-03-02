@@ -26,6 +26,13 @@ public class InvestmentHistory {
     @Column(name = "recorded_at", nullable = false)
     private LocalDateTime recordedAt;
 
+    @Column(name = "returns_generated", precision = 15, scale = 2)
+    private BigDecimal returnsGenerated;
+
+//    @ManyToOne
+//    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_investment_user"))
+//    private User user;
+
 
     // ✅ Automatically set recordedAt before persisting
     @PrePersist
@@ -37,15 +44,15 @@ public class InvestmentHistory {
 
     public InvestmentHistory(){}
 
-    public InvestmentHistory(Long historyId, Investment investment, BigDecimal currentValue, BigDecimal performance, LocalDateTime recordedAt) {
+    public InvestmentHistory(Long historyId, Investment investment, BigDecimal currentValue, BigDecimal performance,
+                             LocalDateTime recordedAt, BigDecimal returnsGenerated) {
         this.historyId = historyId;
         this.investment = investment;
         this.currentValue = currentValue;
         this.performance = performance;
         this.recordedAt = recordedAt;
+        this.returnsGenerated = returnsGenerated;
     }
-
-
 
     // ✅ Getters and Setters
     public Long getHistoryId() { return historyId; }
@@ -62,4 +69,12 @@ public class InvestmentHistory {
 
     public LocalDateTime getRecordedAt() { return recordedAt; }
     public void setRecordedAt(LocalDateTime recordedAt) { this.recordedAt = recordedAt; }
+
+    public BigDecimal getReturnsGenerated() {
+        return returnsGenerated;
+    }
+
+    public void setReturnsGenerated(BigDecimal returnsGenerated) {
+        this.returnsGenerated = returnsGenerated;
+    }
 }

@@ -24,9 +24,9 @@ public class SavingsGoalController {
     }
 
     /** ✅ Get savings goal by ID */
-    @GetMapping("/{id}")
-    public ResponseEntity<SavingsGoalDTO> getSavingsGoalById(@PathVariable Long id) {
-        return savingsGoalService.getSavingsGoalById(id)
+    @GetMapping("/{goalId}")
+    public ResponseEntity<SavingsGoalDTO> getSavingsGoalById(@PathVariable Long goalId) {
+        return savingsGoalService.getSavingsGoalById(goalId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -38,22 +38,22 @@ public class SavingsGoalController {
     }
 
     /** ✅ Update a savings goal */
-    @PutMapping("/{id}")
-    public ResponseEntity<SavingsGoalDTO> updateSavingsGoal(@PathVariable Long id, @RequestBody SavingsGoalDTO savingsGoalDTO) {
-        return ResponseEntity.ok(savingsGoalService.updateSavingsGoal(id, savingsGoalDTO));
+    @PutMapping("/{goalId}")
+    public ResponseEntity<SavingsGoalDTO> updateSavingsGoal(@PathVariable Long goalId, @RequestBody SavingsGoalDTO savingsGoalDTO) {
+        return ResponseEntity.ok(savingsGoalService.updateSavingsGoal(goalId, savingsGoalDTO));
     }
 
     /** ✅ Delete a savings goal */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSavingsGoal(@PathVariable Long id) {
-        savingsGoalService.deleteSavingsGoal(id);
+    @DeleteMapping("/{goalId}")
+    public ResponseEntity<Void> deleteSavingsGoal(@PathVariable Long goalId) {
+        savingsGoalService.deleteSavingsGoal(goalId);
         return ResponseEntity.noContent().build();
     }
 
     /** ✅ Contribute money to a savings goal */
-    @PostMapping("/{id}/contribute")
-    public ResponseEntity<SavingsGoalDTO> contributeToSavings(@PathVariable Long id, @RequestParam BigDecimal amount) {
-        return ResponseEntity.ok(savingsGoalService.contributeToSavings(id, amount));
+    @PostMapping("/{goalId}/contribute")
+    public ResponseEntity<SavingsGoalDTO> contributeToSavings(@PathVariable Long goalId, @RequestParam BigDecimal amount) {
+        return ResponseEntity.ok(savingsGoalService.contributeToSavings(goalId, amount));
     }
 }
 

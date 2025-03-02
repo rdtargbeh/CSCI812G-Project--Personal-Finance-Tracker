@@ -73,6 +73,8 @@ public class Investment {
     @Column(name = "performance", precision = 5, scale = 2)
     private BigDecimal performance;
 
+    @Column(name = "invested_amount", nullable = false, precision = 15, scale = 2)
+    private BigDecimal investedAmount;
 
     /**
      * Last updated timestamp for the investment valuation.
@@ -132,7 +134,7 @@ public class Investment {
     public Investment(){}
     public Investment(Long investmentId, User user, InvestmentType investmentType, String assetName, BigDecimal amountInvested,
                       BigDecimal currentValue, LocalDateTime purchaseDate, LocalDateTime lastUpdated, boolean isDeleted,
-                      LocalDateTime dateCreated, BigDecimal performance) {
+                      LocalDateTime dateCreated, BigDecimal performance, BigDecimal investedAmount) {
         this.investmentId = investmentId;
         this.user = user;
         this.investmentType = investmentType;
@@ -144,6 +146,7 @@ public class Investment {
         this.isDeleted = isDeleted;
         this.dateCreated = dateCreated;
         this.performance = performance;
+        this.investedAmount = investedAmount;
     }
 
     // Getter and Setter
@@ -233,6 +236,14 @@ public class Investment {
 
     public void setPerformance(BigDecimal performance) {
         this.performance = performance;
+    }
+
+    public BigDecimal getInvestedAmount() {
+        return investedAmount;
+    }
+
+    public void setInvestedAmount(BigDecimal investedAmount) {
+        this.investedAmount = investedAmount;
     }
 }
 

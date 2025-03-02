@@ -9,17 +9,21 @@ public class InvestmentHistoryDTO {
     private BigDecimal currentValue;
     private BigDecimal performance;
     private LocalDateTime recordedAt;
+    private BigDecimal returnsGenerated;
 
 
     // Constructor
 
     public InvestmentHistoryDTO(){}
-    public InvestmentHistoryDTO(Long historyId, Long investmentId, BigDecimal currentValue, BigDecimal performance, LocalDateTime recordedAt) {
+
+    public InvestmentHistoryDTO(Long historyId, Long investmentId, BigDecimal currentValue, BigDecimal performance,
+                                LocalDateTime recordedAt, BigDecimal returnsGenerated) {
         this.historyId = historyId;
         this.investmentId = investmentId;
         this.currentValue = currentValue;
         this.performance = performance;
         this.recordedAt = recordedAt;
+        this.returnsGenerated = returnsGenerated;
     }
 
     // ✅ Getters and Setters
@@ -37,5 +41,13 @@ public class InvestmentHistoryDTO {
 
     public LocalDateTime getRecordedAt() { return recordedAt; }
     public void setRecordedAt(LocalDateTime recordedAt) { this.recordedAt = recordedAt; }
+
+    public BigDecimal getReturnsGenerated() {
+        return returnsGenerated;
+    }
+
+    public void setReturnsGenerated(BigDecimal returnsGenerated) {
+        this.returnsGenerated = returnsGenerated;
+    }
 }
 

@@ -29,6 +29,7 @@ public class InvestmentHistoryController {
         return ResponseEntity.ok(investmentHistoryService.getInvestmentHistory(investmentId));
     }
 
+
     /**
      * ✅ Retrieve investment history for a given investment within a date range.
      */

@@ -83,7 +83,7 @@ public class Transaction {
     /**
      * Payment method used for the transaction (CASH, CREDIT_CARD, BANK_TRANSFER, PAYPAL).
      */
-    @Column(name = "payment_method")
+    @Column(name = "payment_method", length = 30)
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 

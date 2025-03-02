@@ -22,6 +22,8 @@ public interface LoanPaymentRepository extends JpaRepository<LoanPayment, Long> 
     @Query("SELECT COALESCE(SUM(lp.interestPaid), 0) FROM LoanPayment lp WHERE lp.loan.loanId = :loanId")
     Optional<BigDecimal> findTotalInterestPaidByLoanId(@Param("loanId") Long loanId);
 
+    @Query("SELECT COALESCE(SUM(lp.paymentAmount + lp.extraPayment), 0) FROM LoanPayment lp WHERE lp.loan.user.userId = :userId AND lp.paymentDate BETWEEN :startDate AND :endDate")
+    BigDecimal getTotalLoanPaymentsByUserId(@Param("userId") Long userId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
 }
 

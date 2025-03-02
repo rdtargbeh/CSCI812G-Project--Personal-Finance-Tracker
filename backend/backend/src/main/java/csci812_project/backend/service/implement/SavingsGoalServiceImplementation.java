@@ -46,12 +46,20 @@ public class SavingsGoalServiceImplementation implements SavingsGoalService {
         User user = userRepository.findById(savingsGoalDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        // ✅ Set default values for `dateCreated` and `dateUpdated` if missing
+        if (savingsGoalDTO.getDateCreated() == null) {
+            savingsGoalDTO.setDateCreated(LocalDateTime.now());
+        }
+        if (savingsGoalDTO.getDateUpdated() == null) {
+            savingsGoalDTO.setDateUpdated(LocalDateTime.now());
+        }
+
         SavingsGoal savingsGoal = savingsGoalMapper.toEntity(savingsGoalDTO, user);
-        savingsGoal.setDateCreated(LocalDate.from(LocalDateTime.now()));
-        savingsGoal.setDateUpdated(LocalDate.from(LocalDateTime.now()));
 
         return savingsGoalMapper.toDTO(savingsGoalRepository.save(savingsGoal));
     }
+
+
 
     /** ✅ Get savings goal by ID */
     @Override
@@ -74,6 +82,11 @@ public class SavingsGoalServiceImplementation implements SavingsGoalService {
         SavingsGoal savingsGoal = savingsGoalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Savings goal not found"));
 
+        // ✅ Prevent `deadline` from being null
+        if (savingsGoalDTO.getDeadline() == null) {
+            throw new RuntimeException("Deadline cannot be null! Please provide a valid date.");
+        }
+
         savingsGoal.setGoalName(savingsGoalDTO.getGoalName());
         savingsGoal.setTargetAmount(savingsGoalDTO.getTargetAmount());
         savingsGoal.setDeadline(savingsGoalDTO.getDeadline());
@@ -84,6 +97,23 @@ public class SavingsGoalServiceImplementation implements SavingsGoalService {
 
         return savingsGoalMapper.toDTO(savingsGoalRepository.save(savingsGoal));
     }
+
+//    @Override
+//    @Transactional
+//    public SavingsGoalDTO updateSavingsGoal(Long id, SavingsGoalDTO savingsGoalDTO) {
+//        SavingsGoal savingsGoal = savingsGoalRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Savings goal not found"));
+//
+//        savingsGoal.setGoalName(savingsGoalDTO.getGoalName());
+//        savingsGoal.setTargetAmount(savingsGoalDTO.getTargetAmount());
+//        savingsGoal.setDeadline(savingsGoalDTO.getDeadline());
+//        savingsGoal.setAutoSave(savingsGoalDTO.isAutoSave());
+//        savingsGoal.setPriorityLevel(PriorityLevel.valueOf(savingsGoalDTO.getPriorityLevel()));
+//        savingsGoal.setContributionFrequency(ContributionFrequency.valueOf(savingsGoalDTO.getContributionFrequency()));
+//        savingsGoal.setDateUpdated(LocalDate.from(LocalDateTime.now()));
+//
+//        return savingsGoalMapper.toDTO(savingsGoalRepository.save(savingsGoal));
+//    }
 
     /** ✅ Delete a savings goal */
     @Override
