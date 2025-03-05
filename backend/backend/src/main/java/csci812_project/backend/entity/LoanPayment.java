@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "loan_payments")
-public class LoanPayment {
+public class  LoanPayment {
 
     /**
      * Unique payment ID (Primary Key).

@@ -1,8 +1,10 @@
 package csci812_project.backend.service;
 
 import csci812_project.backend.dto.TransactionDTO;
+import csci812_project.backend.dto.TransactionReportDTO;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface TransactionService {
@@ -27,6 +29,7 @@ public interface TransactionService {
     void processRecurringTransactions();
 
     TransactionDTO createRecurringTransaction(TransactionDTO transactionDTO);
+
 
 }
 

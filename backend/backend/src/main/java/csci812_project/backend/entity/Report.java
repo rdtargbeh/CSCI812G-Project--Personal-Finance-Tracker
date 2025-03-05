@@ -101,16 +101,33 @@ public class Report {
      * ✅ Calculates net balance automatically.
      */
     public void calculateNetBalance() {
-        this.netBalance = totalIncome.subtract(totalExpense);
+        this.netBalance = this.totalIncome.subtract(this.totalExpense);
+        if (this.netBalance.compareTo(BigDecimal.ZERO) < 0) {
+            this.netBalance = BigDecimal.ZERO; // ✅ Prevent negative balances
+        }
     }
 
 
     @PrePersist
     @PreUpdate
     private void onPersistOrUpdate() {
-        this.dateUpdated = LocalDate.now(); // ✅ Update timestamp
-        this.netBalance = totalIncome.subtract(totalExpense); // ✅ Auto-calculate net balance
+        this.dateUpdated = LocalDate.now(); // ✅ Auto-update timestamp
+        calculateNetBalance(); // ✅ Ensure balance is updated before saving
+        validateDateRange(); // ✅ Ensure date range is valid
     }
+
+    public void validateDateRange() {
+        if (this.startDate.isAfter(this.endDate)) {
+            throw new IllegalArgumentException("Start date cannot be after end date.");
+        }
+    }
+
+//    @PrePersist
+//    @PreUpdate
+//    private void onPersistOrUpdate() {
+//        this.dateUpdated = LocalDate.now(); // ✅ Update timestamp
+//        this.netBalance = totalIncome.subtract(totalExpense); // ✅ Auto-calculate net balance
+//    }
 
 
 

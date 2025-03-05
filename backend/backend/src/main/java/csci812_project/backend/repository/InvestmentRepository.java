@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface InvestmentRepository extends JpaRepository<Investment, Long> {
@@ -17,7 +18,16 @@ public interface InvestmentRepository extends JpaRepository<Investment, Long> {
 
     List<Investment> findByInvestmentType(InvestmentType investmentType);
 
-    @Query("SELECT COALESCE(SUM(i.investedAmount), 0) FROM Investment i WHERE i.user.userId = :userId")
-    BigDecimal getTotalInvestmentsByUserId(@Param("userId") Long userId);
+    @Query("SELECT COALESCE(SUM(ih.returnsGenerated), 0) FROM InvestmentHistory ih WHERE ih.investment.user.userId = :userId AND ih.recordedAt BETWEEN :startDate AND :endDate")
+    BigDecimal getTotalInvestmentsByUserId(
+            @Param("userId") Long userId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
+
+//    @Query("SELECT SUM(i.amountInvested) FROM Investment i WHERE i.user.userId = :userId")
+//    BigDecimal getTotalInvestmentsByUserId(@Param("userId") Long userId);
+
+
 }
 

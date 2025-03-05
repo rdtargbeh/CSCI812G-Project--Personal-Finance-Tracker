@@ -17,11 +17,19 @@ public class SubscriptionController {
 
 
     /**
+     * ✅ Create a New Subscription
+     */
+    @PostMapping
+    public ResponseEntity<SubscriptionDTO> createSubscription(@RequestBody SubscriptionDTO dto) {
+        return ResponseEntity.ok(subscriptionService.createSubscription(dto));
+    }
+
+    /**
      * ✅ Get Subscription by ID
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<SubscriptionDTO> getSubscriptionById(@PathVariable Long id) {
-        return ResponseEntity.ok(subscriptionService.getSubscriptionById(id));
+    @GetMapping("/{subscriptionId}")
+    public ResponseEntity<SubscriptionDTO> getSubscriptionById(@PathVariable Long subscriptionId) {
+        return ResponseEntity.ok(subscriptionService.getSubscriptionById(subscriptionId));
     }
 
     /**
@@ -32,28 +40,21 @@ public class SubscriptionController {
         return ResponseEntity.ok(subscriptionService.getSubscriptionsByUser(userId));
     }
 
-    /**
-     * ✅ Create a New Subscription
-     */
-    @PostMapping
-    public ResponseEntity<SubscriptionDTO> createSubscription(@RequestBody SubscriptionDTO dto) {
-        return ResponseEntity.ok(subscriptionService.createSubscription(dto));
-    }
 
     /**
      * ✅ Update an Existing Subscription
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<SubscriptionDTO> updateSubscription(@PathVariable Long id, @RequestBody SubscriptionDTO dto) {
-        return ResponseEntity.ok(subscriptionService.updateSubscription(id, dto));
+    @PutMapping("/{subscriptionId}")
+    public ResponseEntity<SubscriptionDTO> updateSubscription(@PathVariable Long subscriptionId, @RequestBody SubscriptionDTO dto) {
+        return ResponseEntity.ok(subscriptionService.updateSubscription(subscriptionId, dto));
     }
 
     /**
      * ✅ Cancel a Subscription
      */
-    @PutMapping("/{id}/cancel")
-    public ResponseEntity<String> cancelSubscription(@PathVariable Long id) {
-        subscriptionService.cancelSubscription(id);
+    @PutMapping("/{subscriptionId}/cancel")
+    public ResponseEntity<String> cancelSubscription(@PathVariable Long subscriptionId) {
+        subscriptionService.cancelSubscription(subscriptionId);
         return ResponseEntity.ok("Subscription cancelled successfully.");
     }
 }

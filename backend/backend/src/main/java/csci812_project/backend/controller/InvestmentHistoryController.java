@@ -7,6 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,10 +19,10 @@ public class InvestmentHistoryController {
     private InvestmentHistoryService investmentHistoryService;
 
 
-    @PostMapping("/record/{investmentId}")
-    public ResponseEntity<Void> recordHistory(@PathVariable Long investmentId) {
-        investmentHistoryService.recordInvestmentHistory(investmentId);
-        return ResponseEntity.ok().build();
+    @PostMapping("/record")
+    public ResponseEntity<String> recordInvestmentHistory(@RequestBody InvestmentHistoryDTO historyDTO) {
+        investmentHistoryService.recordInvestmentHistory(historyDTO.getInvestmentId(), historyDTO.getCurrentValue());
+        return ResponseEntity.ok("Investment history recorded and current value updated!");
     }
 
     @GetMapping("/{investmentId}")
@@ -42,4 +43,11 @@ public class InvestmentHistoryController {
         List<InvestmentHistoryDTO> history = investmentHistoryService.getInvestmentHistoryByDateRange(investmentId, startDate, endDate);
         return ResponseEntity.ok(history);
     }
+
+//    @PostMapping("/record/{investmentId}")
+//    public ResponseEntity<Void> recordHistory(@PathVariable Long investmentId, @RequestBody InvestmentHistoryDTO historyDTO) {
+//        investmentHistoryService.recordInvestmentsHistory(investmentId);
+//        return ResponseEntity.ok().build();
+//    }
+
 }

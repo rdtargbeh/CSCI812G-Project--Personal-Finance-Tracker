@@ -1,6 +1,6 @@
 package csci812_project.backend.service;
 
-import csci812_project.backend.dto.ReportDTO;
+import csci812_project.backend.dto.*;
 import csci812_project.backend.enums.ReportFileFormat;
 
 import java.time.LocalDate;
@@ -14,10 +14,18 @@ public interface ReportService {
 
     void generateMonthlyReports();
 
-    ReportDTO generateLoanReport(Long userId, LocalDate startDate, LocalDate endDate);
+    LoanReportDTO generateLoanReport(Long userId, LocalDate startDate, LocalDate endDate);
 
-    ReportDTO generateInvestmentReport(Long userId, LocalDate startDate, LocalDate endDate);
+    InvestmentReportDTO generateInvestmentReport(Long userId, LocalDate startDate, LocalDate endDate);
 
-    ReportDTO generateSavingsGoalReport(Long userId, LocalDate startDate, LocalDate endDate);
+    SavingsGoalReportDTO generateSavingsGoalReport(Long userId, LocalDate startDate, LocalDate endDate);
+
+    List<ReportDTO> getReportsByUserAndDate(Long userId, LocalDate startDate, LocalDate endDate);
+
+    BudgetReportDTO generateBudgetReport(Long userId, LocalDate startDate, LocalDate endDate);
+
+    TransactionReportDTO generateTransactionReport(Long userId, LocalDate startDate, LocalDate endDate);
+
+
 }
 

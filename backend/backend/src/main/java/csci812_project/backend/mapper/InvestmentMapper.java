@@ -21,7 +21,6 @@ public class InvestmentMapper {
         dto.setPerformance(investment.getPerformance());
         dto.setCurrentValue(investment.getCurrentValue());
         dto.setPurchaseDate(investment.getPurchaseDate());
-        dto.setInvestedAmount(investment.getInvestedAmount());
         dto.setLastUpdated(investment.getLastUpdated());
         dto.setDeleted(investment.isDeleted());
         dto.setDateCreated(investment.getDateCreated());
@@ -39,7 +38,6 @@ public class InvestmentMapper {
         investment.setAmountInvested(dto.getAmountInvested());
         investment.setCurrentValue(dto.getCurrentValue());
         investment.setPurchaseDate(dto.getPurchaseDate());
-        investment.setInvestedAmount(dto.getInvestedAmount());
         return investment;
     }
 

@@ -11,7 +11,6 @@ public class InvestmentDTO {
     private Long investmentId;
     private BigDecimal performance;
     private Long userId;
-    private BigDecimal investedAmount;
 
     /** Type of investment (STOCKS, CRYPTO, MUTUAL_FUNDS, REAL_ESTATE) */
     private InvestmentType investmentType;
@@ -40,7 +39,7 @@ public class InvestmentDTO {
 
     public InvestmentDTO(Long investmentId, Long userId, InvestmentType investmentType, String assetName, BigDecimal amountInvested,
                          BigDecimal currentValue, LocalDateTime purchaseDate, boolean isDeleted, LocalDateTime lastUpdated,
-                         LocalDateTime dateCreated, BigDecimal performance, BigDecimal investedAmount) {
+                         LocalDateTime dateCreated, BigDecimal performance) {
         this.investmentId = investmentId;
         this.userId = userId;
         this.investmentType = investmentType;
@@ -52,7 +51,6 @@ public class InvestmentDTO {
         this.lastUpdated = lastUpdated;
         this.dateCreated = dateCreated;
         this.performance = performance;
-        this.investedAmount = investedAmount;
     }
 
     // Getter and Setter
@@ -143,13 +141,5 @@ public class InvestmentDTO {
 
     public void setPerformance(BigDecimal performance) {
         this.performance = performance;
-    }
-
-    public BigDecimal getInvestedAmount() {
-        return investedAmount;
-    }
-
-    public void setInvestedAmount(BigDecimal investedAmount) {
-        this.investedAmount = investedAmount;
     }
 }

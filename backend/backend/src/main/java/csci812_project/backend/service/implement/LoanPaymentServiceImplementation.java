@@ -166,8 +166,6 @@ public class LoanPaymentServiceImplementation implements LoanPaymentService {
 
 
 
-
-
     @Override
     @Transactional(readOnly = true)
     public List<LoanPaymentDTO> getPaymentsByLoan(Long loanId) {

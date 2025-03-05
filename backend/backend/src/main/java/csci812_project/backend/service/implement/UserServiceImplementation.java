@@ -62,30 +62,6 @@ public class UserServiceImplementation implements UserService {
     }
 
 
-//    @Override
-//    @Transactional
-//    public UserDTO register(UserDTO userDTO){
-//        if (userRepository.existsByUserName(userDTO.getUserName())){
-//            throw new RuntimeException("Username is already taken");
-//        }
-//
-//        if (userRepository.existsByEmail(userDTO.getEmail())){
-//            throw  new RuntimeException("Email is ready registered");
-//        }
-//
-//        User user = userMapper.toEntity(userDTO);
-////        User user = new User();
-//        user.setUserName(userDTO.getUserName());
-//        user.setEmail(userDTO.getEmail());
-//        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-//        user.setDateCreated(LocalDateTime.now());
-//        user.setDateUpdated(LocalDateTime.now());
-//
-//        User savedUser = userRepository.save(user);
-//        return userMapper.toDTO(savedUser);
-//    }
-
-
     // Simple login authentication (replace later)
     @Override
     public boolean authenticate(String username, String password) {
@@ -165,38 +141,6 @@ public class UserServiceImplementation implements UserService {
         user.setDeleted(false);
         userRepository.save(user);
     }
-
-
-
-
-
-
-
-//    @Override
-//    public UserDTO authenticate(String username, String password) {
-//        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-//
-//        User user = userRepository.findByUserName(username)
-//                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
-//
-//        return userMapper.toDTO(user);
-//    }
-
-//    @Override
-//    public String login(UserDTO userDTO) {
-//        // ✅ Authenticate user
-//        Authentication authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(userDTO.getUserName(), userDTO.getPassword())
-//        );
-//
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//        // ✅ Extract username from authentication
-//        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
-//
-//        // ✅ Pass username to generateToken() instead of Authentication
-//        return jwtTokenProvider.generateToken(username);
-//    }
 
 
 }

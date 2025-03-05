@@ -19,5 +19,7 @@ public interface InvestmentService {
 
     void restoreInvestment(Long id);
 
+    void simulateInvestmentGrowth();
+
 
 }

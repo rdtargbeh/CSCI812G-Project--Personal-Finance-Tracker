@@ -3,6 +3,7 @@ package csci812_project.backend.controller;
 import csci812_project.backend.dto.InvestmentDTO;
 import csci812_project.backend.service.InvestmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import java.util.List;
@@ -14,35 +15,44 @@ public class InvestmentController {
     @Autowired
     private InvestmentService investmentService;
 
+
+
+    /**
+     * ✅ Add a new investment.
+     */
     @PostMapping
-    public ResponseEntity<InvestmentDTO> addInvestment(@RequestBody InvestmentDTO dto) {
-        return ResponseEntity.ok(investmentService.addInvestment(dto));
+    public ResponseEntity<InvestmentDTO> addInvestment(@RequestBody InvestmentDTO investmentDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(investmentService.addInvestment(investmentDTO));
     }
 
+    /**
+     * ✅ Update an investment.
+     */
+    @PutMapping("/{investmentId}")
+    public ResponseEntity<InvestmentDTO> updateInvestment(
+            @PathVariable Long investmentId,
+            @RequestBody InvestmentDTO investmentDTO) {
+        return ResponseEntity.ok(investmentService.updateInvestment(investmentId, investmentDTO));
+    }
+
+    /**
+     * ✅ Get an investment by ID.
+     */
     @GetMapping("/{investmentId}")
     public ResponseEntity<InvestmentDTO> getInvestmentById(@PathVariable Long investmentId) {
         return ResponseEntity.ok(investmentService.getInvestmentById(investmentId));
     }
 
     /**
-     * ✅ Update an existing investment
-     * @param investmentId The ID of the investment to update.
-     * @param investmentDTO The new investment details.
-     * @return The updated investment.
+     * ✅ Get all investments for a user.
      */
-    @PutMapping("/{investmentId}")
-    public ResponseEntity<InvestmentDTO> updateInvestment(
-            @PathVariable Long investmentId,
-            @RequestBody InvestmentDTO investmentDTO) {
-
-        InvestmentDTO updatedInvestment = investmentService.updateInvestment(investmentId, investmentDTO);
-        return ResponseEntity.ok(updatedInvestment);
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<InvestmentDTO>> getInvestmentsByUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(investmentService.getInvestmentsByUser(userId));
     }
 
     /**
-     * ✅ Delete an existing investment
-     * @param investmentId The ID of the investment to update.
-     * @return The updated investment.
+     * ✅ Delete an investment.
      */
     @DeleteMapping("/{investmentId}")
     public ResponseEntity<Void> deleteInvestment(@PathVariable Long investmentId) {
@@ -50,24 +60,23 @@ public class InvestmentController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/restore/{investmentId}")
-    public ResponseEntity<String> restoreInvestment(@PathVariable Long investmentId) {
+    /**
+     * ✅ Restore a deleted investment.
+     */
+    @PutMapping("/{investmentId}/restore")
+    public ResponseEntity<Void> restoreInvestment(@PathVariable Long investmentId) {
         investmentService.restoreInvestment(investmentId);
-        return ResponseEntity.ok("Investment restored successfully.");
+        return ResponseEntity.noContent().build();
     }
 
     /**
-     * ✅ Fetch investments by user ID
-     * @param userId The ID of the user whose investments are retrieved.
-     * @return List of investments for the user.
+     * ✅ Trigger manual simulation (for testing).
      */
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<InvestmentDTO>> getInvestmentsByUser(@PathVariable Long userId) {
-        List<InvestmentDTO> investments = investmentService.getInvestmentsByUser(userId);
-        return ResponseEntity.ok(investments);
+    @PostMapping("/simulate-growth")
+    public ResponseEntity<String> simulateGrowth() {
+        investmentService.simulateInvestmentGrowth();
+        return ResponseEntity.ok("Simulated investment growth updated!");
     }
-
-
 
 
 }

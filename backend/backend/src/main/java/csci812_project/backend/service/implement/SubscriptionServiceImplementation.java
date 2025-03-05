@@ -5,6 +5,7 @@ import csci812_project.backend.entity.Account;
 import csci812_project.backend.entity.Subscription;
 import csci812_project.backend.entity.User;
 import csci812_project.backend.enums.SubscriptionStatus;
+import csci812_project.backend.exception.NotFoundException;
 import csci812_project.backend.mapper.SubscriptionMapper;
 import csci812_project.backend.repository.AccountRepository;
 import csci812_project.backend.repository.SubscriptionRepository;
@@ -65,7 +66,7 @@ public class SubscriptionServiceImplementation implements SubscriptionService {
     @Override
     public SubscriptionDTO getSubscriptionById(Long id) {
         Subscription subscription = subscriptionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Subscription not found"));
+                .orElseThrow(() -> new NotFoundException("Subscription not found"));
 
         return subscriptionMapper.toDTO(subscription);
     }
@@ -84,7 +85,7 @@ public class SubscriptionServiceImplementation implements SubscriptionService {
     @Override
     public SubscriptionDTO updateSubscription(Long id, SubscriptionDTO dto) {
         Subscription subscription = subscriptionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Subscription not found"));
+                .orElseThrow(() -> new NotFoundException("Subscription not found"));
 
         subscription.setName(dto.getName());
         subscription.setAmount(dto.getAmount());
