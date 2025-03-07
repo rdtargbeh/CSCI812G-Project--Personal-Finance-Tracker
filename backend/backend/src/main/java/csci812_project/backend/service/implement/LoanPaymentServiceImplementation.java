@@ -33,6 +33,8 @@ public class LoanPaymentServiceImplementation implements LoanPaymentService {
     private EmailService emailService;
     @Autowired
     private LoanService loanService;  // ✅ Inject LoanService
+    @Autowired
+    private  ScheduledEmailService scheduledEmailService;
 
 
 
@@ -189,7 +191,7 @@ public class LoanPaymentServiceImplementation implements LoanPaymentService {
             BigDecimal amountDue = payment.getPaymentAmount();
             String dueDate = payment.getNextDueDate().toString();
 
-            emailService.sendLoanReminder(userEmail, loanName, dueDate, amountDue);
+            scheduledEmailService.sendLoanReminders();
         }
     }
 

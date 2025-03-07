@@ -1,16 +1,13 @@
 package csci812_project.backend.service;
 
 import csci812_project.backend.dto.UserDTO;
-import csci812_project.backend.entity.User;
+import csci812_project.backend.enums.RoleType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 
 public interface UserService {
-
-
     /**
      * Retrieves user details by user ID.
      * @param userId ID of the user.
@@ -54,11 +51,12 @@ public interface UserService {
      */
     UserDTO register(UserDTO userDTO);
 
-    boolean authenticate(String username, String password);
+    String authenticate(String username, String password, Long userId);
 
+    void assignRoleToUser(Long userId, RoleType roleName);
 
-//    UserDTO authenticate(String username, String password);
+    void removeUser(Long userId);
 
-//    String login(UserDTO userDTO);
+    ResponseEntity<?> getUserProfile(Authentication authentication);
 
 }

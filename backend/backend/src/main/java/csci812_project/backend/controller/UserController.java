@@ -5,10 +5,9 @@ import csci812_project.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
 
 @RestController
 @RequestMapping("/api/users")
@@ -17,35 +16,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-
-    // BUILD A REGISTER USER REST API
-    @PostMapping("/register")
-    public ResponseEntity<UserDTO> registerUser(@RequestBody UserDTO userDTO) {
-        return ResponseEntity.ok(userService.register(userDTO));
-    }
-
-    // BUILD A LOGIN REST API
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserDTO userDTO) {
-        boolean isAuthenticated = userService.authenticate(userDTO.getUserName(), userDTO.getPassword());
-
-        if (isAuthenticated) {
-            return ResponseEntity.ok("Login successful!");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password.");
-        }
-    }
-
-//    @PostMapping("/login")
-//    public ResponseEntity<String> login(@RequestParam String userName, @RequestParam String password) {
-//        boolean isAuthenticated = userService.authenticate(userName, password);
-//
-//        if (isAuthenticated) {
-//            return ResponseEntity.ok("Login successful!");
-//        } else {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password.");
-//        }
-//    }
 
     // BUILD AN UPDATE USER REST API
     @PutMapping("/{userId}")
@@ -74,8 +44,14 @@ public class UserController {
 
     // BUILD A DELETE USER REST API
     @DeleteMapping("/{userId}")
-    public ResponseEntity<String> deleteBudget(@PathVariable Long userId) {
+    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
+        return ResponseEntity.ok("User has been deleted successfully.");
+    }
+
+    @DeleteMapping("/remove/{userId}")
+    public ResponseEntity<String> removeUser(@PathVariable Long userId) {
+        userService.removeUser(userId);
         return ResponseEntity.ok("User has been deleted successfully.");
     }
 
@@ -89,6 +65,10 @@ public class UserController {
         return ResponseEntity.ok("User has been restored successfully.");
     }
 
+    @GetMapping("/profile")
+    public ResponseEntity<?> getUserProfile(Authentication authentication) {
+        return userService.getUserProfile(authentication);
+    }
 
 
     // Restore later    ++++++++++++++++++++++++++++++++++

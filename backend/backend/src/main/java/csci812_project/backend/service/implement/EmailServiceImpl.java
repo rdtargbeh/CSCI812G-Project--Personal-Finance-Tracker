@@ -1,116 +1,77 @@
 package csci812_project.backend.service.implement;
 
+import com.sendgrid.helpers.mail.Mail;
+import com.sendgrid.helpers.mail.objects.Content;
+import com.sendgrid.helpers.mail.objects.Email;
 import csci812_project.backend.entity.User;
 import csci812_project.backend.repository.UserRepository;
 import csci812_project.backend.service.EmailService;
-import lombok.RequiredArgsConstructor;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import com.sendgrid.*;
+import java.io.IOException;
 import java.math.BigDecimal;
 
 @Service
 public class EmailServiceImpl implements EmailService {
 
-    @Autowired
-    private JavaMailSender mailSender;
+    @Value("${sendgrid.api.key}")
+    private String sendGridApiKey;
+
+    @Value("${sendgrid.sender.email}")
+    private String senderEmail;
+
+
     @Autowired
     private UserRepository userRepository;
 
 
     @Override
-    public void sendBudgetAlert(String email, String categoryName, BigDecimal budgetLimit) {
+    public void sendEmail(String to, String subject, String body) {
+        System.out.println("📩 Attempting to send email to: " + to); // ✅ Log recipient email
+        System.out.println("📤 Sending from: " + senderEmail); // ✅ Log sender email
+
+        Email from = new Email(senderEmail);
+        Email toEmail = new Email(to);
+        Content content = new Content("text/html", body);
+        Mail mail = new Mail(from, subject, toEmail, content);
+
+        SendGrid sg = new SendGrid(sendGridApiKey);
+        Request request = new Request();
         try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            request.setMethod(Method.POST);
+            request.setEndpoint("mail/send");
+            request.setBody(mail.build());
+            Response response = sg.api(request);
 
-            helper.setTo(email);
-            helper.setSubject("⚠️ Budget Alert: You're close to exceeding your limit!");
-            helper.setText("Dear user, <br><br>"
-                    + "You have spent nearly all of your budget for **" + categoryName + "**. <br>"
-                    + "Your limit is: **$" + budgetLimit + "**. <br>"
-                    + "Please manage your expenses wisely! <br><br>"
-                    + "Regards, <br>Finance Tracker Team", true);
-
-            mailSender.send(message);
-        } catch (MessagingException e) {
-            throw new RuntimeException("Failed to send email alert: " + e.getMessage());
+            if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
+                System.out.println("✅ Email sent successfully to: " + to);
+            } else {
+                System.err.println("🚨 Email failed: " + response.getStatusCode() + " - " + response.getBody());
+            }
+        } catch (IOException e) {
+            System.err.println("🚨 Error sending email: " + e.getMessage());
         }
     }
 
-    /**
-     * ✅ Sends a loan payment reminder email
-     */
-    @Override
-    public void sendLoanReminder(String toEmail, String loanName, String dueDate, BigDecimal amountDue) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-            helper.setTo(toEmail);
-            helper.setSubject("Loan Payment Reminder - " + loanName);
-            helper.setText(
-                    "Hello,\n\n" +
-                            "This is a friendly reminder that your loan payment for **" + loanName + "** is due on **" + dueDate + "**.\n" +
-                            "The amount due is: **$" + amountDue + "**.\n\n" +
-                            "Please ensure timely payment to avoid late fees.\n\n" +
-                            "Best regards,\nYour Personal Finance Tracker", true
-            );
-
-            mailSender.send(message);
-            System.out.println("✅ Loan Reminder Sent to: " + toEmail);
-        } catch (MessagingException e) {
-            throw new RuntimeException("❌ Error sending loan reminder email: " + e.getMessage());
-        }
-    }
-
-    /** ✅ Send savings goal progress reminder */
-    @Override
-    public void sendSavingsGoalReminder(Long userId, String goalName, BigDecimal progress) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        String subject = "🚀 Savings Goal Update: " + goalName;
-        String message = "Dear " + user.getFirstName() + ",\n\n"
-                + "Your savings goal **" + goalName + "** is now **" + progress + "% complete**! 🎉\n"
-                + "Keep up the great work and reach your goal soon!\n\n"
-                + "Best,\nYour Personal Finance Tracker";
-
-        sendEmail(user.getEmail(), subject, message);
-    }
-
-    /** ✅ Helper method to send email */
-    private void sendEmail(String to, String subject, String text) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(text);
-            mailSender.send(message);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to send email: " + e.getMessage());
-        }
-    }
-
-    /** ✅ Send savings contribution confirmation */
     @Override
     public void sendSavingsContributionEmail(Long userId, String goalName, BigDecimal contributionAmount) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("🚨 User not found"));
 
         String subject = "✅ Auto-Savings Contribution Completed";
-        String message = "Dear " + user.getFirstName() + ",\n\n"
-                + "A contribution of **$" + contributionAmount + "** has been successfully added to your savings goal **" + goalName + "**. 🎯\n"
-                + "Keep saving and reach your goal!\n\n"
-                + "Best,\nYour Personal Finance Tracker";
+        String body = "<p>Dear " + user.getFirstName() + ",</p>"
+                + "<p>A contribution of <strong>$" + contributionAmount + "</strong> has been successfully added to your savings goal <strong>" + goalName + "</strong>. 🎯</p>"
+                + "<p>Keep saving and reach your goal!</p>"
+                + "<p>Best regards,<br><strong>Your Personal Finance Tracker</strong></p>";
 
-        sendEmail(user.getEmail(), subject, message);
+        sendEmail(user.getEmail(), subject, body);
     }
 
+    @Override
+    public void send(String to, String subject, String body) {
+        sendEmail(to, subject, body);
+    }
 }

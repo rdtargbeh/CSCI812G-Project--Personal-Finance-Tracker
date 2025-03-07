@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
@@ -27,6 +28,9 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
      * ✅ Fetch all budgets for a user within a given date range
      */
     List<Budget> findByUser_UserIdAndStartDateBetween(Long userId, LocalDate startDate, LocalDate endDate);
+
+    @Query("SELECT b FROM Budget b WHERE b.user.userId = :userId ORDER BY b.dateCreated DESC LIMIT 1")
+    Optional<Budget> findLatestBudgetByUser(Long userId);
 
     /** Find active budgets (not deleted) */
     List<Budget> findByIsDeletedFalse();

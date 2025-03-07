@@ -18,6 +18,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Page<User> findByIsDeletedFalse(Pageable pageable); // ✅ Fetch only non-deleted users
 
+    Optional<User> findByUserNameOrEmail(String username, String email);
+
+    Optional<User> findByVerificationToken(String verificationToken); // ✅ Add this method
+
     /** Check if a username already exists */
     boolean existsByUserName(String userName);
 
@@ -25,7 +29,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email);
 
-    Optional<User> findByUserNameOrEmail(String username, String email);
 
 }
 

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SavingsGoalRepository extends JpaRepository<SavingsGoal, Long> {
@@ -24,5 +25,8 @@ public interface SavingsGoalRepository extends JpaRepository<SavingsGoal, Long> 
 
     @Query("SELECT COALESCE(SUM(s.currentAmount), 0) FROM SavingsGoal s WHERE s.user.userId = :userId")
     BigDecimal getTotalSavingsByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT s FROM SavingsGoal s WHERE s.user.userId = :userId ORDER BY s.dateCreated DESC LIMIT 1")
+    Optional<SavingsGoal> findLatestSavingsGoalByUser(Long userId);
 }
 

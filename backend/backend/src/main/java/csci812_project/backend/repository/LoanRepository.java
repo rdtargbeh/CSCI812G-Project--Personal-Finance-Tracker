@@ -28,20 +28,23 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
     @Query("SELECT COALESCE(SUM(l.outstandingBalance), 0) FROM Loan l WHERE l.user.userId = :userId")
     BigDecimal getOutstandingLoanBalanceByUserId(@Param("userId") Long userId);
 
+    // ✅ Use FUNCTION('DATE_ADD', ...) for MySQL
+    @Query(value = "SELECT * FROM loans l WHERE l.due_date <= DATE_ADD(CURDATE(), INTERVAL 3 DAY)", nativeQuery = true)
+    List<Loan> findLoansDueSoon();
 
 
     // ✅ Find loans by status (ACTIVE, PAID_OFF, DEFAULTED)
     List<Loan> findByStatus(LoanStatus status);
 
-    // ✅ Count the number of loans a user has
-    long countByUser_UserId(Long userId);
-
-    // ✅ Sum all outstanding balances for a user's loans
-    @Query("SELECT COALESCE(SUM(l.outstandingBalance), 0) FROM Loan l WHERE l.user.userId = :userId")
-    Optional<BigDecimal> getTotalDebtByUser(@Param("userId") Long userId);
-
-    // ✅ Sum of all loan amounts borrowed by user
-    @Query("SELECT COALESCE(SUM(l.amountBorrowed), 0) FROM Loan l WHERE l.user.userId = :userId")
-    Optional<BigDecimal> getTotalLoanBorrowedByUser(@Param("userId") Long userId);
+//    // ✅ Count the number of loans a user has
+//    long countByUser_UserId(Long userId);
+//
+//    // ✅ Sum all outstanding balances for a user's loans
+//    @Query("SELECT COALESCE(SUM(l.outstandingBalance), 0) FROM Loan l WHERE l.user.userId = :userId")
+//    Optional<BigDecimal> getTotalDebtByUser(@Param("userId") Long userId);
+//
+//    // ✅ Sum of all loan amounts borrowed by user
+//    @Query("SELECT COALESCE(SUM(l.amountBorrowed), 0) FROM Loan l WHERE l.user.userId = :userId")
+//    Optional<BigDecimal> getTotalLoanBorrowedByUser(@Param("userId") Long userId);
 
 }

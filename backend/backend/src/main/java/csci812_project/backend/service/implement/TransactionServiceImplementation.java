@@ -53,6 +53,8 @@ public class TransactionServiceImplementation implements TransactionService {
     private EmailService emailService;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private  ScheduledEmailService scheduledEmailService;
 
     @Override
     public TransactionDTO deposit(Long userId, Long accountId, TransactionDTO transactionDTO) {
@@ -258,7 +260,7 @@ public class TransactionServiceImplementation implements TransactionService {
 
         if (isBudgetExceeded) {
             try {
-                emailService.sendBudgetAlert(user.getEmail(), category.getName(), transaction.getAmount());
+                scheduledEmailService.sendBudgetAlerts();
                 System.out.println("⚠️ ALERT: Budget limit warning email sent to " + user.getEmail());
             } catch (Exception e) {
                 System.err.println("⚠️ ERROR: Failed to send budget alert email: " + e.getMessage());
@@ -346,7 +348,7 @@ public class TransactionServiceImplementation implements TransactionService {
 
         if (isBudgetExceeded) {
             // ✅ Send budget alert email
-            emailService.sendBudgetAlert(user.getEmail(), category.getName(), transaction.getAmount());
+            scheduledEmailService.sendBudgetAlerts();
             System.out.println("⚠️ ALERT: Budget limit warning email sent to " + user.getEmail());
         }
 

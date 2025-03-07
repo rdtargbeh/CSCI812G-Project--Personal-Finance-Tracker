@@ -6,6 +6,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -110,6 +113,14 @@ public class User {
     @Column(name = "last_login")
     private LocalDateTime lastLogin = LocalDateTime.now();
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",  // ✅ Join table to handle M:N relation
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
+
     /**
      * Timestamp for when the user was created.
      * Automatically set when a new record is inserted.
@@ -124,6 +135,10 @@ public class User {
     @Column(name = "date_updated")
     private LocalDateTime dateUpdated = LocalDateTime.now();
 
+    // Store verification token
+    @Column(name = "verification_token")
+    private String verificationToken;
+
     /**
      * Lifecycle hook to update the timestamp before updating.
      */
@@ -132,13 +147,23 @@ public class User {
         this.dateUpdated = LocalDateTime.now();
     }
 
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", email='" + email + '\'' +
+                '}';
+    }
+
+
     // Constructor
     public User(){}
 
     public User(Long userId, String userName, String email, String password, String firstName, String lastName, String phoneNumber,
                 String address, String currency, String timezone, String profilePicture, String notificationPreferences,
                 String preferredLanguage, boolean isDeleted, boolean isVerified, LocalDateTime lastLogin, LocalDateTime dateCreated,
-                LocalDateTime dateUpdated) {
+                LocalDateTime dateUpdated, Set<Role> roles, String verificationToken) {
         this.userId = userId;
         this.userName = userName;
         this.email = email;
@@ -154,9 +179,11 @@ public class User {
         this.preferredLanguage = preferredLanguage;
         this.isDeleted = isDeleted;
         this.isVerified = isVerified;
+        this.roles = roles;
         this.lastLogin = lastLogin;
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
+        this.verificationToken = verificationToken;
     }
     // Getter and Setter
 
@@ -214,6 +241,14 @@ public class User {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     public String getAddress() {
@@ -302,5 +337,13 @@ public class User {
 
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
+    }
+
+    public String getVerificationToken() {
+        return verificationToken;
+    }
+
+    public void setVerificationToken(String verificationToken) {
+        this.verificationToken = verificationToken;
     }
 }

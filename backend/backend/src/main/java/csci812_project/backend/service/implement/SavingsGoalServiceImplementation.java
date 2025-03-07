@@ -37,6 +37,8 @@ public class SavingsGoalServiceImplementation implements SavingsGoalService {
     private AccountRepository accountRepository;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private  ScheduledEmailService scheduledEmailService;
 
 
     /** ✅ Create a new savings goal */
@@ -98,22 +100,6 @@ public class SavingsGoalServiceImplementation implements SavingsGoalService {
         return savingsGoalMapper.toDTO(savingsGoalRepository.save(savingsGoal));
     }
 
-//    @Override
-//    @Transactional
-//    public SavingsGoalDTO updateSavingsGoal(Long id, SavingsGoalDTO savingsGoalDTO) {
-//        SavingsGoal savingsGoal = savingsGoalRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("Savings goal not found"));
-//
-//        savingsGoal.setGoalName(savingsGoalDTO.getGoalName());
-//        savingsGoal.setTargetAmount(savingsGoalDTO.getTargetAmount());
-//        savingsGoal.setDeadline(savingsGoalDTO.getDeadline());
-//        savingsGoal.setAutoSave(savingsGoalDTO.isAutoSave());
-//        savingsGoal.setPriorityLevel(PriorityLevel.valueOf(savingsGoalDTO.getPriorityLevel()));
-//        savingsGoal.setContributionFrequency(ContributionFrequency.valueOf(savingsGoalDTO.getContributionFrequency()));
-//        savingsGoal.setDateUpdated(LocalDate.from(LocalDateTime.now()));
-//
-//        return savingsGoalMapper.toDTO(savingsGoalRepository.save(savingsGoal));
-//    }
 
     /** ✅ Delete a savings goal */
     @Override
@@ -195,7 +181,7 @@ public class SavingsGoalServiceImplementation implements SavingsGoalService {
             BigDecimal progress = goal.getCurrentAmount().divide(goal.getTargetAmount(), 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
 
             if (progress.compareTo(BigDecimal.valueOf(80)) >= 0) {
-                emailService.sendSavingsGoalReminder(goal.getUser().getUserId(), goal.getGoalName(), progress);
+                scheduledEmailService.sendSavingsGoalReminders();
             }
         }
     }

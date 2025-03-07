@@ -25,6 +25,7 @@ public class UserDTO {
     private LocalDateTime lastLogin;
     private LocalDateTime dateCreated;
     private LocalDateTime dateUpdated;
+//    private String verificationToken;
 
 
     // Constructor
@@ -33,7 +34,7 @@ public class UserDTO {
     public UserDTO(Long userId, String userName, String email, String password, String firstName, String lastName, String phoneNumber,
                    String address, String currency, String timezone, String profilePicture, String notificationPreferences,
                    String preferredLanguage, boolean isDeleted, boolean isVerified, LocalDateTime lastLogin, LocalDateTime dateCreated,
-                   LocalDateTime dateUpdated) {
+                   LocalDateTime dateUpdated, String verificationToken) {
         this.userId = userId;
         this.userName = userName;
         this.email = email;
@@ -52,6 +53,7 @@ public class UserDTO {
         this.lastLogin = lastLogin;
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
+//        this.verificationToken = verificationToken;
     }
 
     // ✅ Overloaded Constructor (Matches the 4 parameters)
@@ -206,5 +208,13 @@ public class UserDTO {
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
+
+//    public String getVerificationToken() {
+//        return verificationToken;
+//    }
+//
+//    public void setVerificationToken(String verificationToken) {
+//        this.verificationToken = verificationToken;
+//    }
 }
 

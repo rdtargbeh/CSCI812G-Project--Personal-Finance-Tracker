@@ -60,6 +60,7 @@ public class UserMapper {
         user.setDeleted(userDTO.isDeleted());
         user.setVerified(userDTO.isVerified());
         user.setDateCreated(userDTO.getDateCreated());
+//        user.setVerificationToken(userDTO.getVerificationToken());
         user.setDateUpdated(userDTO.getDateUpdated());
         return user;
     }
