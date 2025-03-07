@@ -17,6 +17,9 @@
   overflow-y: auto;
   position: fixed;
   height: 100vh;
+  left: 0;
+  top: 0;
+  bottom: 0;
 }
 
 /* Sidebar User Profile */
@@ -41,14 +44,22 @@
   margin: 15px 0;
 }
 
-.sidebar nav ul li a {
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  display: block;
+  padding: 10px;
+}
+
+/* .sidebar nav ul li a {
   color: white;
   text-decoration: none;
   padding: 10px;
   font-size: 16px;
   display: block;
   transition: background 0.3s;
-}
+} */
 
 .sidebar nav ul li a:hover {
   background: #555;
@@ -57,44 +68,53 @@
 
 /* Main Content */
 .main-content {
-  margin-left: 300px;
+  margin-left: 250px;
   flex-grow: 1;
   /* display: flex; */
   padding: 20px;
   /* flex-direction: column; */
   background: #f9f9f9;
+  width: calc(100% - 250px);
 }
 
+/* Top Bar */
 .top-bar {
   background: white;
-  padding: 15px;
+  padding: 10px;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid #ddd;
 }
 
+/* Stats Section */
 .stats {
   display: flex;
-  gap: 20px;
+  justify-content: space-around;
+  width: 100%;
 }
 
-.stat-item h4 {
-  background-color: #ddd;
+.stat-items {
+  background: white;
   padding: 10px;
-  margin: 0;
-  font-size: 14px;
-  color: gray;
   border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   text-align: center;
+  width: 150px;
+  margin: 0;
 }
 
-.stat-item p {
+.stat-items h4 {
+  /* background-color: #ddd; */
+  font-size: 16px;
+  color: gray;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* .stat-item p {
   font-size: 18px;
   font-weight: bold;
   margin: 0;
-}
+} */
 
 /* Content Section */
 .content {
@@ -105,20 +125,21 @@
 /* Bottom Section */
 .bottom-section {
   display: flex;
-  gap: 20px;
+  /* gap: 20px; */
   margin-top: 20px;
-  /* justify-content: space-between; */
+  justify-content: space-between;
   background: white;
-  padding: 20px;
-  box-shadow: 0px -4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  box-shadow: 0px -4px 6px rgba(0, 0, 0, 0.75);
 }
 
 .recent-transactions,
 .quick-reports {
   flex: 1;
-  background-color: #ddd;
+  background-color: rgb(249, 168, 36);
   width: 48%;
   padding: 15px;
+  border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -129,4 +150,8 @@
 
 .recent-transactions li {
   margin: 5px 0;
+}
+
+h2 {
+  text-align: center;
 }

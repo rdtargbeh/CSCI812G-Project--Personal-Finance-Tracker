@@ -1,17 +1,29 @@
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import "../styles/dashboard.css";
+import "../styles/global.css";
 
 const DashboardLayout = () => {
+  const navigate = useNavigate();
+
+  // Logout
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Remove JWT token
+    localStorage.removeItem("role"); // Remove stored role
+    navigate("/login"); // Redirect to login page
+  };
+
   return (
     <div className="dashboard-container">
+      <h2>Finance Tracker</h2>
       {/* Sidebar */}
       <aside className="sidebar">
-        <h2>Finance Tracker</h2>
         <div className="user-profile">
           <img src="/profile-placeholder.png" alt="User Profile" />
           <h3>Ronald D Targbeh</h3>
           <p>rdtargbeh@gmail.com</p>
         </div>
+
+        {/* Sidebar Navigation */}
         <nav>
           <ul>
             <li>
@@ -40,6 +52,11 @@ const DashboardLayout = () => {
             </li>
           </ul>
         </nav>
+
+        {/* ✅ Logout Button - Added at the Bottom */}
+        <button className="logout-btn" onClick={handleLogout}>
+          Logout
+        </button>
       </aside>
 
       {/* Main Content */}
