@@ -155,3 +155,121 @@
 h2 {
   text-align: center;
 }
+
+/* Logout Button */
+.logout-btn {
+  width: 100%; /* ✅ Full width */
+  background: #d9534f; /* ✅ Red logout button */
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.logout-btn:hover {
+  background: #c9302c; /* ✅ Darker red on hover */
+}
+
+/*  USER PROFILE ++++++++++++++++++++++++++ */
+
+/* ✅ Profile Picture & Name */
+.user-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+/* Profile Icon */
+.profile-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.3s;
+  border: 2px solid #fff;
+}
+
+.profile-name {
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  margin-top: 5px;
+}
+
+.profile-names {
+  font-size: 16px;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.profile-icon:hover {
+  transform: scale(1.1);
+}
+
+/* ✅ Profile Overlay Below Profile Picture */
+.profile-overlay {
+  background: white;
+  color: black;
+  border-radius: 8px;
+  padding: 15px;
+  position: absolute;
+  top: 120px; /* Push overlay below profile picture */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 230px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.profile-info.info {
+  font-size: 16px;
+}
+.profile-info span {
+  margin-right: 8px;
+}
+
+/* Edit Profile Button */
+.edit-profile-btn {
+  width: 100%;
+  padding: 8px;
+  background: #008cba;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.edit-profile-btn:hover {
+  background: #0077a3;
+}
+
+/* Logout button styling */
+.logout-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 10px;
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background-color: #c9302c;
+}

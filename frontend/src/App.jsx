@@ -13,6 +13,7 @@ import Accounts from "./pages/accounts";
 import Savings from "./pages/savings";
 import Investments from "./pages/investments";
 import Reports from "./pages/reports";
+import Profile from "./pages/profile";
 import Subscriptions from "./pages/subscriptions";
 import ProtectedRoute from "./routes/ProtectedRoute"; // ✅ Import Protected Route
 
@@ -30,8 +31,9 @@ const App = () => {
         {/* Protected Dashboard Routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route path="profile" element={<Profile />} />
+            <Route path="/dashboard/profile" element={<Profile />} />
             <Route index element={<Dashboard />} />
-
             <Route path="transactions" element={<Transactions />} />
             <Route path="loans" element={<Loans />} />
             <Route path="accounts" element={<Accounts />} />

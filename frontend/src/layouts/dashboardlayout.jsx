@@ -1,27 +1,81 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import axiosInstance from "../service/axiosInstance";
 import "../styles/dashboard.css";
-import "../styles/global.css";
+// import "../styles/global.css";
 
 const DashboardLayout = () => {
   const navigate = useNavigate();
+  const [showProfile, setShowProfile] = useState(false); // ✅ Toggle Profile Visibility
+  const [user, setUser] = useState(null); // ✅ Store user data
 
-  // Logout
+  // ✅ Fetch User Profile Data
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        console.log("Fetching user profile...");
+        const response = await axiosInstance.get("/users/profile"); // ✅ API call with JWT
+        console.log("User Data Received:", response.data);
+        setUser(response.data); // ✅ Store user data in state
+      } catch (error) {
+        console.error(
+          "❌ Error fetching user profile:",
+          error.response?.data || error.message
+        );
+      }
+    };
+    fetchUserProfile();
+  }, []);
+
+  // ✅ Logout function
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Remove JWT token
-    localStorage.removeItem("role"); // Remove stored role
-    navigate("/login"); // Redirect to login page
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    navigate("/login");
   };
 
   return (
     <div className="dashboard-container">
-      <h2>Finance Tracker</h2>
       {/* Sidebar */}
       <aside className="sidebar">
+        <h2>Finance Tracker</h2>
+
+        {/* User Profile Section */}
         <div className="user-profile">
-          <img src="/profile-placeholder.png" alt="User Profile" />
-          <h3>Ronald D Targbeh</h3>
-          <p>rdtargbeh@gmail.com</p>
+          {/* ✅ Profile Picture */}
+          <img
+            src={user?.profilePicture || "/img/user-1.png"}
+            alt="User Profile"
+            className="profile-icon"
+            onClick={() => setShowProfile(!showProfile)} // Toggle profile details
+          />
+
+          {/* ✅ Show Name/Username Below Profile Picture */}
+          <h4 className="profile-name">
+            {user?.firstName} {user?.lastName || user?.userName}
+          </h4>
         </div>
+
+        {/* ✅ Profile Details (Below Profile Picture) */}
+        {showProfile && user && (
+          <div className="profile-overlay">
+            <p className="profile-names">
+              {user.firstName} {user.lastName}
+            </p>
+            <p className="profile-info info">
+              <span>📧</span> {user.email}
+            </p>
+            <p className="profile-info">
+              <span>📞</span> {user.phoneNumber || "No phone number"}
+            </p>
+            <p className="profile-info info">
+              <span>🏠</span> {user.address || "No address"}
+            </p>
+            <NavLink to="/dashboard/profile">
+              <button className="edit-profile-btn">Edit Profile</button>
+            </NavLink>
+          </div>
+        )}
 
         {/* Sidebar Navigation */}
         <nav>
@@ -53,7 +107,7 @@ const DashboardLayout = () => {
           </ul>
         </nav>
 
-        {/* ✅ Logout Button - Added at the Bottom */}
+        {/* ✅ Logout Button at Bottom */}
         <button className="logout-btn" onClick={handleLogout}>
           Logout
         </button>
@@ -83,7 +137,7 @@ const DashboardLayout = () => {
           <Outlet />
         </section>
 
-        {/* Bottom section */}
+        {/* Bottom Section */}
         <footer className="bottom-section">
           <div className="recent-transactions">
             <h3>Recent Transactions</h3>

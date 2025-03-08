@@ -31,12 +31,12 @@ const Dashboard = () => {
     fetchUserData();
   }, []);
 
-  //  Logout function  ++++++++++++++
-  const handleLogout = () => {
-    localStorage.removeItem("token"); // Remove JWT token
-    localStorage.removeItem("role"); // Remove store role
-    navigate("/login"); // ✅ Redirect to login page
-  };
+  // //  Logout function  ++++++++++++++
+  // const handleLogout = () => {
+  //   localStorage.removeItem("token"); // Remove JWT token
+  //   localStorage.removeItem("role"); // Remove store role
+  //   navigate("/login"); // ✅ Redirect to login page
+  // };
 
   return (
     <div>
@@ -51,10 +51,10 @@ const Dashboard = () => {
           <h3>Hello, {userData?.username}!</h3>
           <p>Email: {userData?.email}</p>
           <p>Role: {userData.roles && userData.roles.join(", ")}</p>
-          <button onClick={handleLogout} className="logout-btn">
+          {/* <button onClick={handleLogout} className="logout-btn">
             Logout
           </button>{" "}
-          {/* ✅ Logout Button */}
+          ✅ Logout Button */}
         </div>
       )}
       ;
