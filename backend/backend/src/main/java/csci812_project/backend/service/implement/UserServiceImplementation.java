@@ -11,6 +11,7 @@ import csci812_project.backend.repository.UserRepository;
 import csci812_project.backend.security.JwtTokenProvider;
 import csci812_project.backend.service.EmailService;
 import csci812_project.backend.service.UserService;
+import csci812_project.backend.utility.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,10 +25,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -48,6 +51,9 @@ public class UserServiceImplementation implements UserService {
     private JwtTokenProvider jwtTokenProvider;
     @Autowired
     EmailService emailService;
+    @Autowired
+    private FileStorageService fileStorageService; // ✅ Service for storing files
+
 
 
 
@@ -71,13 +77,12 @@ public class UserServiceImplementation implements UserService {
 
         user.setVerificationToken(UUID.randomUUID().toString()); // ✅ Generate unique token
         user.setDeleted(false);
-        user.setVerified(false);
+        user.setVerified(true);
         user.setLastLogin(LocalDateTime.now());
         user.setDateCreated(LocalDateTime.now());
         user.setDateUpdated(LocalDateTime.now());
 
         user = userRepository.save(user);
-
         try {
             sendVerificationEmail(user); // ✅ Send email
             System.out.println("Verification email sent successfully!");
@@ -85,7 +90,6 @@ public class UserServiceImplementation implements UserService {
             System.err.println("Error sending verification email: " + e.getMessage()); // 🚨 Log email error
         }
 //        sendVerificationEmail(user); // ✅ Send email
-
         // ✅ Use the correct constructor to match the return statement
         return new UserDTO(user.getUserId(), user.getUserName(), user.getEmail(), user.getCurrency());
     }
@@ -94,7 +98,6 @@ public class UserServiceImplementation implements UserService {
     public void sendVerificationEmail(User user) {
         String verificationLink = "http://localhost:8080/api/auth/verify?token=" + user.getVerificationToken();
         String emailBody = "Click the link to verify your account: " + verificationLink;
-
         try {
             emailService.sendEmail(user.getEmail(), "Verify Your Account", emailBody); // ✅ Send email
             System.out.println("✅ Verification email sent to: " + user.getEmail());
@@ -103,29 +106,42 @@ public class UserServiceImplementation implements UserService {
         }
     }
 
-//    public void sendVerificationEmail(User user) {
-//        String verificationLink = "http://localhost:8080/api/auth/verify?token=" + user.getVerificationToken();
-//        String emailBody = "Click the link to verify your account: " + verificationLink;
-//
-//        emailService.send(user.getEmail(), "Verify Your Account", emailBody); // ✅ Send email
-//    }
-
-
     // Simple login authentication (replace later)
-    public String authenticate(String username, String password, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User Not Found" + userId));
+    @Override
+    public String authenticate(String username, String password) {
+        User user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new NotFoundException("User Not Found: " + username));
 
-        // ✅ Use Spring Security's authentication system
+        // ❌ Prevent deleted users from logging in
+        if (user.isDeleted()) {
+            throw new RuntimeException("Your account has been deleted. Contact support for help.");
+        }
+        // ✅ Authenticate with Spring Security
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
         );
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        // ✅ Generate JWT token upon successful authentication
+        // ✅ Generate JWT Token
         return jwtTokenProvider.generateToken(username);
     }
+
+
+//    public String authenticate(String username, String password, Long userId) {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new NotFoundException("User Not Found" + userId));
+//
+//        // ❌ Prevent deleted users from logging in
+//        if (user.isDeleted()) {
+//            throw new RuntimeException("Your account has been deleted. Contact support for help.");
+//        }
+//        // ✅ Use Spring Security's authentication system
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(username, password)
+//        );
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//        // ✅ Generate JWT token upon successful authentication
+//        return jwtTokenProvider.generateToken(username);
+//    }
 
 
     @Override
@@ -175,23 +191,21 @@ public class UserServiceImplementation implements UserService {
                 .map(userMapper::toDTO); // Convert each User entity to UserDTO
     }
 
-    // METHOD TO DELETE USER BUT STILL SAVE IN DATABASE USING IS_DELETE
+    // PERMANENTLY DELETE USER FROM DATABASE
     @Override
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-
-        // Soft Delete
-        user.setDeleted(true); // ✅ Mark as deleted
-        userRepository.save(user);
-
+        userRepository.deleteById(userId); // ❌ PERMANENTLY deletes the user
     }
 
-    // PERMANENTLY DELETE USER FROM DATABASE
+    // METHOD TO DELETE USER BUT STILL SAVE IN DATABASE USING IS_DELETE
     public void removeUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        userRepository.deleteById(userId); // ❌ PERMANENTLY deletes the user
+        // Soft Delete
+        user.setDeleted(true); // ✅ Mark as deleted
+        userRepository.save(user);
     }
 
 
@@ -199,7 +213,6 @@ public class UserServiceImplementation implements UserService {
     public void restoreDeletedUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-
         user.setDeleted(false);
         userRepository.save(user);
     }
@@ -211,36 +224,71 @@ public class UserServiceImplementation implements UserService {
     public void assignRoleToUser(Long userId, RoleType roleName) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-
         Role role = roleRepository.findByRoleName(roleName)
                 .orElseThrow(() -> new NotFoundException("Role not found"));
-
         user.getRoles().add(role);
         userRepository.save(user);
     }
 
-    @Override
-    public ResponseEntity<?> getUserProfile(Authentication authentication) {
-        if (authentication == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
-        }
 
-        // ✅ Get logged-in user's username from JWT
-        String username = authentication.getName();
-        System.out.println("🔍 Authenticated User: " + username);
+    /**
+     * ✅ Get user profile by authenticated user (Ensures only the logged-in user accesses their profile)
+     */
+    public UserDTO getUserProfile(Authentication authentication) {
+        String username = authentication.getName(); // Get username from JWT token
 
-        // ✅ Fetch user details
         User user = userRepository.findByUserName(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+                .orElseThrow(() -> new NotFoundException("User not found: " + username));
+        UserDTO userDTO = userMapper.toDTO(user); // Convert user entity to DTO
+        // ✅ Ensure profile picture is never null
+        if (userDTO.getProfilePicture() == null || userDTO.getProfilePicture().isEmpty()) {
+            userDTO.setProfilePicture("http://localhost:8080/uploads/default-profile.png");
+        }
+        return userDTO;
+//        return userMapper.toDTO(user); // Convert user entity to DTO
+    }
 
-        // ✅ Create response object
-        Map<String, Object> response = new HashMap<>();
-        response.put("userId", user.getUserId());
-        response.put("username", user.getUserName());
-        response.put("email", user.getEmail());
-        response.put("roles", user.getRoles().stream().map(Role::getRoleName).collect(Collectors.toList()));
+    /**
+     * ✅ Update user profile (Only editable fields can be changed)
+     */
+    public UserDTO updateUserProfile(Authentication authentication, UserDTO userDTO) {
+        String username = authentication.getName(); // Get logged-in username
 
-        return ResponseEntity.ok(response);
+        User user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new NotFoundException("User not found: " + username));
+
+        // ✅ Update only provided fields
+        Optional.ofNullable(userDTO.getFirstName()).ifPresent(user::setFirstName);
+        Optional.ofNullable(userDTO.getLastName()).ifPresent(user::setLastName);
+        Optional.ofNullable(userDTO.getPhoneNumber()).ifPresent(user::setPhoneNumber);
+        Optional.ofNullable(userDTO.getAddress()).ifPresent(user::setAddress);
+        Optional.ofNullable(userDTO.getPreferredLanguage()).ifPresent(user::setPreferredLanguage);
+        Optional.ofNullable(userDTO.getTimezone()).ifPresent(user::setTimezone);
+        Optional.ofNullable(userDTO.getCurrency()).ifPresent(user::setCurrency);
+
+        userRepository.save(user);
+        return userMapper.toDTO(user); // Return updated user data
+    }
+
+    /**
+     * ✅ Upload and update user's profile picture
+     */
+    public String uploadProfilePicture(MultipartFile file, Authentication authentication) {
+        String username = authentication.getName(); // Get logged-in user's username
+
+        User user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new NotFoundException("User not found: " + username));
+        try {
+            // ✅ Store image and get file URL
+            String fileUrl = "http://localhost:8080/uploads/" + fileStorageService.storeFile(file);
+            // ✅ Update user's profile picture URL
+            user.setProfilePicture(fileUrl);
+            userRepository.save(user);
+
+            return fileUrl; // ✅ Return the file URL for frontend display
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to upload image", e);
+        }
     }
 
 }

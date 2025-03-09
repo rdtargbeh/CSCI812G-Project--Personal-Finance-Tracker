@@ -55,8 +55,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()  // ✅ Allow login & registration
-                        .requestMatchers("/api/users/profile").authenticated()  // ✅ Secure `/user/profile`
+                        .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()  // ✅ Allow login & registration
+                        .requestMatchers("/api/users/**").authenticated()  // ✅ Secure `/user/profile`
                         .anyRequest().authenticated() // ✅ Require authentication for everything else
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // ✅ Ensure stateless authentication

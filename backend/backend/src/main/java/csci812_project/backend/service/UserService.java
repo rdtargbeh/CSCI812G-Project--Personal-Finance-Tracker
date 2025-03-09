@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
     /**
@@ -51,12 +52,19 @@ public interface UserService {
      */
     UserDTO register(UserDTO userDTO);
 
-    String authenticate(String username, String password, Long userId);
+    String authenticate(String username, String password);
+
+//    String authenticate(String username, String password, Long userId);
 
     void assignRoleToUser(Long userId, RoleType roleName);
 
     void removeUser(Long userId);
 
-    ResponseEntity<?> getUserProfile(Authentication authentication);
+    UserDTO getUserProfile(Authentication authentication);
+
+    UserDTO updateUserProfile(Authentication authentication, UserDTO userDTO);
+
+
+    String uploadProfilePicture(MultipartFile file, Authentication authentication);
 
 }

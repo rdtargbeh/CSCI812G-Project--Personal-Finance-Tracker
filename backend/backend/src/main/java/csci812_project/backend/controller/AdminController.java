@@ -1,6 +1,7 @@
 package csci812_project.backend.controller;
 
 import csci812_project.backend.dto.RoleAssignmentDTO;
+import csci812_project.backend.dto.UserDTO;
 import csci812_project.backend.entity.Role;
 import csci812_project.backend.entity.User;
 import csci812_project.backend.enums.RoleType;
@@ -20,6 +21,13 @@ public class AdminController {
     @Autowired
     private UserService userService;
 
+
+//    @PostMapping("/register")
+//    public ResponseEntity<UserDTO> registerUser(@RequestBody UserDTO userDTO) {
+//        System.out.println("Received registration request for: " + userDTO.getUserName()); // ✅ Log request
+//        UserDTO registeredUser = userService.register(userDTO);
+//        return ResponseEntity.ok(registeredUser);
+//    }
     @PutMapping("/assign-role")
     public ResponseEntity<String> assignRole(@RequestBody RoleAssignmentDTO request) {
         userService.assignRoleToUser(request.getUserId(), request.getRole());

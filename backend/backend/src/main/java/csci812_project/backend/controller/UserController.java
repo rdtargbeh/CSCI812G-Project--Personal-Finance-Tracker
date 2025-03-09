@@ -5,9 +5,15 @@ import csci812_project.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -16,6 +22,13 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+
+    @PostMapping("/register")
+    public ResponseEntity<UserDTO> registerUser(@RequestBody UserDTO userDTO) {
+        System.out.println("Received registration request for: " + userDTO.getUserName()); // ✅ Log request
+        UserDTO registeredUser = userService.register(userDTO);
+        return ResponseEntity.ok(registeredUser);
+    }
 
     // BUILD AN UPDATE USER REST API
     @PutMapping("/{userId}")
@@ -42,13 +55,15 @@ public class UserController {
         return userService.getAllUsers(PageRequest.of(page, size));
     }
 
-    // BUILD A DELETE USER REST API
+
+    // BUILD REST API THAT DELETE USER PERMANENTLY
     @DeleteMapping("/{userId}")
     public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
         return ResponseEntity.ok("User has been deleted successfully.");
     }
 
+    // BUILD A SOFT DELETE USER REST API
     @DeleteMapping("/remove/{userId}")
     public ResponseEntity<String> removeUser(@PathVariable Long userId) {
         userService.removeUser(userId);
@@ -65,24 +80,33 @@ public class UserController {
         return ResponseEntity.ok("User has been restored successfully.");
     }
 
+
+    /**
+     * ✅ Get the logged-in user's profile
+     */
     @GetMapping("/profile")
-    public ResponseEntity<?> getUserProfile(Authentication authentication) {
-        return userService.getUserProfile(authentication);
+    public ResponseEntity<UserDTO> getUserProfile(Authentication authentication) {
+        UserDTO userDTO = userService.getUserProfile(authentication);
+        return ResponseEntity.ok(userDTO);
     }
 
+    /**
+     * ✅ Update the logged-in user's profile
+     */
+    @PutMapping("/profile")
+    public ResponseEntity<UserDTO> updateUserProfile(@RequestBody UserDTO userDTO, Authentication authentication) {
+        UserDTO updatedUser = userService.updateUserProfile(authentication, userDTO);
+        return ResponseEntity.ok(updatedUser);
+    }
 
-    // Restore later    ++++++++++++++++++++++++++++++++++
-
-
-//    @PostMapping("/login")
-//    public ResponseEntity<UserDTO> login(@RequestParam String username, @RequestParam String password) {
-//        return ResponseEntity.ok(userService.authenticate(username, password));
-//    }
-
-    //    @PostMapping
-//    public UserDTO createUser(@RequestBody UserDTO userDTO) {
-//        return userService.createUser(userDTO);
-//    }
+    /**
+     * ✅ Upload a profile picture
+     */
+    @PostMapping("/upload-profile-picture")
+    public ResponseEntity<?> uploadProfilePicture(@RequestParam("file") MultipartFile file, Authentication authentication) {
+        String fileUrl = userService.uploadProfilePicture(file, authentication);
+        return ResponseEntity.ok().body(Map.of("url", fileUrl));
+    }
 
 }
 
