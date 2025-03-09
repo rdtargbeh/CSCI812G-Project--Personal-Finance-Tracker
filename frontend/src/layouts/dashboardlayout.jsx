@@ -71,7 +71,7 @@ const DashboardLayout = () => {
             <p className="profile-info info">
               <span>🏠</span> {user.address || "No address"}
             </p>
-            <NavLink to="/dashboard/profile">
+            <NavLink to="//profile">
               <button className="edit-profile-btn">Edit Profile</button>
             </NavLink>
           </div>

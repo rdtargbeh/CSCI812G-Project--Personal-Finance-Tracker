@@ -51,10 +51,6 @@ const Dashboard = () => {
           <h3>Hello, {userData?.username}!</h3>
           <p>Email: {userData?.email}</p>
           <p>Role: {userData.roles && userData.roles.join(", ")}</p>
-          {/* <button onClick={handleLogout} className="logout-btn">
-            Logout
-          </button>{" "}
-          ✅ Logout Button */}
         </div>
       )}
       ;

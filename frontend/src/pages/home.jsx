@@ -1,4 +1,8 @@
+import { useState } from "react";
+
 const Home = () => {
+  const [showRegister, setShowRegister] = useState(false);
+
   return (
     <div style={styles.page}>
       <h1>Welcome to your one stop Personal Finance Tracker 💰</h1>;
