@@ -31,29 +31,10 @@ const Dashboard = () => {
     fetchUserData();
   }, []);
 
-  // //  Logout function  ++++++++++++++
-  // const handleLogout = () => {
-  //   localStorage.removeItem("token"); // Remove JWT token
-  //   localStorage.removeItem("role"); // Remove store role
-  //   navigate("/login"); // ✅ Redirect to login page
-  // };
-
   return (
     <div>
       <h2>Welcome to Your Dashboard</h2>
       <p>Here you can see your financial stats.</p>
-      {Loading ? (
-        <p>Loading user data...</p>
-      ) : error ? (
-        <p style={{ color: "red" }}>{error}</p>
-      ) : (
-        <div>
-          <h3>Hello, {userData?.username}!</h3>
-          <p>Email: {userData?.email}</p>
-          <p>Role: {userData.roles && userData.roles.join(", ")}</p>
-        </div>
-      )}
-      ;
     </div>
   );
 };

@@ -1,12 +1,13 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axiosInstance from "../service/axiosInstance";
+import Profile from "../pages/profile"; // ✅ Import Profile component
 import "../styles/dashboard.css";
-// import "../styles/global.css";
 
 const DashboardLayout = () => {
   const navigate = useNavigate();
   const [showProfile, setShowProfile] = useState(false); // ✅ Toggle Profile Visibility
+  const [showEditProfile, setShowEditProfile] = useState(false); // ✅ Control profile modal
   const [user, setUser] = useState(null); // ✅ Store user data
 
   // ✅ Fetch User Profile Data
@@ -34,6 +35,32 @@ const DashboardLayout = () => {
     navigate("/login");
   };
 
+  // USER DELETE ACCOUNT FUNCTION
+  const handleDeleteAccount = async () => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete your account? This action cannot be undone."
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const userId = user.userId; // ✅ Fetch logged-in user's ID
+      await axiosInstance.delete(`/users/remove/${userId}`);
+
+      alert("✅ Your account has been deleted.");
+      localStorage.removeItem("token"); // ✅ Remove JWT token
+      localStorage.removeItem("role");
+      window.location.href = "/login"; // ✅ Redirect to login
+    } catch (error) {
+      console.error(
+        "❌ Error deleting account:",
+        error.response?.data || error.message
+      );
+      alert("❌ Failed to delete account. Please try again.");
+    }
+  };
+
+  //  RETURN  +++++++++++++++++++++++
   return (
     <div className="dashboard-container">
       {/* Sidebar */}
@@ -44,7 +71,7 @@ const DashboardLayout = () => {
         <div className="user-profile">
           {/* ✅ Profile Picture */}
           <img
-            src={user?.profilePicture || "/img/user-1.png"}
+            src={"/img/user-2.png"}
             alt="User Profile"
             className="profile-icon"
             onClick={() => setShowProfile(!showProfile)} // Toggle profile details
@@ -54,28 +81,47 @@ const DashboardLayout = () => {
           <h4 className="profile-name">
             {user?.firstName} {user?.lastName || user?.userName}
           </h4>
-        </div>
 
-        {/* ✅ Profile Details (Below Profile Picture) */}
-        {showProfile && user && (
-          <div className="profile-overlay">
-            <p className="profile-names">
-              {user.firstName} {user.lastName}
-            </p>
-            <p className="profile-info info">
-              <span>📧</span> {user.email}
-            </p>
-            <p className="profile-info">
-              <span>📞</span> {user.phoneNumber || "No phone number"}
-            </p>
-            <p className="profile-info info">
-              <span>🏠</span> {user.address || "No address"}
-            </p>
-            <NavLink to="//profile">
-              <button className="edit-profile-btn">Edit Profile</button>
-            </NavLink>
-          </div>
-        )}
+          {/* ✅ Profile Overlay (Now Stays Fixed) */}
+          {showProfile && user && (
+            <div className="profile-overlay">
+              {/* Close Button (X) */}
+              <button
+                className="close-profile-btn"
+                onClick={() => setShowProfile(false)}
+              >
+                ✖
+              </button>
+              <p className="profile-names">
+                {user.firstName} {user.lastName}
+              </p>
+              <p className="profile-info">
+                <span>📧</span> {user.email}
+              </p>
+              <p className="profile-info">
+                <span>📞</span> {user.phoneNumber || "No phone number"}
+              </p>
+              <p className="profile-info">
+                <span>🏠</span> {user.address || "No address"}
+              </p>
+
+              {/* Edit Profile */}
+              <button
+                className="edit-profile-btn"
+                onClick={() => setShowEditProfile(true)}
+              >
+                Edit Profile
+              </button>
+              {/* Delete Account */}
+              <button
+                className="delete-account-btn"
+                onClick={handleDeleteAccount}
+              >
+                Delete Account
+              </button>
+            </div>
+          )}
+        </div>
 
         {/* Sidebar Navigation */}
         <nav>
@@ -154,6 +200,11 @@ const DashboardLayout = () => {
           </div>
         </footer>
       </main>
+
+      {/* ✅ Edit Profile Modal (Properly Closeable) */}
+      {showEditProfile && (
+        <Profile closeModal={() => setShowEditProfile(false)} />
+      )}
     </div>
   );
 };

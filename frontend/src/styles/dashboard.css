@@ -11,8 +11,8 @@
   width: 250px;
   background: #333;
   color: white;
-  /* display: flex;
-  flex-direction: column; */
+  display: flex;
+  flex-direction: column;
   padding: 20px;
   overflow-y: auto;
   position: fixed;
@@ -20,19 +20,6 @@
   left: 0;
   top: 0;
   bottom: 0;
-}
-
-/* Sidebar User Profile */
-.user-profile {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.user-profile img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  margin-bottom: 10px;
 }
 
 .sidebar nav ul {
@@ -51,15 +38,6 @@
   display: block;
   padding: 10px;
 }
-
-/* .sidebar nav ul li a {
-  color: white;
-  text-decoration: none;
-  padding: 10px;
-  font-size: 16px;
-  display: block;
-  transition: background 0.3s;
-} */
 
 .sidebar nav ul li a:hover {
   background: #555;
@@ -109,12 +87,6 @@
   color: gray;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
-
-/* .stat-item p {
-  font-size: 18px;
-  font-weight: bold;
-  margin: 0;
-} */
 
 /* Content Section */
 .content {
@@ -175,22 +147,32 @@ h2 {
 
 /*  USER PROFILE ++++++++++++++++++++++++++ */
 
+/* Sidebar User Profile */
+
+.user-profile img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
 /* ✅ Profile Picture & Name */
 .user-profile {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 15px;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 /* Profile Icon */
 .profile-icon {
   width: 50px;
   height: 50px;
-  border-radius: 50%;
+  border-radius: 20%;
   cursor: pointer;
   transition: 0.3s;
-  border: 2px solid #fff;
+  border: 1px solid #e94949;
 }
 
 .profile-name {
@@ -201,7 +183,7 @@ h2 {
 }
 
 .profile-names {
-  font-size: 16px;
+  font-size: 18px;
   text-align: center;
   font-weight: bold;
   margin-bottom: 10px;
@@ -211,14 +193,49 @@ h2 {
   transform: scale(1.1);
 }
 
+/* ✅ Adjust the size & padding of Edit and Delete buttons */
+.profile-overlay .edit-profile-btn,
+.profile-overlay .delete-account-btn {
+  width: auto; /* Auto width based on text */
+  padding: 6px 12px; /* Reduce padding */
+  font-size: 14px; /* Slightly smaller text */
+  border-radius: 5px; /* Rounded corners */
+  display: block; /* Stack buttons */
+  margin: 5px auto; /* Center them */
+  cursor: pointer;
+}
+
+/* ✅ Edit Profile Button Styling */
+.profile-overlay .edit-profile-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+/* ✅ Delete Account Button Styling */
+.profile-overlay .delete-account-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+}
+
+/* ✅ Add Hover Effect */
+.profile-overlay .edit-profile-btn:hover {
+  background-color: #0056b3;
+}
+
+.profile-overlay .delete-account-btn:hover {
+  background-color: #c82333;
+}
+
 /* ✅ Profile Overlay Below Profile Picture */
 .profile-overlay {
-  background: white;
-  color: black;
+  background: #fff;
+  /* color: black; */
   border-radius: 8px;
   padding: 15px;
   position: absolute;
-  top: 120px; /* Push overlay below profile picture */
+  top: 120px;
   left: 50%;
   transform: translateX(-50%);
   width: 230px;
@@ -241,6 +258,24 @@ h2 {
 }
 .profile-info span {
   margin-right: 8px;
+}
+
+/* Profile Overlay Close Button */
+.close-profile-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: red;
+  color: white;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 5px 8px;
+  border-radius: 50%;
+}
+
+.close-profile-btn:hover {
+  background: darkred;
 }
 
 /* Edit Profile Button */
@@ -274,7 +309,6 @@ h2 {
   background-color: #c9302c;
 }
 
-
 .delete-account-btn {
   background-color: #ff4d4d;
   color: white;
@@ -289,3 +323,5 @@ h2 {
 .delete-account-btn:hover {
   background-color: #cc0000;
 }
+
+
