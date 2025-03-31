@@ -3,6 +3,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import "../styles/register.css";
 
 const Login = ({ closeModal }) => {
   const navigate = useNavigate(); // ✅ React Router for navigation
@@ -26,7 +27,7 @@ const Login = ({ closeModal }) => {
       localStorage.setItem("role", role);
 
       alert("✅ Login successful!");
-      closeModal(); // ✅ Close the modal after login
+      // closeModal(); // ✅ Close the modal after login
 
       // ✅ Redirect based on role
       if (role === "ADMIN") {
@@ -42,11 +43,17 @@ const Login = ({ closeModal }) => {
 
   return (
     <div className="auth-container modal-overlay login-container">
-      <div className="modal-content">
-        <button className="close-btn" onClick={closeModal}>
-          X
+      <div className="login-modal">
+        <button
+          type="button"
+          className="login-close-btn"
+          onClick={() => closeModal?.()}
+          aria-label="Close Login Modal"
+        >
+          ×
         </button>
-        <h2>Login</h2>
+
+        <h2 className="login-header">Login</h2>
         {error && <p className="error">{error}</p>}
 
         <form onSubmit={handleLogin}>
@@ -64,7 +71,9 @@ const Login = ({ closeModal }) => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit">Login</button>
+          <button type="submit" className="login-btn">
+            Login
+          </button>
         </form>
       </div>
     </div>
@@ -72,4 +81,3 @@ const Login = ({ closeModal }) => {
 };
 
 export default Login;
-

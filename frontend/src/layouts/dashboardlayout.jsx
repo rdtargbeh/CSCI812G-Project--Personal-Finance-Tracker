@@ -67,7 +67,7 @@ const DashboardLayout = () => {
       <aside className="sidebar">
         <h2>Finance Tracker</h2>
 
-        {/* User Profile Section */}
+        {/* User Profile Section +++++++++++++++++++++++++++++++++++++*/}
         <div className="user-profile">
           {/* ✅ Profile Picture */}
           <img

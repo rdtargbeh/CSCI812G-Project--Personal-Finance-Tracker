@@ -75,94 +75,176 @@ const Register = ({ closeModal }) => {
   return (
     <div className="auth-container modal-overlay">
       <div className="modal-content">
-        <button className="close-btn" onClick={closeModal}>
+        <button className="close-btn-btn" onClick={closeModal}>
           X
         </button>
-        <h2>Register</h2>
+        <h2 className="header">Register</h2>
         {successMessage && <p className="success">{successMessage}</p>}
         {error && <p className="error">{error}</p>}
-
         <form onSubmit={handleRegister}>
-          <input
-            type="text"
-            name="userName"
-            placeholder="Username"
-            value={user.userName}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={user.email}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={user.password}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="text"
-            name="firstName"
-            placeholder="First Name"
-            value={user.firstName}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="text"
-            name="lastName"
-            placeholder="Last Name"
-            value={user.lastName}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="text"
-            name="phoneNumber"
-            placeholder="Phone Number"
-            value={user.phoneNumber}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            name="address"
-            placeholder="Address"
-            value={user.address}
-            onChange={handleChange}
-          />
+          <table className="form-table">
+            <tbody>
+              <tr>
+                <td>
+                  <label>Username:</label>
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    name="userName"
+                    value={user.userName}
+                    onChange={handleChange}
+                    required
+                  />
+                </td>
+                <td>
+                  <label>Email:</label>
+                </td>
+                <td>
+                  <input
+                    type="email"
+                    name="email"
+                    value={user.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </td>
+              </tr>
 
-          {/* ✅ Select Dropdowns */}
-          <select name="currency" value={user.currency} onChange={handleChange}>
-            <option value="USD">USD ($)</option>
-            <option value="EUR">EUR (€)</option>
-            <option value="GBP">GBP (£)</option>
-          </select>
+              <tr>
+                <td>
+                  <label>Password:</label>
+                </td>
+                <td>
+                  <input
+                    type="password"
+                    name="password"
+                    value={user.password}
+                    onChange={handleChange}
+                    required
+                  />
+                </td>
+                <td>
+                  <label>Phone Number:</label>
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    name="phoneNumber"
+                    value={user.phoneNumber}
+                    onChange={handleChange}
+                  />
+                </td>
+              </tr>
 
-          <select name="timezone" value={user.timezone} onChange={handleChange}>
-            <option value="UTC">UTC</option>
-            <option value="PST">PST</option>
-            <option value="EST">EST</option>
-          </select>
+              <tr>
+                <td>
+                  <label>First Name:</label>
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={user.firstName}
+                    onChange={handleChange}
+                    required
+                  />
+                </td>
+                <td>
+                  <label>Currency:</label>
+                </td>
+                <td>
+                  <select
+                    name="currency"
+                    value={user.currency}
+                    onChange={handleChange}
+                  >
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                    <option value="GBP">GBP (£)</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label>Last Name:</label>
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={user.lastName}
+                    onChange={handleChange}
+                    required
+                  />
+                </td>
+                <td>
+                  <label>Timezone:</label>
+                </td>
+                <td>
+                  <select
+                    name="timezone"
+                    value={user.timezone}
+                    onChange={handleChange}
+                  >
+                    <option value="UTC">UTC</option>
+                    <option value="PST">PST</option>
+                    <option value="EST">EST</option>
+                  </select>
+                </td>
+              </tr>
 
-          <select
-            name="preferredLanguage"
-            value={user.preferredLanguage}
-            onChange={handleChange}
-          >
-            <option value="en">English</option>
-            <option value="fr">French</option>
-            <option value="es">Spanish</option>
-          </select>
+              <tr>
+                <td>
+                  <label>Address:</label>
+                </td>
+                <td colSpan="3">
+                  <input
+                    type="text"
+                    name="address"
+                    value={user.address}
+                    onChange={handleChange}
+                  />
+                </td>
+              </tr>
 
-          <button type="submit">Register</button>
+              <tr>
+                <td>
+                  <label>Pref Language:</label>
+                </td>
+                <td colSpan="3">
+                  <select
+                    name="preferredLanguage"
+                    value={user.preferredLanguage}
+                    onChange={handleChange}
+                  >
+                    <option value="en">English</option>
+                    <option value="fr">French</option>
+                    <option value="es">Spanish</option>
+                  </select>
+                </td>
+              </tr>
+
+              <tr>
+                <td colSpan="4" className="form-buttons-row">
+                  <div className="form-buttons">
+                    <button type="submit" className="save-btn">
+                      Register
+                    </button>
+                    <button
+                      type="button"
+                      onClick={closeModal}
+                      className="cancel-btn"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </form>
+
         {successMessage && <p className="success-message">{successMessage}</p>}
         {error && <p className="error-message">{error}</p>}
       </div>
