@@ -1,0 +1,94 @@
+/* TRANSACTION DASHBOARD CSS  ++++++++++++++++++++++++++++++++++++++++++++++ */
+.transaction-page {
+  padding: 20px;
+}
+
+.transaction-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.transaction-filters input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.transaction-summary {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
+}
+
+.summary-card {
+  flex: 1;
+  min-width: 180px;
+  background: #f1f1f1;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.summary-card:hover {
+  transform: scale(1.03);
+}
+
+.summary-card.income {
+  background: #d1f7d6;
+}
+
+.summary-card.expense {
+  background: #ffd6d6;
+}
+
+.summary-card.action {
+  background: #d6e7ff;
+}
+
+/* CATOGORY MODAL  +++++++++++++++++++++++++++++++++++++++++++++ */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 1000px;
+  position: relative;
+  z-index: 1000;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 18px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  background-color: #c82333;
+}

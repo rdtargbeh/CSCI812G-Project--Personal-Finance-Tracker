@@ -24,7 +24,11 @@ const Login = ({ closeModal }) => {
 
       const { token, role } = response.data;
       localStorage.setItem("token", token);
-      localStorage.setItem("role", role);
+      localStorage.setItem(
+        "role",
+        typeof role === "string" ? role : role?.roleName || JSON.stringify(role)
+      );
+      // localStorage.setItem("role", role);
 
       alert("✅ Login successful!");
       // closeModal(); // ✅ Close the modal after login
