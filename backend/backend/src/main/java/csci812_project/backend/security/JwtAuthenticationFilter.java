@@ -89,12 +89,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 //        chain.doFilter(request, response);
 //    }
 
-    private String getTokenFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        return (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer "))
-                ? bearerToken.substring(7)
-                : null;
-    }
+    // previous use
+//    private String getTokenFromRequest(HttpServletRequest request) {
+//        String bearerToken = request.getHeader("Authorization");
+//        return (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer "))
+//                ? bearerToken.substring(7)
+//                : null;
+//    }
+
+    // new
+private String getTokenFromRequest(HttpServletRequest request) {
+    String bearerToken = request.getHeader("Authorization");
+    System.out.println("🔍 Raw Authorization header: " + bearerToken); // Add this line!
+
+    return (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer "))
+            ? bearerToken.substring(7)
+            : null;
+}
+
 
 
 }

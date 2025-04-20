@@ -41,5 +41,21 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             Long userId,
             LocalDateTime startDate,
             LocalDateTime endDate);
+
+    // Add Method to Sum Expenses
+    @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t " +
+            "WHERE t.user.userId = :userId " +
+            "AND t.category.categoryId = :categoryId " +
+            "AND t.date BETWEEN :start AND :end " +
+            "AND t.transactionType = 'EXPENSE' " +
+            "AND t.status = 'COMPLETED' || 'PENDING' " +
+            "AND t.isDeleted = false")
+    BigDecimal sumExpensesInCategoryForPeriod(
+            @Param("userId") Long userId,
+            @Param("categoryId") Long categoryId,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
 }
 

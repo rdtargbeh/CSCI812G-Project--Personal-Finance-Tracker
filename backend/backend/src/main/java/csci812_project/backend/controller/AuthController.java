@@ -49,42 +49,15 @@ public class AuthController {
         try {
             // ✅ Authenticate user and generate token
             String jwt = userService.authenticate(loginRequest.getUserName(), loginRequest.getPassword());
-
             // ✅ Fetch user details
             User user = userRepository.findByUserName(loginRequest.getUserName())
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
             return ResponseEntity.ok(Map.of("token", jwt, "role", user.getRoles()));
-
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(Map.of("message", e.getMessage())); // ❌ Send error response for deleted users
         }
     }
-
-
-//    @PostMapping("/login")
-//    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-//        Authentication authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword())
-//        );
-//
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//        String token = jwtTokenProvider.generateToken(loginRequest.getUserName());
-//
-//        // ✅ Fetch user roles from DB
-//        User user = userRepository.findByUserName(loginRequest.getUserName())
-//                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + loginRequest.getUserName()));
-//
-//        String role = String.valueOf(user.getRoles().stream()
-//                .map(Role::getRoleName)
-//                .findFirst()
-//                .orElse(RoleType.valueOf("USER"))); // Default role if none found
-//
-//        // ✅ Return token + role
-//        return ResponseEntity.ok(Map.of("token", token, "role", role));
-//    }
-
-
 
     @PostMapping("/verify")
     public ResponseEntity<String> verifyAccount(@RequestParam String token) {

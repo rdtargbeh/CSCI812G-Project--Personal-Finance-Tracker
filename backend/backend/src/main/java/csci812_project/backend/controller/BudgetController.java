@@ -1,6 +1,7 @@
 package csci812_project.backend.controller;
 
 import csci812_project.backend.dto.BudgetDTO;
+import csci812_project.backend.dto.BudgetReportDTO;
 import csci812_project.backend.service.BudgetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -55,5 +56,11 @@ public class BudgetController {
         budgetService.deleteBudget(budgetId);
         return ResponseEntity.ok("Budget deleted successfully.");
     }
+
+    @GetMapping("/report")
+    public ResponseEntity<BudgetReportDTO> getBudgetReport(@RequestParam Long userId) {
+        return ResponseEntity.ok(budgetService.getBudgetReport(userId));
+    }
+
 }
 

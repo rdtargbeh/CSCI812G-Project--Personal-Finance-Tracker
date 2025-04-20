@@ -1,6 +1,7 @@
 package csci812_project.backend.service;
 
 import csci812_project.backend.dto.TransactionDTO;
+import csci812_project.backend.dto.TransactionDetailsDTO;
 import csci812_project.backend.dto.TransactionReportDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,7 +16,11 @@ public interface TransactionService {
 
     TransactionDTO transfer(Long userId, Long fromAccountId, Long toAccountId, TransactionDTO transactionDTO);
 
-    List<TransactionDTO> getTransactionsByUser(Long userId);
+    List<TransactionDetailsDTO> getTransactionDetailsByUser(Long userId);
+
+//    List<TransactionDetailsDTO> getTransactionsByUser(Long userId);
+
+//    List<TransactionDTO> getTransactionsByUser(Long userId);
 
     List<TransactionDTO> getTransactionsByAccount(Long accountId);
 

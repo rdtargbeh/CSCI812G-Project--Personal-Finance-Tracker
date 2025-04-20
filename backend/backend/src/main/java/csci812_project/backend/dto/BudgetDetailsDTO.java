@@ -10,6 +10,9 @@ public class BudgetDetailsDTO {
     private BigDecimal amountLimit;
     private LocalDate startDate;
     private LocalDate endDate;
+    private BigDecimal spent;
+//    private BigDecimal spent = BigDecimal.ZERO;
+    private int percentageUsed;
     private String budgetType;
     private BigDecimal rolloverAmount;
     private LocalDateTime dateCreated;
@@ -18,7 +21,7 @@ public class BudgetDetailsDTO {
     // Constructor
     public BudgetDetailsDTO(){}
     public BudgetDetailsDTO(String description, BigDecimal amountLimit, LocalDate startDate, LocalDate endDate, String budgetType,
-                            BigDecimal rolloverAmount, LocalDateTime dateCreated, String category) {
+                            BigDecimal rolloverAmount, LocalDateTime dateCreated, String category, BigDecimal spent, int percentageUsed) {
         this.description = description;
         this.amountLimit = amountLimit;
         this.startDate = startDate;
@@ -27,6 +30,8 @@ public class BudgetDetailsDTO {
         this.rolloverAmount = rolloverAmount;
         this.dateCreated = dateCreated;
         this.category = category;
+        this.spent = spent;
+        this.percentageUsed = percentageUsed;
     }
 
     // Getter and Setter
@@ -93,5 +98,15 @@ public class BudgetDetailsDTO {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public BigDecimal getSpent() {return spent;
+    }
+    public void setSpent(BigDecimal spent) {this.spent = spent;
+    }
+
+    public int getPercentageUsed() {return percentageUsed;
+    }
+    public void setPercentageUsed(int percentageUsed) {this.percentageUsed = percentageUsed;
     }
 }

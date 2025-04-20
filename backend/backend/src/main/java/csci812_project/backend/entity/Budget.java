@@ -36,7 +36,7 @@ public class Budget {
     @JoinColumn(name = "category_id", foreignKey = @ForeignKey(name = "fk_budget_category"))
     private Category category;
 
-    @Column(name = "description", length = 30)
+    @Column(name = "description", length = 50)
     private String description;
     /**
      * Maximum spending amount allowed within the budget period.

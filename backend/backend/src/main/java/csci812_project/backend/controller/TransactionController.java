@@ -1,6 +1,7 @@
 package csci812_project.backend.controller;
 
 import csci812_project.backend.dto.TransactionDTO;
+import csci812_project.backend.dto.TransactionDetailsDTO;
 import csci812_project.backend.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/transactions")
 public class TransactionController {
@@ -56,8 +58,9 @@ public class TransactionController {
      * Retrieve all transactions by user ID.
      */
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<TransactionDTO>> getTransactionsByUser(@PathVariable Long userId) {
-        return ResponseEntity.ok(transactionService.getTransactionsByUser(userId));
+    public ResponseEntity<List<TransactionDetailsDTO>> getTransactionsByUser(@PathVariable Long userId) {
+        List<TransactionDetailsDTO> details = transactionService.getTransactionDetailsByUser(userId);
+        return ResponseEntity.ok(details);
     }
 
     /**

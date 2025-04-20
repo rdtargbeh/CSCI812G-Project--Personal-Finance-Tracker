@@ -126,24 +126,6 @@ public class UserServiceImplementation implements UserService {
     }
 
 
-//    public String authenticate(String username, String password, Long userId) {
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new NotFoundException("User Not Found" + userId));
-//
-//        // ❌ Prevent deleted users from logging in
-//        if (user.isDeleted()) {
-//            throw new RuntimeException("Your account has been deleted. Contact support for help.");
-//        }
-//        // ✅ Use Spring Security's authentication system
-//        Authentication authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(username, password)
-//        );
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//        // ✅ Generate JWT token upon successful authentication
-//        return jwtTokenProvider.generateToken(username);
-//    }
-
-
     @Override
     public UserDTO updateUser(Long userId, UserDTO userDTO) {
 

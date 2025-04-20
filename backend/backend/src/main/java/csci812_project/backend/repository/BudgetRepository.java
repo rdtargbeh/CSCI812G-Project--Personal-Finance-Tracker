@@ -34,4 +34,9 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
 
     /** Find active budgets (not deleted) */
     List<Budget> findByIsDeletedFalse();
+
+    Optional<Budget> findFirstByUser_UserIdAndCategory_CategoryIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualAndIsDeletedFalse(
+            Long userId, Long categoryId, LocalDate startDate, LocalDate endDate
+    );
+
 }

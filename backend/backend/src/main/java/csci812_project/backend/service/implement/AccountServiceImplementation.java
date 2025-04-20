@@ -3,6 +3,7 @@ package csci812_project.backend.service.implement;
 import csci812_project.backend.dto.AccountDTO;
 import csci812_project.backend.entity.Account;
 import csci812_project.backend.entity.User;
+import csci812_project.backend.enums.AccountType;
 import csci812_project.backend.exception.NotFoundException;
 import csci812_project.backend.mapper.AccountMapper;
 import csci812_project.backend.repository.AccountRepository;
@@ -59,12 +60,27 @@ public class AccountServiceImplementation implements AccountService {
                 .collect(Collectors.toList());
     }
 
+//    Get All account Both Soft-Delete and Non-Delete
+    @Override
+    public List<AccountDTO> getAllAccountsByUser(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("User with ID " + userId + " not found");
+        }
+        // ✅ Do not filter out deleted accounts
+        return accountRepository.findByUser_UserId(userId)
+                .stream()
+                .map(accountMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
     @Override
     public AccountDTO updateAccount(Long accountId, AccountDTO accountDTO) {
         Account existingAccount = accountRepository.findById(accountId)
                 .orElseThrow(() -> new NotFoundException("Account not found"));
 
         existingAccount.setName(accountDTO.getName());
+        existingAccount.setType(AccountType.valueOf(accountDTO.getType().toUpperCase()));
+        existingAccount.setAccountNumber(accountDTO.getAccountNumber());
         existingAccount.setBalance(accountDTO.getBalance());
         existingAccount.setInterestRate(accountDTO.getInterestRate());
         existingAccount.setInstitutionName(accountDTO.getInstitutionName());

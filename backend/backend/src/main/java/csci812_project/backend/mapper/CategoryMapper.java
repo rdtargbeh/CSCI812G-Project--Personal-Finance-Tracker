@@ -18,6 +18,7 @@ public class CategoryMapper {
         dto.setColorCode(category.getColorCode());
         dto.setUserId(category.getUser() != null ? category.getUser().getUserId() : null);
         dto.setDeleted(category.isDeleted());
+        dto.setDateCreated(category.getDateCreated());
         return dto;
     }
 

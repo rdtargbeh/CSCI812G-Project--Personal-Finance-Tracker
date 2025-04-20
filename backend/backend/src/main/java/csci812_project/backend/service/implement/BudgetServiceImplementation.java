@@ -1,6 +1,8 @@
 package csci812_project.backend.service.implement;
 
 import csci812_project.backend.dto.BudgetDTO;
+import csci812_project.backend.dto.BudgetDetailsDTO;
+import csci812_project.backend.dto.BudgetReportDTO;
 import csci812_project.backend.entity.Budget;
 import csci812_project.backend.entity.Category;
 import csci812_project.backend.entity.User;
@@ -9,13 +11,18 @@ import csci812_project.backend.exception.NotFoundException;
 import csci812_project.backend.mapper.BudgetMapper;
 import csci812_project.backend.repository.BudgetRepository;
 import csci812_project.backend.repository.CategoryRepository;
+import csci812_project.backend.repository.TransactionRepository;
 import csci812_project.backend.repository.UserRepository;
 import csci812_project.backend.service.BudgetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +36,8 @@ public class BudgetServiceImplementation implements BudgetService {
     private CategoryRepository categoryRepository;
     @Autowired
     private BudgetMapper budgetMapper;
+    @Autowired
+    private TransactionRepository transactionRepository;
 
 
     @Override
@@ -105,4 +114,75 @@ public class BudgetServiceImplementation implements BudgetService {
         }
         return false;
     }
+
+    @Override
+    public BudgetReportDTO getBudgetReport(Long userId) {
+        List<Budget> budgets = budgetRepository.findByUser_UserId(userId)
+                .stream()
+                .filter(b -> !b.isDeleted())
+                .collect(Collectors.toList());
+
+        List<BudgetDetailsDTO> details = budgets.stream()
+                .map(budgetMapper::toDetailsDTO)
+                .collect(Collectors.toList());
+
+        BigDecimal totalBudgetLimit = budgets.stream()
+                .map(Budget::getAmountLimit)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalRolloverAmount = budgets.stream()
+                .map(b -> b.getRolloverAmount() != null ? b.getRolloverAmount() : BigDecimal.ZERO)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        LocalDate minStartDate = budgets.stream()
+                .map(Budget::getStartDate)
+                .min(LocalDate::compareTo)
+                .orElse(null);
+
+        LocalDate maxEndDate = budgets.stream()
+                .map(Budget::getEndDate)
+                .max(LocalDate::compareTo)
+                .orElse(null);
+
+        BudgetReportDTO report = new BudgetReportDTO();
+        report.setUserId(userId);
+        report.setBudgets(details);
+        report.setTotalBudgetLimit(totalBudgetLimit);
+        report.setTotalRolloverAmount(totalRolloverAmount);
+        report.setStartDate(minStartDate);
+        report.setEndDate(maxEndDate);
+
+        return report;
+    }
+
+    @Override
+    public Optional<Budget> findActiveBudget(Long userId, Long categoryId, LocalDate transactionDate) {
+        return budgetRepository.findFirstByUser_UserIdAndCategory_CategoryIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualAndIsDeletedFalse(
+                userId, categoryId, transactionDate, transactionDate
+        );
+    }
+
+    // This method determines if a transaction would exceed the limit.
+    @Override
+    public boolean isTransactionWithinBudget(Long userId, Long categoryId, BigDecimal transactionAmount, LocalDateTime transactionDate) {
+        Optional<Budget> optionalBudget = findActiveBudget(userId, categoryId, transactionDate.toLocalDate());
+        if (optionalBudget.isEmpty()) return true; // No budget => allow transaction
+
+        Budget budget = optionalBudget.get();
+
+        BigDecimal spent = transactionRepository.sumExpensesInCategoryForPeriod(
+                userId,
+                categoryId,
+                budget.getStartDate().atStartOfDay(),
+                budget.getEndDate().atTime(LocalTime.MAX)
+        );
+        BigDecimal projected = spent.add(transactionAmount);
+
+        // ✅ Use BudgetType to determine allowance
+        if (budget.getBudgetType() == BudgetType.STRICT) {
+            return projected.compareTo(budget.getAmountLimit()) <= 0;
+        }
+        return true; // FLEXIBLE: Allow even if over budget
+    }
+
 }

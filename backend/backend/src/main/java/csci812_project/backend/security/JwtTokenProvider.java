@@ -32,20 +32,6 @@ public class JwtTokenProvider {
     }
 
     // ✅ Generate JWT token
-//    public String generateToken(User user) {  // Accept User object instead of username
-//        Date currentDate = new Date();
-//        Date expirationDate = new Date(currentDate.getTime() + jwtExpirationMillis);
-//
-//        return Jwts.builder()
-//                .setSubject(user.getUserName())
-//                .claim("userId", user.getUserId())  // ✅ Add userId
-//                .claim("email", user.getEmail())    // ✅ Add email
-//                .setIssuedAt(currentDate)
-//                .setExpiration(expirationDate)
-//                .signWith(SignatureAlgorithm.HS256, key())
-//                .compact();
-//    }
-
     public String generateToken(String username) {
         User user = userRepository.findByUserName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
@@ -79,17 +65,32 @@ public class JwtTokenProvider {
     }
 
     // ✅ Validate token
+    // new
     public boolean validateToken(String token) {
         try {
+            System.out.println("✅ Validating token: " + token);
             Jwts.parserBuilder()
                     .setSigningKey(key())
                     .build()
                     .parseClaimsJws(token);
             return !isTokenExpired(token);
         } catch (Exception e) {
+            System.out.println("❌ Token validation failed: " + e.getMessage());
             return false;
         }
     }
+// previous use
+//    public boolean validateToken(String token) {
+//        try {
+//            Jwts.parserBuilder()
+//                    .setSigningKey(key())
+//                    .build()
+//                    .parseClaimsJws(token);
+//            return !isTokenExpired(token);
+//        } catch (Exception e) {
+//            return false;
+//        }
+//    }
 
     private boolean isTokenExpired(String token) {
         return extractClaims(token).getExpiration().before(new Date());

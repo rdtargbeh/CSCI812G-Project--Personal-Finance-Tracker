@@ -73,6 +73,15 @@ public class Category {
     @Column(name = "date_created", updatable = false)
     private LocalDateTime dateCreated = LocalDateTime.now();
 
+    @PrePersist
+    protected void onCreate() {
+        if (this.dateCreated == null) {
+            this.dateCreated = LocalDateTime.now();
+        }
+    }
+
+
+
     // Constructor
     public Category(){}
     public Category(Long categoryId, String name, CategoryType type, String icon, String colorCode, User user,

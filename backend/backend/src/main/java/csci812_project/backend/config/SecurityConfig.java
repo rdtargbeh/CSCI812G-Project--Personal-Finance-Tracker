@@ -104,15 +104,6 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 
-
-//    @Bean
-//    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
-//        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-//        authProvider.setUserDetailsService(userDetailsService);
-//        authProvider.setPasswordEncoder(passwordEncoder);
-//        return new ProviderManager(authProvider);
-//    }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

@@ -40,7 +40,7 @@ public class Account {
      * Type of the account.
      * Must be one of the predefined ENUM values.
      */
-    @Column(name = "type", nullable = false)
+    @Column(name = "type", nullable = false, length = 50)
     @Enumerated(EnumType.STRING)
     private AccountType type;
 

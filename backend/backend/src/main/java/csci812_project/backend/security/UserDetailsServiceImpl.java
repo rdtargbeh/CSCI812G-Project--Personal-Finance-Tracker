@@ -33,11 +33,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (!user.isVerified()) {
             throw new DisabledException("Account is not verified. Please check your email.");
         }
-
         if (user.isDeleted()) {
             throw new LockedException("Account is deleted.");
         }
-
         return new org.springframework.security.core.userdetails.User(
                 user.getUserName(),
                 user.getPassword(),

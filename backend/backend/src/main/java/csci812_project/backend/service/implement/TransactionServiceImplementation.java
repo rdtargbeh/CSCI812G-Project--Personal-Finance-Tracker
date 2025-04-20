@@ -1,12 +1,14 @@
 package csci812_project.backend.service.implement;
 
 import csci812_project.backend.dto.TransactionDTO;
+import csci812_project.backend.dto.TransactionDetailsDTO;
 import csci812_project.backend.dto.TransactionReportDTO;
 import csci812_project.backend.entity.Account;
 import csci812_project.backend.entity.Category;
 import csci812_project.backend.entity.Transaction;
 import csci812_project.backend.entity.User;
 import csci812_project.backend.enums.RecurringInterval;
+import csci812_project.backend.enums.TransactionStatus;
 import csci812_project.backend.enums.TransactionType;
 import csci812_project.backend.exception.NotFoundException;
 import csci812_project.backend.mapper.TransactionMapper;
@@ -86,26 +88,21 @@ public class TransactionServiceImplementation implements TransactionService {
         if (account.getBalance().compareTo(transactionDTO.getAmount()) < 0) {
             throw new RuntimeException("Insufficient funds");
         }
-
         // ✅ Fetch Category
         Category category = categoryRepository.findById(transactionDTO.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
-
         // ✅ Fetch Parent Transaction if `parentTransactionId` is provided
         Transaction parentTransaction = null;
         if (transactionDTO.getParentTransactionId() != null) {
             parentTransaction = transactionRepository.findById(transactionDTO.getParentTransactionId())
                     .orElseThrow(() -> new RuntimeException("Parent transaction not found"));
         }
-
         account.setBalance(account.getBalance().subtract(transactionDTO.getAmount()));
-
         Transaction transaction = transactionMapper.toEntity(transactionDTO, account.getUser(), account, null);
         transaction.setUser(account.getUser());
         transaction.setAccount(account);
         transaction.setCategory(category);
         transaction.setParentTransaction(parentTransaction);
-
 
         transactionRepository.save(transaction);
         accountRepository.save(account);
@@ -119,14 +116,11 @@ public class TransactionServiceImplementation implements TransactionService {
         }
         Account fromAccount = accountRepository.findById(fromAccountId)
                 .orElseThrow(() -> new RuntimeException("From account not found"));
-
         Account toAccount = accountRepository.findById(toAccountId)
                 .orElseThrow(() -> new RuntimeException("To account not found"));
-
         if (fromAccount.getBalance().compareTo(transactionDTO.getAmount()) < 0) {
             throw new RuntimeException("Insufficient funds");
         }
-
         fromAccount.setBalance(fromAccount.getBalance().subtract(transactionDTO.getAmount()));
         toAccount.setBalance(toAccount.getBalance().add(transactionDTO.getAmount()));
 
@@ -145,18 +139,12 @@ public class TransactionServiceImplementation implements TransactionService {
      * Retrieves all transactions for a specific user.
      */
     @Override
-    public List<TransactionDTO> getTransactionsByUser(Long userId) {
-        // ✅ Check if the user exists before fetching accounts
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("User with ID " + userId + " not found"); // ✅ Throws a 404 error
-        }
-
+    public List<TransactionDetailsDTO> getTransactionDetailsByUser(Long userId) {
         List<Transaction> transactions = transactionRepository.findByUser_UserId(userId);
         return transactions.stream()
-                .map(transactionMapper::toDTO)
+                .map(transactionMapper::toDetailsDTO)
                 .collect(Collectors.toList());
     }
-
 
     /**
      * Retrieves all transactions for a specific account.
@@ -167,7 +155,6 @@ public class TransactionServiceImplementation implements TransactionService {
         if (!accountRepository.existsById(accountId)) {
             throw new NotFoundException("Account with ID " + accountId + " not found"); // ✅ Throws a 404 error
         }
-
         List<Transaction> transactions = transactionRepository.findByAccount_AccountId(accountId);
         return transactions.stream()
                 .map(transactionMapper::toDTO)
@@ -228,10 +215,8 @@ public class TransactionServiceImplementation implements TransactionService {
     public TransactionDTO addManualTransaction(TransactionDTO transactionDTO) {
         User user = userRepository.findById(transactionDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
         Account account = accountRepository.findById(transactionDTO.getAccountId())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
-
         Category category = categoryRepository.findById(transactionDTO.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
@@ -241,7 +226,14 @@ public class TransactionServiceImplementation implements TransactionService {
             parentTransaction = transactionRepository.findById(transactionDTO.getParentTransactionId())
                     .orElseThrow(() -> new RuntimeException("Parent transaction not found"));
         }
-
+        // ✅ Budget validation (STRICT prevents, FLEXIBLE allows)
+        boolean allowed = budgetService.isTransactionWithinBudget(
+                user.getUserId(), category.getCategoryId(), transactionDTO.getAmount(),
+                LocalDateTime.now()
+        );
+        if (!allowed) {
+            throw new RuntimeException("❌ This transaction exceeds your budget limit for this category.");
+        }
         // ✅ Convert DTO to Entity
         Transaction transaction = transactionMapper.toEntity(transactionDTO, user, account, null);
         transaction.setUser(user);
@@ -251,54 +243,66 @@ public class TransactionServiceImplementation implements TransactionService {
 
         transaction = transactionRepository.save(transaction);
 
-        // ✅ Check if Budget Limit Exceeded
-        boolean isBudgetExceeded = budgetService.checkBudgetUsage(
-                transaction.getUser().getUserId(),
-                transaction.getCategory().getCategoryId(),
-                transaction.getAmount()
+        // ✅ Alert logic: only notify if FLEXIBLE and exceeded 80%
+        boolean alert = budgetService.checkBudgetUsage(
+                user.getUserId(), category.getCategoryId(), transaction.getAmount()
         );
-
-        if (isBudgetExceeded) {
+        if (alert) {
             try {
                 scheduledEmailService.sendBudgetAlerts();
-                System.out.println("⚠️ ALERT: Budget limit warning email sent to " + user.getEmail());
+                System.out.println("⚠️ Budget warning email sent to " + user.getEmail());
             } catch (Exception e) {
-                System.err.println("⚠️ ERROR: Failed to send budget alert email: " + e.getMessage());
+                System.err.println("Failed to send budget alert: " + e.getMessage());
             }
         }
-
         return transactionMapper.toDTO(transaction);
     }
-
-
 
     /**
      * Runs every day at midnight to check and create recurring transactions.
      */
-    @Scheduled(cron = "0 0 0 * * ?") // Runs daily at 12 AM
+    @Scheduled(cron = "0 0 0 * * ?") // Every day at midnight
     @Override
     public void processRecurringTransactions() {
         LocalDateTime now = LocalDateTime.now();
-        List<Transaction> recurringTransactions = transactionRepository.findByIsRecurringTrueAndNextDueDateBefore(now);
+        List<Transaction> dueTransactions =
+                transactionRepository.findByIsRecurringTrueAndNextDueDateBefore(now);
 
-        for (Transaction transaction : recurringTransactions) {
-            TransactionDTO transactionDTO = new TransactionDTO();
-            transactionDTO.setUserId(transaction.getUser().getUserId());
-            transactionDTO.setAccountId(transaction.getAccount().getAccountId());
-            transactionDTO.setAmount(transaction.getAmount());
-            transactionDTO.setTransactionType(transaction.getTransactionType().name());
-            transactionDTO.setDescription(transaction.getDescription());
-            transactionDTO.setRecurring(false);
-            transactionDTO.setDateCreated(now);
+        System.out.println("🕒 Processing " + dueTransactions.size() + " recurring transactions...");
 
-            // ✅ Pass `transactionDTO`, `transaction.getUser()`, `transaction.getAccount()` to `toEntity()`
-            Transaction newTransaction = transactionMapper.toEntity(transactionDTO, transaction.getUser(), transaction.getAccount(), null);
+        for (Transaction transaction : dueTransactions) {
+            try {
+                TransactionDTO transactionDTO = new TransactionDTO();
+                transactionDTO.setUserId(transaction.getUser().getUserId());
+                transactionDTO.setAccountId(transaction.getAccount().getAccountId());
+                transactionDTO.setAmount(transaction.getAmount());
+                transactionDTO.setTransactionType(transaction.getTransactionType().name());
+                transactionDTO.setDescription(transaction.getDescription());
+                transactionDTO.setRecurring(false); // one-time execution
+                transactionDTO.setDateCreated(now);
+                transactionDTO.setCategoryId(transaction.getCategory().getCategoryId());
+                transactionDTO.setPaymentMethod(transaction.getPaymentMethod().name());
+                transactionDTO.setStatus(TransactionStatus.COMPLETED.name());
 
-            transactionRepository.save(newTransaction);
-            transaction.setNextDueDate(calculateNextDueDate(transaction));
-            transactionRepository.save(transaction);
+                Transaction newTransaction = transactionMapper.toEntity(
+                        transactionDTO,
+                        transaction.getUser(),
+                        transaction.getAccount(),
+                        transaction.getToAccount() // Keep same toAccount if needed
+                );
+                newTransaction.setCategory(transaction.getCategory()); // ✅ Manually set it
+
+                transactionRepository.save(newTransaction);
+                transaction.setNextDueDate(calculateNextDueDate(transaction));
+                transactionRepository.save(transaction);
+
+            } catch (Exception ex) {
+                System.err.println("❌ Failed to process recurring transaction ID: " +
+                        transaction.getTransactionId() + " → " + ex.getMessage());
+            }
         }
     }
+
 
     private LocalDateTime calculateNextDueDate(Transaction transaction) {
         switch (transaction.getRecurringInterval()) {
@@ -315,46 +319,40 @@ public class TransactionServiceImplementation implements TransactionService {
         }
     }
 
-    @Override
-    public TransactionDTO createRecurringTransaction(TransactionDTO transactionDTO) {
-        User user = userRepository.findById(transactionDTO.getUserId())
+    public TransactionDTO createRecurringTransaction(TransactionDTO dto) {
+        User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Account account = accountRepository.findById(transactionDTO.getAccountId())
+        Account account = accountRepository.findById(dto.getAccountId())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
-        Category category = categoryRepository.findById(transactionDTO.getCategoryId())
+        Category category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
-        RecurringInterval recurringInterval = RecurringInterval.valueOf(transactionDTO.getRecurringInterval().toUpperCase());
+        RecurringInterval interval = RecurringInterval.valueOf(dto.getRecurringInterval().toUpperCase());
 
-        // ✅ Set recurring values
-        transactionDTO.setRecurring(true);
-        transactionDTO.setDateCreated(LocalDateTime.now());
-        transactionDTO.setNextDueDate(LocalDateTime.now().plusDays(1)); // Start from tomorrow
+        dto.setRecurring(true);
+        dto.setDateCreated(LocalDateTime.now());
+        dto.setNextDueDate(LocalDateTime.now().plusDays(1));
 
-        // ✅ Convert DTO to Entity with Correct Arguments
-        Transaction transaction = transactionMapper.toEntity(transactionDTO, user, account, null);
-        transaction.setRecurringInterval(recurringInterval);
+        Transaction tx = transactionMapper.toEntity(dto, user, account, null); // 🔥
+        tx.setCategory(category); // ✅ Set category here
+        tx.setRecurringInterval(interval);
 
-        transaction = transactionRepository.save(transaction);
+        tx = transactionRepository.save(tx);
 
-        // ✅ Check if the budget limit is about to be exceeded
         boolean isBudgetExceeded = budgetService.checkBudgetUsage(
-                transaction.getUser().getUserId(),
-                transactionDTO.getCategoryId(),
-                transaction.getAmount()
+                dto.getUserId(),
+                dto.getCategoryId(),
+                dto.getAmount()
         );
-
         if (isBudgetExceeded) {
-            // ✅ Send budget alert email
             scheduledEmailService.sendBudgetAlerts();
-            System.out.println("⚠️ ALERT: Budget limit warning email sent to " + user.getEmail());
+            System.out.println("⚠️ Budget alert sent to " + user.getEmail());
         }
 
-        return transactionMapper.toDTO(transaction);
+        return transactionMapper.toDTO(tx);
     }
-
 
 
 }

@@ -8,6 +8,7 @@ public interface AccountService {
     AccountDTO createAccount(Long userId, AccountDTO accountDTO);
 
     AccountDTO getAccountById(Long accountId);
+    List<AccountDTO> getAllAccountsByUser(Long userId);
 
     List<AccountDTO> getAccountsByUser(Long userId);
 

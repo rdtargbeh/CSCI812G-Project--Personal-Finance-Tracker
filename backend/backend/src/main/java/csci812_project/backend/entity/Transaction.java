@@ -63,7 +63,7 @@ public class Transaction {
     /**
      * Type of transaction (INCOME, EXPENSE, or TRANSFER).
      */
-    @Column(name = "transaction_type", nullable = false)
+    @Column(name = "transaction_type", nullable = false, length = 50)
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 
@@ -336,4 +336,5 @@ public class Transaction {
     public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
     }
+
 }

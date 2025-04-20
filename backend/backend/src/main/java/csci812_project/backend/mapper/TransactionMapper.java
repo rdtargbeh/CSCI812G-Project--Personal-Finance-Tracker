@@ -2,6 +2,7 @@ package csci812_project.backend.mapper;
 
 
 import csci812_project.backend.dto.TransactionDTO;
+import csci812_project.backend.dto.TransactionDetailsDTO;
 import csci812_project.backend.entity.Account;
 import csci812_project.backend.entity.Category;
 import csci812_project.backend.entity.Transaction;
@@ -69,45 +70,25 @@ public class TransactionMapper {
         return transaction;
     }
 
-//    public Transaction toEntity(TransactionDTO transactionDTO, User user, Account account, Account toAccount, Category category) {
-//        if (transactionDTO == null) return null;
-//
-//        Transaction transaction = new Transaction();
-//        transaction.setUser(user); // ✅ Assign User object
-//        transaction.setAccount(account); // ✅ Assign Account object
-//        transaction.setToAccount(toAccount); // ✅ Assign destination account for transfers
-//        transaction.setCategory(category); // Ensure category is set
-//
-//        // ✅ Set category only if provided
-//        if (category != null) {
-//            transaction.setCategory(category);
-//        }
-//        transaction.setAmount(transactionDTO.getAmount());
-//        transaction.setTransactionType(TransactionType.valueOf(transactionDTO.getTransactionType()));
-//        transaction.setDescription(transactionDTO.getDescription());
-//
-//
-//        if (transactionDTO.getPaymentMethod() != null) {
-//            try {
-//                transaction.setPaymentMethod(PaymentMethod.valueOf(transactionDTO.getPaymentMethod().toUpperCase()));
-//            } catch (IllegalArgumentException e) {
-//                throw new RuntimeException("Invalid payment method: " + transactionDTO.getPaymentMethod());
-//            }
-//        } else {
-//            throw new RuntimeException("Payment method is required!");
-//        }
-//
-//        // ✅ Set default status if null
-//        if (transactionDTO.getStatus() != null) {
-//            transaction.setStatus(TransactionStatus.valueOf(transactionDTO.getStatus().toUpperCase()));
-//        } else {
-//            transaction.setStatus(TransactionStatus.COMPLETED); // Default to COMPLETED
-//        }
-//
-//        transaction.setRecurring(transactionDTO.isRecurring());
-//        transaction.setDateCreated(transactionDTO.getDateCreated());
-//        return transaction;
-//    }
+// TransactionDetailsDto
+public TransactionDetailsDTO toDetailsDTO(Transaction tx) {
+    TransactionDetailsDTO dto = new TransactionDetailsDTO();
+    dto.setAmount(tx.getAmount());
+    dto.setTransactionType(tx.getTransactionType());
+    dto.setDescription(tx.getDescription());
+    dto.setDate(tx.getDate());
+    dto.setPaymentMethod(tx.getPaymentMethod());
+    dto.setNextDueDate(tx.getNextDueDate() != null ? tx.getNextDueDate().toLocalDate() : null);
+    dto.setToAccountId(tx.getToAccount() != null ? tx.getToAccount().getAccountId() : null);
+    dto.setDateCreated(tx.getDateCreated());
+    dto.setStatus(tx.getStatus());
+
+    // 🔗 Add readable names
+    dto.setAccountName(tx.getAccount() != null ? tx.getAccount().getName() : null);
+    dto.setCategory(tx.getCategory() != null ? tx.getCategory().getName() : null);
+
+    return dto;
+}
 
 }
 

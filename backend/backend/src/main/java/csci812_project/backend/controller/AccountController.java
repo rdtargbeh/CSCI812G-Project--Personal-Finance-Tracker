@@ -82,4 +82,11 @@ public class AccountController {
         accountService.restoreAccount(accountId);
         return ResponseEntity.ok("Account has been restored.");
     }
+
+    //    Get All account Both Soft-Delete and Non-Delete
+    @GetMapping("/user/{userId}/all")
+    public ResponseEntity<List<AccountDTO>> getAllAccountsByUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(accountService.getAllAccountsByUser(userId));
+    }
+
 }
