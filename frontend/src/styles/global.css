@@ -63,11 +63,6 @@ body {
   color: #333;
 }
 
-.dashboard-container p {
-  font-size: 18px;
-  color: #666;
-}
-
 .nav-btn {
   background: none; /* ✅ Remove default background */
   border: none; /* ✅ Remove border */

@@ -33,7 +33,9 @@ const Category = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await axiosInstance.get(`/categories/user/${userId}`);
+      const res = await axiosInstance.get(
+        `/categories/user/${userId}?includeDeleted=true`
+      );
       setCategories(res.data);
     } catch (err) {
       console.error("❌ Error fetching categories:", err);
@@ -74,10 +76,7 @@ const Category = () => {
           formData
         );
       } else {
-        await axiosInstance.post("/categories", {
-          ...formData,
-          userId,
-        });
+        await axiosInstance.post("/categories", { ...formData, userId });
       }
       setShowForm(false);
       setEditCategory(null);
@@ -101,9 +100,12 @@ const Category = () => {
 
   return (
     <div className="category-container">
-      <h2>Categories</h2>
-
-      <button onClick={() => openForm(null)}>Add Category</button>
+      <div className="category-header">
+        <h2>Categories</h2>
+        <button className="add-btn" onClick={() => openForm(null)}>
+          ➕ Add Category
+        </button>
+      </div>
 
       {showForm && (
         <div className="modal-overlay">
@@ -138,18 +140,25 @@ const Category = () => {
                       </select>
                     </td>
                   </tr>
-
                   <tr>
                     <td>
                       <label>Icon:</label>
                     </td>
                     <td>
-                      <input
+                      <select
                         name="icon"
                         value={formData.icon}
                         onChange={handleChange}
-                        placeholder="💰"
-                      />
+                      >
+                        <option value="">Select Icon</option>
+                        <option value="💰">💰 Money</option>
+                        <option value="🛒">🛒 Shopping</option>
+                        <option value="🏠">🏠 Home</option>
+                        <option value="🚗">🚗 Car</option>
+                        <option value="🍽">🍽 Food</option>
+                        <option value="🎓">🎓 Education</option>
+                        <option value="⚡">⚡ Electricity</option>
+                      </select>
                     </td>
                     <td>
                       <label>Color:</label>
@@ -163,7 +172,6 @@ const Category = () => {
                       />
                     </td>
                   </tr>
-
                   <tr>
                     <td colSpan="4" className="form-buttons-row">
                       <div className="form-buttons">
@@ -230,14 +238,22 @@ const Category = () => {
               <td>
                 {!cat.deleted ? (
                   <>
-                    <button onClick={() => openForm(cat)}>Edit</button>
-                    <button onClick={() => handleDelete(cat.categoryId)}>
-                      Delete
+                    <button className="edit" onClick={() => openForm(cat)}>
+                      ✏️ Edit
+                    </button>
+                    <button
+                      className="delete"
+                      onClick={() => handleDelete(cat.categoryId)}
+                    >
+                      🗑 Delete
                     </button>
                   </>
                 ) : (
-                  <button onClick={() => handleRestore(cat.categoryId)}>
-                    Restore
+                  <button
+                    className="restore"
+                    onClick={() => handleRestore(cat.categoryId)}
+                  >
+                    ♻️ Restore
                   </button>
                 )}
               </td>

@@ -87,15 +87,6 @@ const Accounts = () => {
         >
           Add New
         </button>
-
-        {/* <button
-          onClick={() => {
-            setEditAccount(null);
-            setShowAddModal(true);
-          }}
-        >
-          Add New
-        </button> */}
         <button onClick={() => setShowAllModal(true)}>View All</button>
       </div>
 

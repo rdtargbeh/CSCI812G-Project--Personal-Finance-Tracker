@@ -12,6 +12,7 @@ import Dashboard from "./pages/dashboard"; // ✅ Add this if missing
 import Accounts from "./pages/accounts";
 import Savings from "./pages/savings";
 import Investments from "./pages/investments";
+import Budget from "./pages/budget";
 import Reports from "./pages/reports";
 import Profile from "./pages/profile";
 import Subscriptions from "./pages/subscriptions";
@@ -38,6 +39,7 @@ const App = () => {
             <Route path="loans" element={<Loans />} />
             <Route path="accounts" element={<Accounts />} />
             <Route path="savings" element={<Savings />} />
+            <Route path="budget" element={<Budget />} />
             <Route path="investments" element={<Investments />} />
             <Route path="reports" element={<Reports />} />
             <Route path="subscriptions" element={<Subscriptions />} />

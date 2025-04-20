@@ -10,7 +10,7 @@
 .sidebar {
   width: 250px;
   background: #333;
-  color: white;
+  color: rgb(17, 15, 15);
   display: flex;
   flex-direction: column;
   padding: 20px;
@@ -44,25 +44,35 @@
   border-radius: 5px;
 }
 
-/* Main Content */
-.main-content {
-  margin-left: 250px;
-  flex-grow: 1;
-  /* display: flex; */
-  padding: 20px;
-  /* flex-direction: column; */
-  background: #f9f9f9;
-  width: calc(100% - 250px);
+.dashboard-scrollable {
+  overflow-y: auto;
+  max-height: calc(100vh - 130px);
+  padding: 1rem;
 }
 
+/* Main Content */
+.main-content {
+  display: flex;
+  margin-left: 250px;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+se
 /* Top Bar */
 .top-bar {
-  background: white;
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid #ddd;
+  position: sticky; /* or use fixed if you want it always visible */
+  top: 0;
+  background-color: white;
+  z-index: 10;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
 }
 
 /* Stats Section */
@@ -96,25 +106,52 @@
 
 /* Bottom Section */
 .bottom-section {
+  margin-top: 2rem;
   display: flex;
-  /* gap: 20px; */
-  margin-top: 20px;
   justify-content: space-between;
-  background: white;
-  padding: 10px;
-  box-shadow: 0px -4px 6px rgba(0, 0, 0, 0.75);
+  gap: 1rem;
 }
 
-.recent-transactions,
-.quick-reports {
-  flex: 1;
+.recent-transactions {
+  flex: 2;
   background-color: rgb(249, 168, 36);
-  width: 48%;
   padding: 15px;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
 }
 
+.recent-transactions-header {
+  margin-bottom: 10px;
+  color: #280273;
+}
+
+.recent-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.recent-table th,
+.recent-table td {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.quick-reports {
+  flex: 1;
+  background-color: rgb(31, 9, 55);
+  padding: 1rem;
+  border-radius: 8px;
+  color: #ddd;
+  font-size: 16px;
+}
+
+.quick-reports-header {
+  color: #bc0a0a;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
 .recent-transactions ul {
   list-style: none;
   padding: 0;
@@ -323,5 +360,3 @@ h2 {
 .delete-account-btn:hover {
   background-color: #cc0000;
 }
-
-

@@ -47,7 +47,7 @@ const AllAccountsModal = ({ isOpen, onClose, userId, onEdit }) => {
         <table className="accounts-table">
           <thead>
             <tr>
-              <th>Title</th>
+              <th>Account Name</th>
               <th>Type</th>
               <th>Balance</th>
               <th>Institution</th>

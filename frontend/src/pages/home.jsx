@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [showRegister, setShowRegister] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div style={styles.page}>

@@ -10,7 +10,7 @@ axiosInstance.interceptors.request.use((config) => {
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-    console.log("✅ Axios is sending token:", token);
+    // console.log("✅ Axios is sending token:", token);
   } else {
     console.warn("⚠️ No token found in localStorage.");
   }

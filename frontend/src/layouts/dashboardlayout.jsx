@@ -9,6 +9,7 @@ const DashboardLayout = () => {
   const [showProfile, setShowProfile] = useState(false); // ✅ Toggle Profile Visibility
   const [showEditProfile, setShowEditProfile] = useState(false); // ✅ Control profile modal
   const [user, setUser] = useState(null); // ✅ Store user data
+  const [recentTransactions, setRecentTransactions] = useState([]); // Fetch transactions
 
   // ✅ Fetch User Profile Data
   useEffect(() => {
@@ -32,7 +33,7 @@ const DashboardLayout = () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
-    navigate("/login");
+    navigate("/");
   };
 
   // USER DELETE ACCOUNT FUNCTION
@@ -59,6 +60,25 @@ const DashboardLayout = () => {
       alert("❌ Failed to delete account. Please try again.");
     }
   };
+
+  //  FETCH RECENT TRANSACTIONS FROM TRANSACTION
+  useEffect(() => {
+    const fetchRecent = async () => {
+      try {
+        const profile = await axiosInstance.get("/users/profile");
+        const userId = profile.data.userId;
+        const res = await axiosInstance.get(`/transactions/user/${userId}`);
+        const recent = res.data
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .slice(0, 5); // ✅ Limit to 5
+        setRecentTransactions(recent);
+      } catch (err) {
+        console.error("❌ Error fetching recent transactions:", err);
+      }
+    };
+
+    fetchRecent();
+  }, []);
 
   //  RETURN  +++++++++++++++++++++++
   return (
@@ -136,10 +156,13 @@ const DashboardLayout = () => {
               <NavLink to="/dashboard/transactions">Transactions</NavLink>
             </li>
             <li>
+              <NavLink to="/dashboard/budget">My Budgets</NavLink>
+            </li>
+            <li>
               <NavLink to="/dashboard/loans">Loans</NavLink>
             </li>
             <li>
-              <NavLink to="/dashboard/savings">Savings Goals</NavLink>
+              <NavLink to="/dashboard/savings">My Savings Goals</NavLink>
             </li>
             <li>
               <NavLink to="/dashboard/investments">Investments</NavLink>
@@ -161,6 +184,7 @@ const DashboardLayout = () => {
 
       {/* Main Content */}
       <main className="main-content">
+        {/* Header stays fixed */}
         <header className="top-bar">
           <div className="stats">
             <div className="stat-items">
@@ -178,27 +202,54 @@ const DashboardLayout = () => {
           </div>
         </header>
 
-        {/* Dynamic Content */}
-        <section className="content">
-          <Outlet />
-        </section>
+        {/* ✅ Only this part will scroll */}
+        <div className="dashboard-scrollable">
+          <section className="content">
+            <Outlet />
+          </section>
 
-        {/* Bottom Section */}
-        <footer className="bottom-section">
-          <div className="recent-transactions">
-            <h3>Recent Transactions</h3>
-            <ul>
-              <li>💰 Salary Received - $3,000</li>
-              <li>🛒 Grocery Shopping - $120</li>
-              <li>🏠 Loan Payment - $500</li>
-            </ul>
-          </div>
-          <div className="quick-reports">
-            <h3>Quick Reports</h3>
-            <p>📊 Monthly Expenses: $2,500</p>
-            <p>📈 Investment Growth: 8%</p>
-          </div>
-        </footer>
+          <footer className="bottom-section">
+            <div className="recent-transactions">
+              <h3 className="recent-transactions-header">
+                Recent Transactions
+              </h3>
+              <table className="recent-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Account</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentTransactions.length === 0 ? (
+                    <tr>
+                      <td colSpan="5">No transactions found.</td>
+                    </tr>
+                  ) : (
+                    recentTransactions.map((tx) => (
+                      <tr key={tx.transactionId}>
+                        <td>{new Date(tx.date).toLocaleDateString()}</td>
+                        <td>{tx.transactionType}</td>
+                        <td>${tx.amount}</td>
+                        <td>{tx.accountName || "N/A"}</td>
+                        <td>{tx.status}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="quick-reports">
+              <h3 className="quick-reports-header">Quick Reports</h3>
+              <p>📊 Monthly Expenses: $2,500</p>
+              <p>📈 Investment Growth: 8%</p>
+            </div>
+          </footer>
+        </div>
       </main>
 
       {/* ✅ Edit Profile Modal (Properly Closeable) */}

@@ -259,24 +259,22 @@ form button[type="submit"] {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .accounts-table th,
 .accounts-table td {
   border: 1px solid #ddd;
   padding: 10px;
-  text-align: center;
+  text-align: left;
 }
 
 .accounts-table th {
   background-color: #e85b5b;
   font-weight: bold;
+  text-align: center;
+  font-size: 14px;
 }
-
-/* .accounts-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-} */
 
 .accounts-table button {
   padding: 6px 10px;
@@ -312,8 +310,8 @@ form button[type="submit"] {
 
 .close-btn {
   position: absolute;
-  top: 310px;
-  right: 350px;
+  top: 120px;
+  right: 50px;
   background: #dc3545;
   color: white;
   border: none;
