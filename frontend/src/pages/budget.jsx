@@ -153,8 +153,18 @@ const Budget = () => {
   };
 
   const handleDelete = async (id) => {
-    await axiosInstance.delete(`/budgets/${id}`);
-    fetchBudgets();
+    if (!id) {
+      console.warn("⛔ Tried to delete a budget with no ID.");
+      return;
+    }
+
+    try {
+      await axiosInstance.delete(`/budgets/${id}`);
+      fetchBudgets();
+    } catch (err) {
+      console.error("❌ Error deleting budget:", err);
+      alert("Failed to delete. Please try again.");
+    }
   };
 
   const handleConfirmRestore = (id) => {
@@ -249,11 +259,19 @@ const Budget = () => {
               <td>{b.budgetType}</td>
               <td>${b.rolloverAmount}</td>
               <td>{new Date(b.dateCreated).toLocaleDateString()}</td>
-              <td>
+              <td className="actions">
                 {!b.isDeleted ? (
                   <>
-                    <button onClick={() => openForm(b)}>✏️ Edit</button>
-                    <button onClick={() => handleDelete(b.budgetId)}>
+                    <button className="edit-btns" onClick={() => openForm(b)}>
+                      ✏️ Edit
+                    </button>
+                    <button
+                      className="delete-btns"
+                      onClick={() => {
+                        console.log("Deleting budget with ID:", b.budgetId); // Debug line
+                        handleDelete(b.budgetId);
+                      }}
+                    >
                       🗑 Delete
                     </button>
                   </>

@@ -40,7 +40,7 @@ const AllAccountsModal = ({ isOpen, onClose, userId, onEdit }) => {
   return (
     <div className="modal-overlay">
       <div className="modals">
-        <button onClick={onClose} className="close-btn">
+        <button onClick={onClose} className="closes-btn">
           X
         </button>
         <h2 className="header">All Accounts</h2>

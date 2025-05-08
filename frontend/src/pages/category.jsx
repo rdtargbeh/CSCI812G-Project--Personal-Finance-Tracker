@@ -238,11 +238,11 @@ const Category = () => {
               <td>
                 {!cat.deleted ? (
                   <>
-                    <button className="edit" onClick={() => openForm(cat)}>
+                    <button className="edit-btn" onClick={() => openForm(cat)}>
                       ✏️ Edit
                     </button>
                     <button
-                      className="delete"
+                      className="delete-btn"
                       onClick={() => handleDelete(cat.categoryId)}
                     >
                       🗑 Delete

@@ -15,6 +15,7 @@ import Investments from "./pages/investments";
 import Budget from "./pages/budget";
 import Reports from "./pages/reports";
 import Profile from "./pages/profile";
+import LoanPayment from "./pages/loanPayment";
 import Subscriptions from "./pages/subscriptions";
 import ProtectedRoute from "./routes/ProtectedRoute"; // ✅ Import Protected Route
 
@@ -44,6 +45,7 @@ const App = () => {
             <Route path="reports" element={<Reports />} />
             <Route path="subscriptions" element={<Subscriptions />} />
           </Route>
+          <Route path="/loan-payments/:loanId" element={<LoanPayment />} />
         </Route>
       </Routes>
     </Router>

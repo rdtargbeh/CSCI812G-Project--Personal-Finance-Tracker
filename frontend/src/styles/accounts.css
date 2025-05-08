@@ -1,5 +1,5 @@
 .accounts-container {
-  max-width: 900px;
+  max-width: 1200px;
   margin: auto;
   padding: 20px;
 }
@@ -308,10 +308,10 @@ form button[type="submit"] {
   text-align: center;
 }
 
-.close-btn {
+.closes-btn {
   position: absolute;
-  top: 120px;
-  right: 50px;
+  top: 270px;
+  right: 360px;
   background: #dc3545;
   color: white;
   border: none;

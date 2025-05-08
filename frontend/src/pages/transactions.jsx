@@ -236,7 +236,7 @@ const Transaction = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <button
-              className="close-btns"
+              className="close-btn-btn"
               onClick={() => setShowCategoryModal(false)}
             >
               ×

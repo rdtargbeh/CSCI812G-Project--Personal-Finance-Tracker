@@ -161,18 +161,18 @@ const DashboardLayout = () => {
             <li>
               <NavLink to="/dashboard/loans">Loans</NavLink>
             </li>
-            <li>
+            {/* <li>
               <NavLink to="/dashboard/savings">My Savings Goals</NavLink>
-            </li>
+            </li> */}
             <li>
               <NavLink to="/dashboard/investments">Investments</NavLink>
             </li>
             <li>
               <NavLink to="/dashboard/reports">Reports</NavLink>
             </li>
-            <li>
+            {/* <li>
               <NavLink to="/dashboard/subscriptions">Subscriptions</NavLink>
-            </li>
+            </li> */}
           </ul>
         </nav>
 
